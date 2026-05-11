@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -8,12 +9,13 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import {
   User, Building2, Users, Bell, Settings as SettingsIcon,
-  Mail, Trash2, Shield, Send, AlertTriangle, Loader2, Camera
+  Mail, Trash2, Shield, Send, AlertTriangle, Loader2, Camera, Sun, Moon
 } from "lucide-react";
 
 // ─── Profile Tab ────────────────────────────────────────────────────────────────
@@ -361,25 +363,14 @@ function EmailTab() {
 
 // ─── General Tab ────────────────────────────────────────────────────────────────
 
-function GeneralTab() {
-  const [theme, setThemeState] = useState<string>(() => {
-    if (typeof window !== "undefined") return document.documentElement.classList.contains("dark") ? "dark" : "light";
-    return "dark";
-  });
-
-  const toggleTheme = (value: string) => {
-    setThemeState(value);
-    if (value === "dark") { document.documentElement.classList.add("dark"); localStorage.setItem("theme", "dark"); }
-    else { document.documentElement.classList.remove("dark"); localStorage.setItem("theme", "light"); }
-  };
-
+function GeneralTab({ theme, onThemeChange }: { theme: string; onThemeChange: (value: string) => void }) {
   return (
     <div className="divide-y divide-border">
       <div className="px-4 md:px-6 py-4">
         <p className="text-[12px] text-muted-foreground font-medium mb-3">Appearance</p>
         <div className="flex items-center justify-between max-w-lg">
           <span className="text-[13px]">Theme</span>
-          <Select value={theme} onValueChange={toggleTheme}>
+          <Select value={theme} onValueChange={onThemeChange}>
             <SelectTrigger className="w-[100px] h-7 text-[12px]"><SelectValue /></SelectTrigger>
             <SelectContent><SelectItem value="light">Light</SelectItem><SelectItem value="dark">Dark</SelectItem></SelectContent>
           </Select>
@@ -413,11 +404,68 @@ function GeneralTab() {
 // ─── Main Settings Page ─────────────────────────────────────────────────────────
 
 export default function Settings() {
+  const { profile, user } = useAuth()
+  const [theme, setThemeState] = useState<string>(() => {
+    if (typeof window !== "undefined") return document.documentElement.classList.contains("dark") ? "dark" : "light";
+    return "dark";
+  });
+
+  const initials = profile?.full_name
+    ? profile.full_name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
+    : "U";
+
+  const toggleTheme = (value: string) => {
+    setThemeState(value);
+    if (value === "dark") { document.documentElement.classList.add("dark"); localStorage.setItem("theme", "dark"); }
+    else { document.documentElement.classList.remove("dark"); localStorage.setItem("theme", "light"); }
+  };
+
   return (
     <AppLayout>
       <div className="flex flex-col h-full">
-        <div className="px-4 md:px-6 h-11 border-b border-border flex items-center shrink-0">
+        <div className="px-4 md:px-6 h-11 border-b border-border flex items-center justify-between shrink-0">
           <h1 className="text-[13px] font-medium">Settings</h1>
+          <div className="flex items-center gap-2">
+            {/* Theme Toggle - Single Icon */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => toggleTheme(theme === "dark" ? "light" : "dark")}
+              className="h-7 w-7"
+              title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-3.5 w-3.5" />
+              ) : (
+                <Moon className="h-3.5 w-3.5" />
+              )}
+            </Button>
+
+            {/* Avatar with Popover */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full">
+                  <Avatar className="h-5 w-5">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-[9px] leading-none">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-48 p-0" align="end">
+                <div className="p-3 border-b border-border">
+                  <p className="text-[13px] font-medium">{profile?.full_name || "User"}</p>
+                  <p className="text-[11px] text-muted-foreground truncate">{user?.email || ""}</p>
+                </div>
+                <div className="p-1">
+                  <Button variant="ghost" size="sm" disabled className="w-full justify-start h-7 text-[12px] gap-1.5">
+                    <SettingsIcon className="h-3 w-3" />
+                    Settings
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
 
         <div className="flex-1 overflow-auto">
@@ -447,7 +495,7 @@ export default function Settings() {
               <TabsContent value="company" className="m-0"><CompanyTab /></TabsContent>
               <TabsContent value="team" className="m-0"><TeamTab /></TabsContent>
               <TabsContent value="email" className="m-0"><EmailTab /></TabsContent>
-              <TabsContent value="general" className="m-0"><GeneralTab /></TabsContent>
+              <TabsContent value="general" className="m-0"><GeneralTab theme={theme} onThemeChange={toggleTheme} /></TabsContent>
             </div>
           </Tabs>
         </div>

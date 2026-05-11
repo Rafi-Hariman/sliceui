@@ -1,0 +1,679 @@
+# Claude Code Build Prompts — SliceUI
+
+Jalankan **satu prompt per sesi**. Tunggu selesai sebelum lanjut.
+
+---
+
+## ► PROMPT 0
+> Jalankan ini di terminal biasa (bukan Claude Code)
+
+```bash
+npx create-next-app@latest sliceui \
+  --typescript --tailwind --app \
+  --no-src-dir --import-alias "@/*" \
+  --no-eslint
+
+cd sliceui
+
+npm install @google/generative-ai groq-sdk sharp \
+  react-syntax-highlighter \
+  @types/react-syntax-highlighter
+```
+
+---
+
+## ► PROMPT 1 — Baca konteks, buat semua file kosong
+
+```
+Kamu adalah senior fullstack engineer. Kamu akan membangun aplikasi bernama SliceUI dari nol.
+
+=== APA ITU SLICEUI ===
+Web app yang mengkonversi screenshot UI (PNG/JPG/WebP) menjadi kode frontend
+siap pakai. User upload gambar, pilih framework, klik generate, dapat kode
+komponen yang langsung bisa di-paste ke project mereka yang sudah ada.
+
+=== AI ENGINE ===
+- PRIMARY: Google Gemini 2.0 Flash (gratis, aistudio.google.com)
+- FALLBACK: Groq (gratis, console.groq.com) — otomatis jika Gemini 429
+- Gemini bisa vision + codegen dalam SATU call (multimodal)
+- Tidak ada dua-stage pipeline, satu call langsung dapat kode
+
+=== FRAMEWORK OUTPUT YANG DIDUKUNG ===
+tailwind | react-tsx | vue-sfc | bootstrap5 | native-html | nextjs | svelte | flutter
+
+=== TECH STACK ===
+- Next.js 14 App Router
+- TypeScript strict mode
+- Tailwind CSS
+- sharp (normalisasi gambar sebelum dikirim ke AI)
+- react-syntax-highlighter (tampilkan kode output)
+- @google/generative-ai + groq-sdk (sudah ter-install)
+
+=== STRUKTUR FILE YANG HARUS DIBUAT ===
+Buat semua file ini dengan konten kosong (hanya export placeholder):
+
+app/
+  page.tsx
+  layout.tsx
+  globals.css (sudah ada, jangan hapus)
+  api/
+    convert/
+      route.ts
+
+components/
+  UploadZone.tsx
+  FrameworkPicker.tsx
+  OptionsBar.tsx
+  CodeOutput.tsx
+  GenerateButton.tsx
+  LoadingState.tsx
+
+lib/
+  ai.ts
+  prompts.ts
+  imageUtils.ts
+  frameworks.ts
+  types.ts
+
+hooks/
+  useImageUpload.ts
+  useConvert.ts
+
+Setelah membuat semua file, tampilkan daftar file yang sudah dibuat dan konfirmasi.
+```
+
+---
+
+## ► PROMPT 2 — Types, frameworks, imageUtils
+
+```
+Isi tiga file berikut dengan implementasi lengkap.
+
+=== FILE 1: lib/types.ts ===
+
+Export type dan interface berikut:
+
+1. Framework — union type:
+   "tailwind" | "react-tsx" | "vue-sfc" | "bootstrap5" | "native-html" | "nextjs" | "svelte" | "flutter"
+
+2. ConversionOptions — interface:
+   { responsive: boolean; semanticHtml: boolean; darkMode: boolean; a11y: boolean }
+
+3. ConvertResponse — interface:
+   { code: string; error?: string }
+
+4. FrameworkMeta — interface:
+   { id: Framework; label: string; desc: string; ext: string; lang: string }
+
+=== FILE 2: lib/frameworks.ts ===
+
+Import Framework dan FrameworkMeta dari types.
+Export const FRAMEWORKS: FrameworkMeta[] dengan data:
+
+id            | label         | desc                  | ext    | lang
+--------------|---------------|-----------------------|--------|------
+tailwind      | Tailwind CSS  | Utility-first HTML    | html   | html
+react-tsx     | React TSX     | TypeScript + JSX      | tsx    | tsx
+vue-sfc       | Vue 3 SFC     | Composition API       | vue    | html
+bootstrap5    | Bootstrap 5   | Grid + components     | html   | html
+native-html   | HTML + CSS    | Semantic & vanilla    | html   | html
+nextjs        | Next.js       | App Router ready      | tsx    | tsx
+svelte        | Svelte 5      | Runes syntax          | svelte | html
+flutter       | Flutter       | Dart widget tree      | dart   | dart
+
+Export juga: function getFramework(id: Framework): FrameworkMeta
+
+=== FILE 3: lib/imageUtils.ts ===
+
+Import sharp.
+
+Export async function normalizeImage(buffer: Buffer): Promise<string>
+- Resize max 1600px sisi terpanjang: { fit: "inside", withoutEnlargement: true }
+- Convert ke PNG
+- Return base64 string
+
+Export function validateImageFile(file: File): { valid: boolean; error?: string }
+- Cek type: harus image/png, image/jpeg, image/jpg, atau image/webp
+- Cek size: max 10MB (10 * 1024 * 1024)
+- Return { valid: true } jika lolos, { valid: false, error: "pesan" } jika gagal
+```
+
+---
+
+## ► PROMPT 3 — AI engine (Gemini + Groq + prompts)
+
+```
+Isi dua file berikut dengan implementasi lengkap.
+
+=== FILE 1: lib/prompts.ts ===
+
+Import Framework dan ConversionOptions dari types.
+
+Export function buildPrompt(framework: Framework, options: ConversionOptions): string
+
+Prompt yang direturn harus berisi:
+1. Instruksi peran: senior frontend engineer
+2. Tugas: analyze screenshot, generate [framework] component code
+3. CRITICAL OUTPUT RULES (wajib ada semua):
+   - Output HANYA kode, tanpa penjelasan, tanpa markdown fence
+   - Karakter pertama response = karakter pertama kode
+   - Self-contained component, bukan full app
+   - Teks dari gambar dipakai as-is sebagai placeholder
+   - Gambar dalam UI: div abu-abu dengan alt text deskriptif
+   - Icon dalam UI: komentar /* icon: {deskripsi} */
+   - Warna: match hex dari gambar secara exact
+   - Baris pertama kode wajib: // Generated by SliceUI
+
+4. Aturan kondisional (hanya tambahkan jika option true):
+   - responsive: "Add responsive breakpoints (mobile-first, sm: md: lg:)"
+   - semanticHtml: "Use semantic HTML5 elements (nav, main, section, article, header, footer)"
+   - darkMode: "Include dark mode variant using prefers-color-scheme or dark: prefix"
+   - a11y: "Add aria-label, role, and alt attributes from visual context"
+
+5. Framework-specific rules (gunakan switch atau object map):
+
+   tailwind:
+     "Plain HTML fragment. Tailwind utility classes only.
+      No <style> block. For custom hex not in Tailwind, use inline style only for that value."
+
+   react-tsx:
+     "React functional component with TypeScript.
+      Name it based on dominant type (HeroSection, NavBar, CardGrid, etc).
+      Use className not class. Tailwind for styling. Export as default."
+
+   vue-sfc:
+     "Vue 3 SFC with <template>, <script setup lang='ts'>, <style scoped>.
+      Composition API. Tailwind classes in template."
+
+   bootstrap5:
+     "Plain HTML. Bootstrap 5 class names only.
+      Use container/row/col-* grid. Bootstrap utility classes (d-flex, gap-*, etc)."
+
+   native-html:
+     "Semantic HTML5 with <style> block at top.
+      CSS custom properties for colors (--color-primary, --color-bg, etc).
+      CSS Grid or Flexbox for layout. Zero framework dependencies."
+
+   nextjs:
+     "Next.js App Router component. Add 'use client' only if has onClick/useState.
+      Prefer Server Component. Use next/image for images. Tailwind. Export default."
+
+   svelte:
+     "Svelte 5 component with runes ($state, $derived).
+      <script lang='ts'>. Tailwind classes."
+
+   flutter:
+     "Flutter StatelessWidget. Material 3. Color(0xFFHEXHEX) for colors.
+      Column/Row/Expanded layout. Widget class only, not full app."
+
+=== FILE 2: lib/ai.ts ===
+
+Import GoogleGenerativeAI dari @google/generative-ai.
+Import Groq dari groq-sdk.
+Import buildPrompt dari prompts, Framework dan ConversionOptions dari types.
+
+Setup clients:
+const gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
+
+Export async function imageToCode(
+  base64Image: string,
+  framework: Framework,
+  options: ConversionOptions
+): Promise<string>
+
+Logic:
+1. Coba callGemini() dulu
+2. Jika catch error dengan status 429 atau message mengandung "quota" atau "rate":
+   - console.warn("Gemini rate limit hit, switching to Groq")
+   - Return callGroq()
+3. Jika error lain: re-throw
+
+Private async function callGemini(base64: string, fw: Framework, opts: ConversionOptions): Promise<string>
+- model: gemini.getGenerativeModel({ model: "gemini-2.0-flash" })
+- prompt: buildPrompt(fw, opts)
+- Call: model.generateContent([prompt, { inlineData: { mimeType: "image/png", data: base64 } }])
+- Return: clean(result.response.text())
+
+Private async function callGroq(base64: string, fw: Framework, opts: ConversionOptions): Promise<string>
+- model: "meta-llama/llama-4-scout-17b-16e-instruct"
+- messages: role user, content array:
+  - { type: "text", text: buildPrompt(fw, opts) }
+  - { type: "image_url", image_url: { url: `data:image/png;base64,${base64}` } }
+- max_tokens: 4096
+- Return: clean(res.choices[0].message.content ?? "")
+
+Private function clean(raw: string): string
+- Strip ```markdown fence di awal: replace /^```[\w-]*\n?/m dengan ""
+- Strip ``` di akhir: replace /```\s*$/m dengan ""
+- Trim
+- Return hasil
+```
+
+---
+
+## ► PROMPT 4 — API Route
+
+```
+Isi file app/api/convert/route.ts dengan implementasi lengkap.
+
+Import yang dibutuhkan:
+- NextRequest, NextResponse dari next/server
+- normalizeImage, validateImageFile dari @/lib/imageUtils
+- imageToCode dari @/lib/ai
+- Framework, ConversionOptions dari @/lib/types
+
+Tambahkan di top level:
+export const maxDuration = 60
+export const runtime = "nodejs"
+
+Rate limiter in-memory (tanpa Redis dulu):
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+const FREE_LIMIT = 5
+const DAY_MS = 24 * 60 * 60 * 1000
+
+Export async function POST(req: NextRequest):
+
+Step 1 — Rate limiting:
+- ip = req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? "unknown"
+- now = Date.now()
+- Ambil entry dari rateLimitMap
+- Jika entry ada dan now < entry.resetAt:
+    - Jika count >= FREE_LIMIT: return 429 JSON { error: "daily_limit_reached", message: "5 free conversions per day. Come back tomorrow." }
+    - Else: entry.count++
+- Jika tidak ada atau expired: set entry baru { count: 1, resetAt: now + DAY_MS }
+
+Step 2 — Parse form:
+- const form = await req.formData()
+- const file = form.get("image") as File
+- const framework = form.get("framework") as Framework
+- const options = JSON.parse(form.get("options") as string) as ConversionOptions
+
+Step 3 — Validasi:
+- Jika !file atau !framework: return 400 { error: "Missing required fields" }
+- const check = validateImageFile(file)
+- Jika !check.valid: return 400 { error: check.error }
+
+Step 4 — Proses:
+- const buf = Buffer.from(await file.arrayBuffer())
+- const base64 = await normalizeImage(buf)
+
+Step 5 — Generate:
+- Bungkus dalam try/catch
+- const code = await imageToCode(base64, framework, options)
+- Return 200 { code }
+- Catch: console.error, return 500 { error: "Generation failed", message: err.message }
+```
+
+---
+
+## ► PROMPT 5 — Hooks
+
+```
+Isi dua file hooks dengan implementasi lengkap. Semua file hooks wajib 'use client' di baris pertama.
+
+=== FILE 1: hooks/useImageUpload.ts ===
+
+'use client'
+
+Import useState, useCallback, useEffect, useRef dari react.
+Import validateImageFile dari @/lib/imageUtils.
+
+Export default function useImageUpload() yang return:
+{
+  file: File | null
+  preview: string | null        // object URL untuk preview gambar
+  isDragging: boolean
+  error: string | null
+  handleDrop: (e: DragEvent<HTMLDivElement>) => void
+  handleFileChange: (e: ChangeEvent<HTMLInputElement>) => void
+  handleDragOver: (e: DragEvent<HTMLDivElement>) => void
+  handleDragLeave: () => void
+  clearFile: () => void
+}
+
+Logic:
+- processFile(f: File): validate dengan validateImageFile. Jika invalid set error. Jika valid: set file, buat preview = URL.createObjectURL(f), clear error.
+- handleDrop: e.preventDefault(), e.stopPropagation(), set isDragging false, ambil file dari e.dataTransfer.files[0], panggil processFile.
+- handleDragOver: e.preventDefault(), set isDragging true.
+- handleDragLeave: set isDragging false.
+- handleFileChange: ambil file dari e.target.files?.[0], panggil processFile.
+- clearFile: revoke preview URL, reset semua state ke null/false.
+
+useEffect untuk handle paste dari clipboard:
+- const handlePaste = (e: ClipboardEvent): loop e.clipboardData.items, cari type yang starts with "image/", convert ke File dengan new File([item.getAsFile()!], "paste.png", { type: item.type }), panggil processFile.
+- addEventListener("paste", handlePaste) saat mount.
+- removeEventListener saat unmount.
+
+useEffect untuk cleanup preview URL saat unmount atau file berubah:
+- return () => { if (preview) URL.revokeObjectURL(preview) }
+
+=== FILE 2: hooks/useConvert.ts ===
+
+'use client'
+
+Import useState, useCallback, useRef dari react.
+Import Framework, ConversionOptions, ConvertResponse dari @/lib/types.
+
+Export default function useConvert() yang return:
+{
+  convert: (file: File, framework: Framework, options: ConversionOptions) => Promise<void>
+  code: string | null
+  isLoading: boolean
+  loadingMessage: string
+  error: string | null
+  reset: () => void
+}
+
+Logic di dalam convert():
+1. Set isLoading true, error null, code null, loadingMessage "Analyzing UI layout..."
+2. setTimeout setelah 1800ms: set loadingMessage "Generating code..."
+3. Buat FormData:
+   - append("image", file)
+   - append("framework", framework)
+   - append("options", JSON.stringify(options))
+4. const res = await fetch("/api/convert", { method: "POST", body: form })
+5. const data = await res.json()
+6. Jika res.status === 429: set error "Daily limit reached. 5 free conversions per day."
+7. Jika !res.ok: set error data.message ?? "Conversion failed. Please try again."
+8. Jika ok: set code data.code
+9. Set isLoading false di finally block
+10. Catch exception: set error err.message, set isLoading false
+
+reset(): set semua ke null/false/""
+```
+
+---
+
+## ► PROMPT 6 — Komponen UI
+
+```
+Buat semua komponen berikut. Semua wajib 'use client' di baris pertama.
+Gunakan Tailwind CSS. Tidak ada library UI eksternal.
+
+=== UploadZone.tsx ===
+
+Props interface:
+{
+  file: File | null
+  preview: string | null
+  isDragging: boolean
+  error: string | null
+  onDrop: (e: DragEvent<HTMLDivElement>) => void
+  onFileChange: (e: ChangeEvent<HTMLInputElement>) => void
+  onDragOver: (e: DragEvent<HTMLDivElement>) => void
+  onDragLeave: () => void
+  onClear: () => void
+}
+
+Tampilan:
+- Div besar dengan border-2 border-dashed
+- isDragging=true: border-violet-500 bg-violet-50 dark:bg-violet-950/20
+- Default: border-gray-200 dark:border-gray-700 hover:border-gray-300
+- Ada hidden input type="file" accept="image/png,image/jpeg,image/webp"
+- Klik zona = trigger input file
+- Saat preview null: tampilkan ikon upload (SVG panah ke atas), teks "Drop your UI screenshot here", sub "or click to browse · PNG, JPG, WebP · max 10MB", hint "Ctrl+V to paste from clipboard"
+- Saat preview ada: tampilkan <img src={preview} className="object-contain"> + tombol X di pojok kanan atas untuk clearFile
+- Saat error: teks merah di bawah zona
+
+=== FrameworkPicker.tsx ===
+
+Props: { selected: Framework; onChange: (fw: Framework) => void }
+
+Import FRAMEWORKS dari @/lib/frameworks.
+
+Tampilan: grid 4 kolom di desktop, 2 kolom di mobile.
+Tiap card:
+- border rounded-xl padding
+- selected: border-violet-500 bg-violet-50 dark:bg-violet-950/20 ring-2 ring-violet-500
+- default: border-gray-200 hover:border-gray-300 dark:border-gray-700
+- Tampilkan: label (bold) dan desc (text-sm text-gray-500)
+- onClick: onChange(fw.id)
+
+=== OptionsBar.tsx ===
+
+Props: { options: ConversionOptions; onChange: (o: ConversionOptions) => void }
+
+4 toggle chip horizontal (flex wrap):
+label dan key: "Responsive" (responsive) | "Semantic HTML" (semanticHtml) | "Dark mode" (darkMode) | "A11y" (a11y)
+
+Chip aktif: bg-violet-100 text-violet-700 border-violet-300 dark:bg-violet-900/30 dark:text-violet-300
+Chip non-aktif: bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400
+
+onClick: toggle nilai boolean yang sesuai di options, panggil onChange dengan options baru.
+
+=== LoadingState.tsx ===
+
+Props: { message: string }
+
+Tampilan: div flex column center, spinner (div dengan border + border-t-violet-600 + animate-spin rounded-full w-8 h-8), teks message di bawah.
+
+=== GenerateButton.tsx ===
+
+Props: { onClick: () => void; disabled: boolean; isLoading: boolean }
+
+Button full width, bg-violet-600 hover:bg-violet-700 text-white rounded-xl py-3.
+Disabled style: opacity-50 cursor-not-allowed
+Teks: isLoading ? "Generating..." : "Generate code"
+disabled prop = props.disabled || props.isLoading
+
+=== CodeOutput.tsx ===
+
+Props: { code: string | null; framework: Framework | null }
+
+Import SyntaxHighlighter dari react-syntax-highlighter.
+Import { atomOneDark } dari react-syntax-highlighter/dist/esm/styles/hljs.
+Import getFramework dari @/lib/frameworks.
+
+State: activeTab ("code" | "preview"), copied (boolean)
+
+Tampilan:
+- Header: tab "Code" dan tab "Preview" di kiri, tombol copy di kanan
+- Saat code null: placeholder "Upload a screenshot to get started" centered
+- Tab code: SyntaxHighlighter dengan language=getFramework(framework).lang, style=atomOneDark, customStyle={{ borderRadius: 0, margin: 0, minHeight: 400 }}
+- Tab preview: iframe sandbox="allow-scripts" dengan srcdoc=code (hanya untuk tailwind, bootstrap5, native-html, dan html frameworks). Untuk framework lain tampilkan pesan "Preview not available for this framework"
+- Copy button: copy code ke clipboard, set copied true 2 detik lalu false kembali. Teks: copied ? "Copied!" : "Copy"
+- Footer: teks "{jumlah baris} lines · {framework label}" (hanya tampil jika code ada)
+```
+
+---
+
+## ► PROMPT 7 — Layout & Halaman Utama
+
+```
+Isi app/layout.tsx dan app/page.tsx.
+
+=== app/layout.tsx ===
+
+Import Inter dari next/font/google.
+Import type Metadata dari next.
+Import "./globals.css"
+
+export const metadata: Metadata = {
+  title: "SliceUI — Image to Code",
+  description: "Convert UI screenshots into frontend code instantly. Supports Tailwind, React, Vue, Bootstrap, and more.",
+}
+
+const inter = Inter({ subsets: ["latin"] })
+
+RootLayout: html lang="en", body dengan inter.className + "bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen"
+
+=== app/page.tsx ===
+
+'use client'
+
+Import semua komponen dan hooks.
+Import FRAMEWORKS dari lib/frameworks.
+Import Framework, ConversionOptions dari lib/types.
+
+State:
+- framework: Framework = "tailwind"
+- options: ConversionOptions = { responsive: true, semanticHtml: true, darkMode: false, a11y: false }
+
+Hooks: useImageUpload(), useConvert()
+
+function handleGenerate():
+  jika !file: return
+  convert(file, framework, options)
+
+Layout halaman:
+┌─────────────────────────────────────────────────────┐
+│ HEADER (sticky, border bawah, bg putih/dark)        │
+│  Logo "SliceUI" (bold violet) + badge "beta"        │
+│  Kanan: link "Get API key" ke aistudio.google.com   │
+├────────────────────┬────────────────────────────────┤
+│ KOLOM KIRI (2/5)   │ KOLOM KANAN (3/5)              │
+│                    │                                 │
+│ UploadZone         │ Jika isLoading:                 │
+│                    │   LoadingState message          │
+│ "Framework"        │                                 │
+│ FrameworkPicker    │ Jika error:                     │
+│                    │   Card merah dengan pesan error │
+│ "Options"          │                                 │
+│ OptionsBar         │ CodeOutput (selalu render,      │
+│                    │   handle null state internal)   │
+│ GenerateButton     │                                 │
+└────────────────────┴────────────────────────────────┘
+
+Responsive: di mobile, kolom kiri dulu kemudian kolom kanan (flex-col).
+Di desktop: grid grid-cols-5, kiri col-span-2, kanan col-span-3.
+
+Main content: max-w-7xl mx-auto px-4 py-8 gap-8
+
+Pasang event paste dari useImageUpload ke window via useEffect di page.tsx:
+useEffect(() => {
+  // paste sudah dihandle di dalam hook, tidak perlu tambahan di sini
+}, [])
+```
+
+---
+
+## ► PROMPT 8 — Environment & Final Check
+
+```
+Lakukan langkah-langkah berikut secara berurutan:
+
+LANGKAH 1 — Buat file .env.local di root project:
+GEMINI_API_KEY=GANTI_DENGAN_API_KEY_GEMINI_KAMU
+GROQ_API_KEY=GANTI_DENGAN_API_KEY_GROQ_KAMU
+
+LANGKAH 2 — Pastikan .env.local ada di .gitignore. Jika belum ada baris ".env.local", tambahkan.
+
+LANGKAH 3 — Cek next.config.ts atau next.config.js. Pastikan file ini valid. Jika ada error konfigurasi, perbaiki. Jika file belum mengizinkan body size besar untuk upload, tambahkan:
+const nextConfig = {
+  experimental: {
+    serverActions: { bodySizeLimit: "10mb" }
+  }
+}
+
+LANGKAH 4 — Jalankan TypeScript check:
+npx tsc --noEmit
+
+Tampilkan semua error yang muncul dan perbaiki satu per satu hingga tidak ada error TypeScript.
+
+LANGKAH 5 — Jalankan dev server:
+npm run dev
+
+Jika ada error saat start, tampilkan dan perbaiki.
+
+LANGKAH 6 — Laporkan:
+- Apakah server berjalan di http://localhost:3000 ?
+- File apa saja yang sudah dibuat?
+- Ada TypeScript error yang belum terselesaikan?
+- Ada import yang bermasalah?
+
+Perbaiki semua issue yang ditemukan sebelum konfirmasi selesai.
+```
+
+---
+
+## ► PROMPT 9 — Polish & Bug Fix
+
+```
+Sekarang lakukan review menyeluruh dan perbaiki semua issue berikut:
+
+1. UPLOAD ZONE
+   - Test: klik zona → file picker muncul
+   - Test: drag file PNG ke zona → preview muncul
+   - Test: Ctrl+V screenshot → preview muncul
+   - Test: upload file PDF → muncul pesan error merah di bawah zona
+   - Jika ada yang tidak berfungsi, perbaiki.
+
+2. FRAMEWORK PICKER
+   - Pastikan semua 8 framework tampil dalam grid
+   - Klik card → selected state berubah dengan highlight yang jelas
+   - Jika tidak, perbaiki.
+
+3. GENERATE BUTTON
+   - Saat belum upload gambar: button disabled (opacity berkurang)
+   - Saat isLoading: button disabled + teks "Generating..."
+   - Setelah upload gambar: button aktif
+   - Jika tidak, perbaiki.
+
+4. LOADING STATE
+   - Saat generate: tampil "Analyzing UI layout..."
+   - Setelah ~1.8 detik: berubah jadi "Generating code..."
+   - Jika tidak, perbaiki.
+
+5. CODE OUTPUT
+   - Saat belum generate: tampil placeholder teks
+   - Setelah generate berhasil: tampil kode dengan syntax highlighting
+   - Tombol copy berfungsi
+   - Tab preview berfungsi untuk framework HTML-based
+   - Jika tidak, perbaiki.
+
+6. DARK MODE
+   - Buka browser dev tools → toggle dark mode
+   - Seluruh UI harus menyesuaikan (tidak ada area yang tetap putih/terang)
+   - Jika ada, perbaiki class Tailwind yang kurang dark: prefix
+
+7. MOBILE RESPONSIVE
+   - Di viewport 375px: layout harus satu kolom vertikal
+   - Semua elemen harus tidak overflow
+   - Jika ada, perbaiki.
+
+Setelah semua diperbaiki, tampilkan ringkasan perubahan yang dilakukan.
+```
+
+---
+
+## ► PROMPT 10 (opsional) — Test generate nyata
+
+```
+Lakukan test end-to-end dengan gambar nyata.
+
+Catatan: pastikan .env.local sudah diisi dengan API key asli sebelum test ini.
+
+CARA TEST:
+1. Buka http://localhost:3000
+2. Pergi ke website mana saja (contoh: github.com atau vercel.com)
+3. Screenshot bagian navbar atau hero section (Ctrl+Shift+S atau snipping tool)
+4. Upload screenshot tersebut ke SliceUI
+5. Pilih framework "tailwind"
+6. Aktifkan opsi: Responsive, Semantic HTML
+7. Klik "Generate code"
+8. Tunggu dan perhatikan:
+   - Loading state muncul dengan pesan yang berubah
+   - Kode muncul di panel kanan dengan syntax highlighting
+   - Tombol Copy berfungsi
+   - Tab Preview menampilkan render HTML
+
+Jika ada error:
+- Jika 401: API key belum diset atau salah
+- Jika 429: Rate limit — tunggu 1 menit atau cek apakah Groq fallback berfungsi
+- Jika 500: Lihat console server (terminal npm run dev) dan tampilkan error
+
+Laporkan hasil test secara detail.
+```
+
+---
+
+## Catatan penting untuk Claude Code
+
+- Semua file `components/` dan `hooks/` wajib `'use client'` di baris pertama
+- Tidak boleh ada `any` kecuali benar-benar tidak bisa dihindari
+- Semua fetch ke `/api/convert` harus handle error response
+- Image preview menggunakan `URL.createObjectURL` — wajib di-revoke saat unmount
+- `sharp` hanya berjalan di Node.js runtime — pastikan `export const runtime = "nodejs"` ada di route.ts
+- Jangan install library UI tambahan (shadcn, radix, dll) — Tailwind saja
+- Jika Gemini API key belum diisi, app tetap harus bisa dibuka tanpa crash

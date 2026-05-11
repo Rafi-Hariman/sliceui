@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { AppSidebar, SidebarContent } from "./AppSidebar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -7,10 +8,28 @@ import { StackedLogo } from "./StackedLogo";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const location = useLocation();
+
+  // Auto-collapse sidebar when navigating to settings
+  useEffect(() => {
+    if (location.pathname === "/settings") {
+      setSidebarCollapsed(true);
+    }
+    // Don't auto-expand when leaving settings - let user control it
+  }, [location.pathname]);
+
+  const handleSidebarExpand = () => {
+    setSidebarCollapsed(false);
+  };
 
   return (
     <div className="flex min-h-screen">
-      <AppSidebar />
+      <AppSidebar
+        collapsed={sidebarCollapsed}
+        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+        onNavigate={handleSidebarExpand}
+      />
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile header */}
@@ -29,7 +48,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </Sheet>
           <div className="flex items-center gap-1.5">
             <StackedLogo size={16} />
-            <span className="font-bold uppercase tracking-[0.08em] text-[14px] text-foreground">Triage</span>
+            <span className="font-bold uppercase tracking-[0.08em] text-[14px] text-foreground">SliceUI</span>
           </div>
           <div className="w-7" />
         </header>
