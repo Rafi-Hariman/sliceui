@@ -82,7 +82,7 @@ async function callGroq(
   return clean(res.choices[0].message.content ?? "")
 }
 
-function clean(raw: string): string {
+export function clean(raw: string): string {
   return raw
     .replace(/^```[\w-]*\n?/m, "")
     .replace(/```\s*$/m, "")
