@@ -284,18 +284,24 @@ export async function POST(req: NextRequest) {
 ## Environment variables
 
 ```bash
-# .env.local
+# .env.local (gitignored — NEVER commit real values)
+# Copy from .env.local.example and fill in your own keys.
+# Note: the app reads these client-side (VITE_ prefix), so they are bundle-exposed.
 
 # Gemini (primary) — FREE, get at aistudio.google.com
-GEMINI_API_KEY=AIzaSyCZ6A6PMNG63vkat4P8T21HmWUovtUgUg4
+VITE_GEMINI_API_KEY=your_gemini_key_here
 
 # Groq (fallback) — FREE, get at console.groq.com
-GROQ_API_KEY=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
+VITE_GROQ_API_KEY=your_groq_key_here
+
+# Supabase (auth + DB + storage)
+VITE_SUPABASE_URL=your_supabase_url_here
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key_here
 ```
 
-
-SUPABASE_KEY_ACCOUNT=sbp_v0_2c874e0b6643b9237c9a334647bfb1ea60302d96
-SUPABASE_KEY_PROJECT=sb_publishable_SNw0_PhhQ2q5warhrA86RA_jNMAKeAx
+> SECURITY: live keys were previously committed here and must be **rotated**
+> (revoked at Google / Groq / Supabase). Removing them from this file does not
+> un-leak them — git history still contains the originals.
 ---
 
 ## File structure
