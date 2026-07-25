@@ -54,11 +54,13 @@ directly from the browser, with Supabase for auth and conversion history.
 | [development/api-contract.md](./development/api-contract.md) | External AI + Supabase contracts + planned `/api/convert`. |
 | [development/database.md](./development/database.md) | Supabase schema, storage, drift notes. |
 | [development/ui-ux.md](./development/ui-ux.md) | Design system, screens, responsive, a11y. |
+| [development/ui-ux-audit.md](./development/ui-ux-audit.md) | WCAG 2.2 AA audit + engineer fix-list (both themes). |
 
 ### Operations
 | Document | Purpose |
 | :--- | :--- |
 | [operations/ci-cd.md](./operations/ci-cd.md) | Build, test gates, deploy, secrets. |
+| [operations/deploy-metered-convert.md](./operations/deploy-metered-convert.md) | Phase 0 runbook: deploy the metered `/convert` edge function. |
 
 ### Technical Guidelines
 | Document | Purpose |
