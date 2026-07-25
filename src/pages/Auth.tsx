@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import { StackedLogo } from "@/components/StackedLogo";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Auth() {
   const { user, loading, signIn, signUp } = useAuth();
@@ -60,6 +61,18 @@ export default function Auth() {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!loginEmail) {
+      toast({ title: "Enter your email", description: "Type your email above first, then tap reset.", variant: "destructive" });
+      return;
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(loginEmail, {
+      redirectTo: window.location.origin,
+    });
+    if (error) toast({ title: "Reset failed", description: error.message, variant: "destructive" });
+    else toast({ title: "Check your email", description: "We sent a password reset link." });
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-[420px] border border-border rounded-md p-8 space-y-6">
@@ -88,6 +101,11 @@ export default function Auth() {
               <div className="space-y-1">
                 <Label className="text-[12px]" htmlFor="login-password">Password</Label>
                 <Input id="login-password" type="password" placeholder="••••••••" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required className="h-8 text-[13px]" />
+              </div>
+              <div className="flex justify-end">
+                <button type="button" onClick={handleForgotPassword} className="text-[11px] text-muted-foreground hover:text-foreground underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
+                  Forgot password?
+                </button>
               </div>
               <Button type="submit" className="w-full h-8 text-[13px]" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}

@@ -1,5 +1,5 @@
-import { useState, useRef } from "react"
-import { Link } from "react-router-dom"
+import { useState, useRef, useEffect } from "react"
+import { Link, useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -10,7 +10,8 @@ import OptionsBar from "@/components/OptionsBar"
 import useImageUpload from "@/hooks/useImageUpload"
 import useConvert from "@/hooks/useConvert"
 import { FRAMEWORKS } from "@/lib/frameworks"
-import type { Framework, ConversionOptions } from "@/lib/types"
+import { getConversionById } from "@/lib/conversionService"
+import type { Framework, ConversionOptions, Conversion } from "@/lib/types"
 import { Plus, ArrowUp, X, Image as ImageIcon, Sun, Moon, Settings as SettingsIcon } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
 
@@ -21,26 +22,31 @@ const DEFAULT_OPTIONS: ConversionOptions = {
   a11y: false
 }
 
-const FRAMEWORK_ICONS: Record<string, React.ReactNode> = {
-  "tailwind": <span className="font-bold text-cyan-500">TW</span>,
-  "react-tsx": <span className="font-bold text-blue-500">Re</span>,
-  "vue-sfc": <span className="font-bold text-green-500">Vu</span>,
-  "bootstrap5": <span className="font-bold text-purple-500">BS</span>,
-  "native-html": <span className="font-bold text-orange-500">HT</span>,
-  "nextjs": <span className="font-bold text-gray-900 dark:font-bold">Nx</span>,
-  "svelte": <span className="font-bold text-red-500">Sv</span>,
+// Two-letter glyph per framework — single token color (on-brand indigo).
+const FRAMEWORK_GLYPH: Record<string, string> = {
+  "tailwind": "TW",
+  "react-tsx": "Re",
+  "vue-sfc": "Vu",
+  "bootstrap5": "BS",
+  "native-html": "HT",
+  "nextjs": "Nx",
+  "svelte": "Sv",
 }
+
+const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 
 export default function Slice() {
   const { profile, user } = useAuth()
   const [framework, setFramework] = useState<Framework>("tailwind")
   const [options, setOptions] = useState<ConversionOptions>(DEFAULT_OPTIONS)
   const [showCanvasPreview, setShowCanvasPreview] = useState(false)
+  const [loaded, setLoaded] = useState<Conversion | null>(null)
   const [theme, setThemeState] = useState<string>(() => {
     if (typeof window !== "undefined") return document.documentElement.classList.contains("dark") ? "dark" : "light"
     return "dark"
   })
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [params] = useSearchParams()
 
   const initials = profile?.full_name
     ? profile.full_name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
@@ -72,17 +78,31 @@ export default function Slice() {
   const {
     code,
     isLoading,
+    loadingMessage,
     error: convertError,
     convert,
     reset
   } = useConvert()
+
+  // P0-2: deep-link from Dashboard — /slice?conversion=<id> loads a past conversion.
+  useEffect(() => {
+    const id = params.get("conversion")
+    if (!id || !user) return
+    getConversionById(id)
+      .then((c) => { if (c) setLoaded(c) })
+      .catch(() => { /* ignore — user can still upload fresh */ })
+  }, [params, user])
+
+  const effectiveFramework: Framework = loaded?.framework as Framework ?? framework
+  const effectiveCode: string | null = loaded?.generated_code ?? code
+  const effectivePreview: string | null = loaded?.original_image_url ?? preview
 
   const handleGenerate = async () => {
     if (!file) {
       toast.error("Please upload an image first")
       return
     }
-
+    setLoaded(null) // clear any deep-linked conversion before a fresh generate
     reset()
     await convert(file, framework, options)
   }
@@ -99,27 +119,29 @@ export default function Slice() {
           <h1 className="text-[13px] font-medium">Slice</h1>
 
           <div className="flex items-center gap-2">
-            {/* Theme Toggle - Single Icon */}
+            {/* Theme Toggle */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => toggleTheme(theme === "dark" ? "light" : "dark")}
-              className="h-7 w-7"
+              className="h-8 w-8"
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              aria-pressed={theme === "dark"}
               title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
             >
               {theme === "dark" ? (
-                <Sun className="h-3.5 w-3.5" />
+                <Sun className="h-4 w-4" />
               ) : (
-                <Moon className="h-3.5 w-3.5" />
+                <Moon className="h-4 w-4" />
               )}
             </Button>
 
             {/* Avatar with Popover */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full">
-                  <Avatar className="h-5 w-5">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-[9px] leading-none">
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" aria-label={profile?.full_name ? `Account: ${profile.full_name}` : "Account"}>
+                  <Avatar className="h-6 w-6">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-[10px] leading-none">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
@@ -128,12 +150,12 @@ export default function Slice() {
               <PopoverContent className="w-48 p-0" align="end">
                 <div className="p-3 border-b border-border">
                   <p className="text-[13px] font-medium">{profile?.full_name || "User"}</p>
-                  <p className="text-[11px] text-muted-foreground truncate">{user?.email || ""}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user?.email || ""}</p>
                 </div>
                 <div className="p-1">
                   <Link to="/settings">
-                    <Button variant="ghost" size="sm" className="w-full justify-start h-7 text-[12px] gap-1.5">
-                      <SettingsIcon className="h-3 w-3" />
+                    <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs gap-1.5">
+                      <SettingsIcon className="h-3.5 w-3.5" />
                       Settings
                     </Button>
                   </Link>
@@ -169,7 +191,8 @@ export default function Slice() {
                   variant="ghost"
                   size="icon"
                   onClick={handlePlusClick}
-                  className="shrink-0 rounded-full h-9 w-9"
+                  className={`shrink-0 rounded-full h-9 w-9 ${FOCUS_RING}`}
+                  aria-label={file ? "Remove image" : "Upload image"}
                   title={file ? "Remove image" : "Upload image"}
                 >
                   {file ? <X className="w-4 h-4" onClick={(e) => { e.stopPropagation(); clearFile(); }} /> : <Plus className="w-4 h-4" />}
@@ -187,7 +210,8 @@ export default function Slice() {
                   onClick={handleGenerate}
                   disabled={!file || isLoading}
                   data-testid="generate-button"
-                  className="flex-1 h-9 bg-primary hover:bg-primary/90"
+                  className={`flex-1 h-9 bg-primary hover:bg-primary/90 ${FOCUS_RING}`}
+                  aria-label="Generate code"
                   title="Generate code"
                 >
                   <ArrowUp className="w-4 h-4 mr-1.5" />
@@ -196,7 +220,7 @@ export default function Slice() {
               </div>
 
               {uploadError && (
-                <p className="text-xs text-destructive mt-2">{uploadError}</p>
+                <p className="text-xs text-destructive mt-2" role="alert">{uploadError}</p>
               )}
             </div>
 
@@ -204,28 +228,31 @@ export default function Slice() {
             <div className="p-3 flex-1 overflow-auto">
               <p className="text-xs text-muted-foreground mb-2 px-1">Select Framework</p>
               <div className="grid grid-cols-2 gap-2">
-                {FRAMEWORKS.map((fw) => (
-                  <button
-                    key={fw.id}
-                    onClick={() => setFramework(fw.id as Framework)}
-                    aria-pressed={framework === fw.id}
-                    data-testid={`framework-${fw.id}`}
-                    className={`
-                      flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all
-                      ${framework === fw.id
-                        ? "border-primary bg-primary/20 shadow-sm"
-                        : "border-border bg-sidebar hover:border-muted-foreground/30 hover:bg-muted/20"
-                      }
-                    `}
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-sidebar border border-border flex items-center justify-center text-sm font-bold">
-                      {FRAMEWORK_ICONS[fw.id] || fw.id.slice(0, 2).toUpperCase()}
-                    </div>
-                    <span className="text-[10px] text-center leading-tight text-foreground">
-                      {fw.label}
-                    </span>
-                  </button>
-                ))}
+                {FRAMEWORKS.map((fw) => {
+                  const selected = effectiveFramework === fw.id
+                  return (
+                    <button
+                      key={fw.id}
+                      onClick={() => { setFramework(fw.id as Framework); setLoaded(null) }}
+                      aria-pressed={selected}
+                      data-testid={`framework-${fw.id}`}
+                      className={`
+                        flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-colors ${FOCUS_RING}
+                        ${selected
+                          ? "border-primary bg-primary/15 shadow-sm"
+                          : "border-border bg-sidebar hover:border-muted-foreground/40 hover:bg-muted/30"
+                        }
+                      `}
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-sidebar border border-border flex items-center justify-center text-sm font-bold text-primary">
+                        {FRAMEWORK_GLYPH[fw.id] || fw.id.slice(0, 2).toUpperCase()}
+                      </div>
+                      <span className="text-[11px] text-center leading-tight text-foreground">
+                        {fw.label}
+                      </span>
+                    </button>
+                  )
+                })}
               </div>
 
               {/* Options */}
@@ -239,20 +266,21 @@ export default function Slice() {
               <div className="p-3 border-t border-border shrink-0">
                 <button
                   onClick={() => setShowCanvasPreview(!showCanvasPreview)}
-                  className="w-full flex items-center gap-2 p-2 rounded-lg border border-border hover:border-muted-foreground/30 hover:bg-muted/20 transition-colors"
+                  aria-label={`${file.name} — ${showCanvasPreview ? "hide" : "show"} preview`}
+                  className={`w-full flex items-center gap-2 p-2 rounded-lg border border-border hover:border-muted-foreground/40 hover:bg-muted/30 transition-colors ${FOCUS_RING}`}
                 >
                   <div className="w-12 h-12 rounded-lg overflow-hidden border border-border shrink-0">
-                    <img src={preview} alt="Preview" data-testid="image-preview" className="w-full h-full object-cover" />
+                    <img src={preview} alt="Upload preview" data-testid="image-preview" className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 text-left min-w-0">
-                    <p className="text-[11px] font-medium truncate">{file.name}</p>
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-xs font-medium truncate">{file.name}</p>
+                    <p className="text-[11px] text-muted-foreground">
                       {file.size > 1024 * 1024
                         ? `${(file.size / 1024 / 1024).toFixed(1)}MB`
                         : `${(file.size / 1024).toFixed(0)}KB`}
                     </p>
                   </div>
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-[11px] text-muted-foreground">
                     {showCanvasPreview ? "Hide" : "Preview"}
                   </span>
                 </button>
@@ -262,7 +290,7 @@ export default function Slice() {
 
           {/* Right Canvas: Code Output */}
           <div className="flex-1 min-h-[420px] md:min-h-0 bg-sidebar border border-border rounded-xl shadow-sm overflow-hidden flex flex-col">
-            {!file && !code ? (
+            {!file && !effectiveCode ? (
               // Empty State
               <div className="h-full flex flex-col items-center justify-center text-center space-y-4 p-8">
                 <div className="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center">
@@ -278,7 +306,7 @@ export default function Slice() {
             ) : (
               // Content Display
               <div className="h-full flex flex-col">
-                {showCanvasPreview && file && preview && !code && !isLoading && (
+                {showCanvasPreview && file && preview && !effectiveCode && !isLoading && (
                   // Image Preview in Canvas
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-3">
@@ -287,14 +315,14 @@ export default function Slice() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setShowCanvasPreview(false)}
-                        className="h-6 text-[11px]"
+                        className="h-7 text-xs"
                       >
-                        <X className="w-3 h-3 mr-1" />
+                        <X className="w-3.5 h-3.5 mr-1" />
                         Close
                       </Button>
                     </div>
                     <div className="rounded-lg border border-border overflow-hidden bg-background">
-                      <img src={preview} alt="Preview" className="w-full" />
+                      <img src={preview} alt="Upload preview" className="w-full" />
                     </div>
                   </div>
                 )}
@@ -302,17 +330,22 @@ export default function Slice() {
                 {isLoading && (
                   <div className="flex-1 flex items-center justify-center">
                     <div className="text-center space-y-4" data-testid="loading-state">
-                      <div className="w-12 h-12 border-3 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
-                      <p className="text-sm text-muted-foreground">Generating code...</p>
+                      <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
+                      <p className="text-sm text-muted-foreground">{loadingMessage || "Generating code..."}</p>
+                      <div className="mx-auto max-w-md space-y-2" aria-hidden="true">
+                        <div className="h-3 w-3/4 rounded-full bg-muted" />
+                        <div className="h-3 w-full rounded-full bg-muted" />
+                        <div className="h-3 w-5/6 rounded-full bg-muted" />
+                      </div>
                     </div>
                   </div>
                 )}
 
-                {code && (
+                {effectiveCode && !isLoading && (
                   <div className="flex-1 p-4 min-h-0">
                     <CodeOutput
-                      code={code}
-                      framework={framework}
+                      code={effectiveCode}
+                      framework={effectiveFramework}
                       isLoading={false}
                     />
                   </div>
@@ -320,9 +353,9 @@ export default function Slice() {
 
                 {convertError && (
                   <div className="flex-1 flex items-center justify-center">
-                    <div className="text-center" data-testid="error-message">
+                    <div className="text-center" data-testid="error-message" role="alert">
                       <p className="text-sm text-destructive mb-4">{convertError}</p>
-                      <Button onClick={clearFile} variant="outline" size="sm">
+                      <Button onClick={handleGenerate} disabled={!file || isLoading} variant="outline" size="sm">
                         Try again
                       </Button>
                     </div>

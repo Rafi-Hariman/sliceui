@@ -69,7 +69,8 @@ export function SidebarContent({ collapsed = false, onNavigate, onToggle }: Side
           variant="ghost"
           size="icon"
           onClick={onToggle}
-          className="h-6 w-6 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="h-7 w-7 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
         >
           {collapsed ? (
             <ChevronRight className="h-3.5 w-3.5" />
@@ -90,7 +91,7 @@ export function SidebarContent({ collapsed = false, onNavigate, onToggle }: Side
               to={item.path}
               onClick={(e) => handleNavClick(e, item.path)}
               className={cn(
-                "flex items-center gap-2 px-2 py-1.5 rounded text-[13px] transition-colors",
+                "flex items-center gap-2 px-2 py-1.5 rounded text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 isActive
                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
                   : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -122,9 +123,10 @@ export function SidebarContent({ collapsed = false, onNavigate, onToggle }: Side
               variant="ghost"
               size="icon"
               onClick={signOut}
-              className="text-sidebar-foreground hover:bg-sidebar-accent h-6 w-6 shrink-0"
+              aria-label="Sign out"
+              className="text-sidebar-foreground hover:bg-sidebar-accent h-7 w-7 shrink-0"
             >
-              <LogOut className="h-3 w-3" />
+              <LogOut className="h-3.5 w-3.5" />
             </Button>
           )}
         </div>

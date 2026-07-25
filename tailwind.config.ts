@@ -70,12 +70,6 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        severity: {
-          critical: "hsl(var(--severity-critical))",
-          high: "hsl(var(--severity-high))",
-          medium: "hsl(var(--severity-medium))",
-          low: "hsl(var(--severity-low))",
-        },
       },
       fontFamily: {
         sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],

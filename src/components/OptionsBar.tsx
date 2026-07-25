@@ -27,7 +27,7 @@ export default function OptionsBar({ options, onChange }: OptionsBarProps) {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+      <h3 className="text-sm font-medium text-foreground">
         Options
       </h3>
       <div className="flex flex-wrap gap-2">
@@ -36,11 +36,13 @@ export default function OptionsBar({ options, onChange }: OptionsBarProps) {
             key={opt.key}
             type="button"
             onClick={() => toggle(opt.key)}
+            aria-pressed={!!options[opt.key]}
             className={`
-              px-3 py-1.5 rounded-full text-sm font-medium border transition-all
+              px-3 py-1.5 rounded-full text-sm font-medium border transition-colors
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background
               ${options[opt.key]
-                ? "bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border-violet-300 dark:border-violet-700"
-                : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                ? "bg-primary/15 text-primary border-primary/40"
+                : "bg-background text-muted-foreground border-border hover:border-muted-foreground/40 hover:text-foreground"
               }
             `}
           >

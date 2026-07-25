@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 import { AppLayout } from "@/components/AppLayout"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
@@ -32,7 +32,6 @@ const FRAMEWORK_COLORS: Record<string, string> = {
 
 export default function Dashboard() {
   const { profile, user } = useAuth()
-  const navigate = useNavigate()
   const [conversions, setConversions] = useState<Conversion[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -141,22 +140,24 @@ export default function Dashboard() {
               variant="ghost"
               size="icon"
               onClick={() => toggleTheme(theme === "dark" ? "light" : "dark")}
-              className="h-7 w-7"
+              className="h-8 w-8"
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              aria-pressed={theme === "dark"}
               title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
             >
               {theme === "dark" ? (
-                <Sun className="h-3.5 w-3.5" />
+                <Sun className="h-4 w-4" />
               ) : (
-                <Moon className="h-3.5 w-3.5" />
+                <Moon className="h-4 w-4" />
               )}
             </Button>
 
             {/* Avatar with Popover */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full">
-                  <Avatar className="h-5 w-5">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-[9px] leading-none">
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" aria-label={profile?.full_name ? `Account: ${profile.full_name}` : "Account"}>
+                  <Avatar className="h-6 w-6">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-[10px] leading-none">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
@@ -235,6 +236,7 @@ export default function Dashboard() {
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   placeholder="Search conversions..."
+                  aria-label="Search conversions"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-8 h-8 text-[13px] bg-transparent"
@@ -274,16 +276,15 @@ export default function Dashboard() {
                     filtered.map((conv) => (
                       <tr
                         key={conv.id}
-                        className="border-b border-border last:border-0 hover:bg-muted/30 cursor-pointer transition-colors"
-                        onClick={() => navigate(`/slice?conversion=${conv.id}`)}
+                        className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors"
                       >
                         <td className="px-3 py-2">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                          <Link to={`/slice?conversion=${conv.id}`} className="flex items-center gap-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
+                            <div className="w-8 h-8 rounded bg-muted overflow-hidden">
                               <img src={conv.original_image_url} alt="" className="w-full h-full object-cover" />
                             </div>
-                            <span className="font-medium truncate max-w-[150px]">{conv.original_image_name}</span>
-                          </div>
+                            <span className="font-medium truncate max-w-[150px] hover:text-primary">{conv.original_image_name}</span>
+                          </Link>
                         </td>
                         <td className="px-3 py-2">
                           <Badge variant="outline" className="text-xs">
@@ -292,10 +293,10 @@ export default function Dashboard() {
                         </td>
                         <td className="px-3 py-2">
                           <div className="flex gap-1 flex-wrap">
-                            {conv.options.responsive && <Badge variant="secondary" className="text-[10px] px-1.5">R</Badge>}
-                            {conv.options.semanticHtml && <Badge variant="secondary" className="text-[10px] px-1.5">S</Badge>}
-                            {conv.options.darkMode && <Badge variant="secondary" className="text-[10px] px-1.5">D</Badge>}
-                            {conv.options.a11y && <Badge variant="secondary" className="text-[10px] px-1.5">A</Badge>}
+                            {conv.options.responsive && <Badge variant="secondary" className="text-[10px] px-1.5" title="Responsive">R</Badge>}
+                            {conv.options.semanticHtml && <Badge variant="secondary" className="text-[10px] px-1.5" title="Semantic HTML">S</Badge>}
+                            {conv.options.darkMode && <Badge variant="secondary" className="text-[10px] px-1.5" title="Dark mode">D</Badge>}
+                            {conv.options.a11y && <Badge variant="secondary" className="text-[10px] px-1.5" title="Accessibility">A</Badge>}
                           </div>
                         </td>
                         <td className="px-3 py-2 text-muted-foreground text-[12px] whitespace-nowrap">
@@ -310,8 +311,9 @@ export default function Dashboard() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7"
+                            className="h-8 w-8"
                             onClick={(e) => handleDelete(e, conv.id, conv.original_image_url)}
+                            aria-label="Delete conversion"
                             title="Delete conversion"
                           >
                             <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />

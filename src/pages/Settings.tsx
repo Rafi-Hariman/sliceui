@@ -424,22 +424,24 @@ export default function Settings() {
               variant="ghost"
               size="icon"
               onClick={() => toggleTheme(theme === "dark" ? "light" : "dark")}
-              className="h-7 w-7"
+              className="h-8 w-8"
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              aria-pressed={theme === "dark"}
               title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
             >
               {theme === "dark" ? (
-                <Sun className="h-3.5 w-3.5" />
+                <Sun className="h-4 w-4" />
               ) : (
-                <Moon className="h-3.5 w-3.5" />
+                <Moon className="h-4 w-4" />
               )}
             </Button>
 
             {/* Avatar with Popover */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full">
-                  <Avatar className="h-5 w-5">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-[9px] leading-none">
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" aria-label={profile?.full_name ? `Account: ${profile.full_name}` : "Account"}>
+                  <Avatar className="h-6 w-6">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-[10px] leading-none">
                       {initials}
                     </AvatarFallback>
                   </Avatar>

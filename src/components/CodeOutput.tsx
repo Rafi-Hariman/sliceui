@@ -309,6 +309,8 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
         <div className="flex gap-1">
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "code"}
             data-testid="code-tab"
             onClick={() => setActiveTab("code")}
             className={`
@@ -324,6 +326,8 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
           {canPreview && (
             <button
               type="button"
+              role="tab"
+              aria-selected={activeTab === "preview"}
               data-testid="preview-tab"
               onClick={() => setActiveTab("preview")}
               className={`
@@ -344,11 +348,12 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
             data-testid="copy-button"
             onClick={handleCopy}
             disabled={!code}
-            className="p-1.5 hover:bg-muted rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Copy code"
+            className="p-1.5 hover:bg-muted rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             title="Copy to clipboard"
           >
             {copied ? (
-              <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+              <Check className="w-3.5 h-3.5 text-success" />
             ) : (
               <Copy className="w-3.5 h-3.5 text-muted-foreground" />
             )}
@@ -357,7 +362,8 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
             type="button"
             onClick={handleDownload}
             disabled={!code}
-            className="p-1.5 hover:bg-muted rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Download code"
+            className="p-1.5 hover:bg-muted rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             title="Download code"
           >
             <Download className="w-3.5 h-3.5 text-muted-foreground" />
