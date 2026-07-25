@@ -8,7 +8,6 @@ export const FRAMEWORKS: FrameworkMeta[] = [
   { id: "native-html", label: "HTML + CSS", desc: "Semantic & vanilla", ext: "html", lang: "html" },
   { id: "nextjs", label: "Next.js", desc: "App Router ready", ext: "tsx", lang: "tsx" },
   { id: "svelte", label: "Svelte 5", desc: "Runes syntax", ext: "svelte", lang: "html" },
-  { id: "flutter", label: "Flutter", desc: "Dart widget tree", ext: "dart", lang: "dart" },
 ]
 
 export function getFramework(id: Framework): FrameworkMeta {

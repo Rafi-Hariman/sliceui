@@ -8,7 +8,6 @@ export type Framework =
   | "native-html"
   | "nextjs"
   | "svelte"
-  | "flutter"
 
 export interface ConversionOptions {
   responsive: boolean

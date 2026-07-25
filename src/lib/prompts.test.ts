@@ -34,7 +34,6 @@ describe("buildPrompt", () => {
 
   it("includes framework-specific rules", () => {
     expect(buildPrompt("vue-sfc", NONE)).toContain("Composition API")
-    expect(buildPrompt("flutter", NONE)).toContain("Material 3")
     expect(buildPrompt("bootstrap5", NONE)).toContain("container/row/col")
     expect(buildPrompt("native-html", NONE)).toContain("CSS custom properties")
   })

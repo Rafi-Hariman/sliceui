@@ -29,7 +29,6 @@ const FRAMEWORK_ICONS: Record<string, React.ReactNode> = {
   "native-html": <span className="font-bold text-orange-500">HT</span>,
   "nextjs": <span className="font-bold text-gray-900 dark:font-bold">Nx</span>,
   "svelte": <span className="font-bold text-red-500">Sv</span>,
-  "flutter": <span className="font-bold text-sky-500">Fl</span>,
 }
 
 export default function Slice() {
