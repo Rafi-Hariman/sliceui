@@ -51,7 +51,7 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
     URL.revokeObjectURL(url)
   }, [code, framework])
 
-  const canPreview = framework && ["tailwind", "bootstrap5", "native-html", "react-tsx", "vue-sfc", "nextjs"].includes(framework)
+  const canPreview = framework && ["tailwind", "bootstrap5", "native-html", "react-tsx", "vue-sfc", "nextjs", "svelte"].includes(framework)
   const lineCount = code ? code.split("\n").length : 0
 
   // Build preview document with necessary CSS frameworks
@@ -59,6 +59,7 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
     let headExtras = ""
     let bodyContent = code
     let scriptContent = ""
+    let useBabel = false // Only for React/Next.js
 
     if (fw === "tailwind") {
       headExtras = `
@@ -73,33 +74,43 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
         <style>body { font-family: 'Inter', sans-serif; }</style>
       `
     } else if (fw === "react-tsx" || fw === "nextjs") {
+      useBabel = true
       headExtras = `
-        <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+        <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
         <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>body { font-family: 'Inter', sans-serif; }</style>
       `
-      // Extract component code and wrap in proper structure
-      const functionMatch = code.match(/export\s+default\s+function\s+(\w+)/) ||
-                           code.match(/export\s+default\s+\((\w+)\)\s*=>/);
-      const constMatch = code.match(/export\s+default\s+const\s+(\w+)\s*=\s*(?:\(\)|\([^)]*\))\s*=>/);
 
+      // Remove 'use client' directive from Next.js
       let cleanCode = code
-        .replace(/^import\s+.*$/gm, "") // Remove import statements
-        .replace(/export\s+default\s+/g, "window.PreviewComponent = ")
-        .replace(/export\s+/g, "")
+        .replace(/^'use client';?\s*$/gm, "")
+        .replace(/^"use client";?\s*$/gm, "")
+
+      // Remove imports (keep component code intact)
+      cleanCode = cleanCode.replace(/^import\s+.*$/gm, "")
+
+      // Transform export default to window assignment
+      cleanCode = cleanCode.replace(/export\s+default\s+/g, "window.__Component = ")
 
       scriptContent = `
         try {
           const root = ReactDOM.createRoot(document.getElementById('root'));
           ${cleanCode}
-          const Component = window.PreviewComponent;
-          delete window.PreviewComponent;
-          root.render(React.createElement(Component || Component));
+          const Component = window.__Component;
+          delete window.__Component;
+
+          if (typeof Component === 'function') {
+            root.render(React.createElement(Component));
+          } else {
+            document.getElementById('root').innerHTML = '<p style="color:red; padding:2rem;">Error: Component is not a function. Check the generated code.</p>';
+          }
         } catch(e) {
-          document.getElementById('root').innerHTML = '<p style="color:red">Preview error: ' + e.message + '<br><small>' + e.stack + '</small></p>';
+          document.getElementById('root').innerHTML =
+            '<p style="color:red; padding:2rem;">Preview error: ' + e.message +
+            '<br><small style="color:#666;">' + e.stack + '</small></p>';
         }
       `
       bodyContent = `<div id="root"></div>`
@@ -110,32 +121,159 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>body { font-family: 'Inter', sans-serif; }</style>
       `
-      // Parse Vue SFC
-      const templateMatch = code.match(/<template[^>]*>([\s\S]*?)<\/template>/)
-      const scriptMatch = code.match(/<script[^>]*>([\s\S]*?)<\/script>/)
-      const styleMatch = code.match(/<style[^>]*>([\s\S]*?)<\/style>/)
+
+      // Extract template and script sections (both optional)
+      const templateMatch = code.match(/<template[^>]*>([\s\S]*?)<\/template>/i)
+      const scriptMatch = code.match(/<script[^>]*>([\s\S]*?)<\/script>/i)
 
       const template = templateMatch ? templateMatch[1].trim() : '<div>No template found</div>'
       const script = scriptMatch ? scriptMatch[1].trim() : ''
 
+      // Check for script setup
+      const isScriptSetup = scriptMatch?.[0]?.includes('setup')
+
       scriptContent = `
         try {
-          const { createApp, ref } = Vue;
-          ${script}
+          const { createApp, ref, computed, onMounted } = Vue;
+
+          // Execute script content (if exists)
+          let props = {};
+          ${isScriptSetup ? script : ''}
+          ${!isScriptSetup && script ? `
+            // Handle regular script export default
+            ${script}
+          ` : ''}
+
           const app = createApp({
-            template: \`${template}\`,
+            template: \`${template.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`,
             setup() {
-              ${script.includes('defineComponent') ? 'return {};' : ''}
+              return ${isScriptSetup ? '{}' : 'props || {}'};
             }
           });
+
           app.mount('#app');
         } catch(e) {
-          document.getElementById('app').innerHTML = '<p style="color:red">Preview error: ' + e.message + '</p>';
+          document.getElementById('app').innerHTML =
+            '<p style="color:red; padding:2rem;">Preview error: ' + e.message + '</p>';
         }
       `
       bodyContent = `<div id="app"></div>`
+    } else if (fw === "svelte") {
+      headExtras = `
+        <style>
+          body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #fafafa;
+          }
+          .svelte-info {
+            max-width: 600px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+          }
+          .svelte-info h3 {
+            color: #ff3e00;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+          }
+          .svelte-info p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+          }
+          .svelte-info code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+          }
+          .svelte-info .setup-box {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: #f8f8f8;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 0.9rem;
+            border-left: 4px solid #ff3e00;
+          }
+          .svelte-info .setup-box strong {
+            display: block;
+            margin-bottom: 0.75rem;
+            color: #333;
+          }
+          .svelte-info .setup-box ol {
+            margin: 0;
+            padding-left: 1.5rem;
+          }
+          .svelte-info .setup-box li {
+            margin-bottom: 0.5rem;
+            color: #555;
+          }
+        </style>
+      `
+      bodyContent = `
+        <div class="svelte-info">
+          <h3>🔴 Svelte Preview</h3>
+          <p>Svelte components require compilation and cannot be previewed directly in the browser.</p>
+          <p style="font-size: 0.95rem;">Copy the code and run it in a Svelte project with the Svelte compiler.</p>
+          <div class="setup-box">
+            <strong>Quick setup:</strong>
+            <ol>
+              <li>Create a new Svelte project: <code>npm create svelte@latest</code></li>
+              <li>Paste this component in <code>src/routes/+page.svelte</code></li>
+              <li>Run: <code>npm run dev</code></li>
+            </ol>
+          </div>
+        </div>
+      `
+    } else if (fw === "native-html") {
+      // Generated native-html includes its own <style> block — render as-is.
+      bodyContent = code
+    } else {
+      // Unknown framework - show message
+      headExtras = `
+        <style>
+          body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #fafafa;
+            padding: 2rem;
+          }
+          .no-preview {
+            max-width: 500px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+          }
+          .no-preview h3 {
+            color: #666;
+            margin-bottom: 1rem;
+          }
+          .no-preview p {
+            color: #888;
+            line-height: 1.6;
+          }
+          .no-preview code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+          }
+        </style>
+      `
+      bodyContent = `
+        <div class="no-preview">
+          <h3>Preview Not Available</h3>
+          <p>The framework <code>"${fw}"</code> does not support browser preview.</p>
+          <p style="margin-top: 1rem;">Copy the code and run it in a proper project setup.</p>
+        </div>
+      `
     }
-    // native-html has embedded CSS
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -147,7 +285,7 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
 </head>
 <body>
   ${bodyContent}
-  ${scriptContent ? `<script type="text/babel">${scriptContent}</script>` : ''}
+  ${scriptContent ? `<script${useBabel ? ' type="text/babel"' : ''}>${scriptContent}</script>` : ''}
 </body>
 </html>`
   }
@@ -166,11 +304,12 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
   }
 
   return (
-    <div className="rounded-lg border border-border overflow-hidden bg-card h-full flex flex-col">
+    <div data-testid="code-output" className="rounded-lg border border-border overflow-hidden bg-card h-full flex flex-col">
       <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-muted/30">
         <div className="flex gap-1">
           <button
             type="button"
+            data-testid="code-tab"
             onClick={() => setActiveTab("code")}
             className={`
               px-3 py-1 text-xs font-medium rounded transition-colors
@@ -185,6 +324,7 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
           {canPreview && (
             <button
               type="button"
+              data-testid="preview-tab"
               onClick={() => setActiveTab("preview")}
               className={`
                 px-3 py-1 text-xs font-medium rounded transition-colors
@@ -201,6 +341,7 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
         <div className="flex gap-1">
           <button
             type="button"
+            data-testid="copy-button"
             onClick={handleCopy}
             disabled={!code}
             className="p-1.5 hover:bg-muted rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -232,7 +373,7 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
             </p>
           </div>
         ) : activeTab === "code" ? (
-          <div className="min-h-full">
+          <div className="inline-block min-w-full max-w-full">
             <SyntaxHighlighter
               language={framework ? getFramework(framework).lang : "html"}
               style={cleanTheme}
@@ -241,7 +382,8 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
                 margin: 0,
                 fontSize: "13px",
                 background: "transparent",
-                minHeight: "100%"
+                minWidth: "100%",
+                width: "fit-content"
               }}
               showLineNumbers
               lineNumberStyle={{
@@ -267,6 +409,7 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
             srcDoc={getPreviewDoc(code, framework!)}
             title="Preview"
             sandbox="allow-scripts"
+            data-testid="preview-iframe"
             className="w-full h-full border-0 bg-white"
           />
         ) : (

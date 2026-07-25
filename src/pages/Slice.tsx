@@ -1,13 +1,12 @@
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import { AppLayout } from "@/components/AppLayout"
 import CodeOutput from "@/components/CodeOutput"
+import OptionsBar from "@/components/OptionsBar"
 import useImageUpload from "@/hooks/useImageUpload"
 import useConvert from "@/hooks/useConvert"
 import { FRAMEWORKS } from "@/lib/frameworks"
@@ -30,12 +29,13 @@ const FRAMEWORK_ICONS: Record<string, React.ReactNode> = {
   "native-html": <span className="font-bold text-orange-500">HT</span>,
   "nextjs": <span className="font-bold text-gray-900 dark:font-bold">Nx</span>,
   "svelte": <span className="font-bold text-red-500">Sv</span>,
+  "flutter": <span className="font-bold text-sky-500">Fl</span>,
 }
 
 export default function Slice() {
   const { profile, user } = useAuth()
   const [framework, setFramework] = useState<Framework>("tailwind")
-  const [prompt, setPrompt] = useState("")
+  const [options, setOptions] = useState<ConversionOptions>(DEFAULT_OPTIONS)
   const [showCanvasPreview, setShowCanvasPreview] = useState(false)
   const [theme, setThemeState] = useState<string>(() => {
     if (typeof window !== "undefined") return document.documentElement.classList.contains("dark") ? "dark" : "light"
@@ -85,15 +85,8 @@ export default function Slice() {
     }
 
     reset()
-    await convert(file, framework, DEFAULT_OPTIONS)
+    await convert(file, framework, options)
   }
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleGenerate()
-    }
-  }, [handleGenerate])
 
   const handlePlusClick = () => {
     fileInputRef.current?.click()
@@ -163,54 +156,44 @@ export default function Slice() {
 
         {/* Main Content: Left Panel + Right Canvas */}
         <div
-          className="flex-1 flex overflow-hidden p-4 gap-4 bg-sidebar min-h-0"
+          className="flex-1 flex flex-col md:flex-row overflow-auto md:overflow-hidden p-4 gap-4 bg-sidebar min-h-0"
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
           {/* Left Panel Card - Not attached to sidebar/header */}
-          <div className="w-80 shrink-0 bg-sidebar border border-border rounded-xl shadow-sm flex flex-col min-h-0">
-            {/* Chat Bar */}
+          <div data-testid="upload-zone" className="w-full md:w-80 md:shrink-0 bg-sidebar border border-border rounded-xl shadow-sm flex flex-col min-h-0">
+            {/* Upload + Generate Bar */}
             <div className="p-3 border-b border-border">
-              <div className="bg-background border border-border rounded-xl p-2">
-                <div className="flex items-end gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handlePlusClick}
-                    className="shrink-0 rounded-full h-9 w-9"
-                    title="Upload image"
-                  >
-                    {file ? <X className="w-4 h-4" onClick={(e) => { e.stopPropagation(); clearFile(); }} /> : <Plus className="w-4 h-4" />}
-                  </Button>
+              <div className="bg-background border border-border rounded-xl p-2 flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handlePlusClick}
+                  className="shrink-0 rounded-full h-9 w-9"
+                  title={file ? "Remove image" : "Upload image"}
+                >
+                  {file ? <X className="w-4 h-4" onClick={(e) => { e.stopPropagation(); clearFile(); }} /> : <Plus className="w-4 h-4" />}
+                </Button>
 
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
 
-                  <Textarea
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder={file ? "Add instructions..." : "Upload image..."}
-                    disabled={!file}
-                    rows={1}
-                    className="min-h-[36px] max-h-24 resize-none border-0 focus-visible:ring-0 shadow-none bg-transparent px-2 text-sm"
-                  />
-
-                  <Button
-                    onClick={handleGenerate}
-                    disabled={!file || isLoading}
-                    size="icon"
-                    className="shrink-0 rounded-full h-9 w-9 bg-primary hover:bg-primary/90"
-                  >
-                    <ArrowUp className="w-4 h-4" />
-                  </Button>
-                </div>
+                <Button
+                  onClick={handleGenerate}
+                  disabled={!file || isLoading}
+                  data-testid="generate-button"
+                  className="flex-1 h-9 bg-primary hover:bg-primary/90"
+                  title="Generate code"
+                >
+                  <ArrowUp className="w-4 h-4 mr-1.5" />
+                  {isLoading ? "Generating..." : "Generate code"}
+                </Button>
               </div>
 
               {uploadError && (
@@ -218,7 +201,7 @@ export default function Slice() {
               )}
             </div>
 
-            {/* Framework Cards */}
+            {/* Framework Cards + Options */}
             <div className="p-3 flex-1 overflow-auto">
               <p className="text-xs text-muted-foreground mb-2 px-1">Select Framework</p>
               <div className="grid grid-cols-2 gap-2">
@@ -226,6 +209,8 @@ export default function Slice() {
                   <button
                     key={fw.id}
                     onClick={() => setFramework(fw.id as Framework)}
+                    aria-pressed={framework === fw.id}
+                    data-testid={`framework-${fw.id}`}
                     className={`
                       flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all
                       ${framework === fw.id
@@ -243,6 +228,11 @@ export default function Slice() {
                   </button>
                 ))}
               </div>
+
+              {/* Options */}
+              <div className="mt-4">
+                <OptionsBar options={options} onChange={setOptions} />
+              </div>
             </div>
 
             {/* Image Thumbnail - Bottom of Left Panel */}
@@ -253,7 +243,7 @@ export default function Slice() {
                   className="w-full flex items-center gap-2 p-2 rounded-lg border border-border hover:border-muted-foreground/30 hover:bg-muted/20 transition-colors"
                 >
                   <div className="w-12 h-12 rounded-lg overflow-hidden border border-border shrink-0">
-                    <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                    <img src={preview} alt="Preview" data-testid="image-preview" className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 text-left min-w-0">
                     <p className="text-[11px] font-medium truncate">{file.name}</p>
@@ -272,7 +262,7 @@ export default function Slice() {
           </div>
 
           {/* Right Canvas: Code Output */}
-          <div className="flex-1 bg-sidebar border border-border rounded-xl shadow-sm overflow-hidden min-h-0 flex flex-col">
+          <div className="flex-1 min-h-[420px] md:min-h-0 bg-sidebar border border-border rounded-xl shadow-sm overflow-hidden flex flex-col">
             {!file && !code ? (
               // Empty State
               <div className="h-full flex flex-col items-center justify-center text-center space-y-4 p-8">
@@ -312,7 +302,7 @@ export default function Slice() {
 
                 {isLoading && (
                   <div className="flex-1 flex items-center justify-center">
-                    <div className="text-center space-y-4">
+                    <div className="text-center space-y-4" data-testid="loading-state">
                       <div className="w-12 h-12 border-3 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
                       <p className="text-sm text-muted-foreground">Generating code...</p>
                     </div>
@@ -331,7 +321,7 @@ export default function Slice() {
 
                 {convertError && (
                   <div className="flex-1 flex items-center justify-center">
-                    <div className="text-center">
+                    <div className="text-center" data-testid="error-message">
                       <p className="text-sm text-destructive mb-4">{convertError}</p>
                       <Button onClick={clearFile} variant="outline" size="sm">
                         Try again

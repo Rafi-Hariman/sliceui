@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { toast } from "@/hooks/use-toast";
 import {
   User, Building2, Users, Bell, Settings as SettingsIcon,
@@ -195,8 +196,10 @@ function CompanyTab() {
 
 function TeamTab() {
   const { user } = useAuth();
-  const [members, setMembers] = useState<any[]>([]);
-  const [invitations, setInvitations] = useState<any[]>([]);
+  type TeamMember = Database["public"]["Functions"]["get_team_members"]["Returns"][number];
+  type Invitation = Database["public"]["Tables"]["invitations"]["Row"];
+  const [members, setMembers] = useState<TeamMember[]>([]);
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<string>("user");
   const [loading, setLoading] = useState(true);
@@ -217,7 +220,7 @@ function TeamTab() {
   const handleInvite = async () => {
     if (!user || !inviteEmail) return;
     setSending(true);
-    const { error } = await supabase.from("invitations").insert({ email: inviteEmail, role: inviteRole as any, invited_by: user.id });
+    const { error } = await supabase.from("invitations").insert({ email: inviteEmail, role: inviteRole as Database["public"]["Enums"]["app_role"], invited_by: user.id });
     setSending(false);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Invitation sent", description: `Invited ${inviteEmail}` }); setInviteEmail(""); fetchData(); }
@@ -251,7 +254,7 @@ function TeamTab() {
         <div className="px-4 md:px-6 py-4">
           <p className="text-[12px] text-muted-foreground font-medium mb-3">Pending Invitations</p>
           <div className="space-y-1">
-            {invitations.map((inv: any) => (
+            {invitations.map((inv) => (
               <div key={inv.id} className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-muted/30">
                 <div className="flex items-center gap-2">
                   <Mail className="h-3.5 w-3.5 text-muted-foreground" />
@@ -270,7 +273,7 @@ function TeamTab() {
       <div className="px-4 md:px-6 py-4">
         <p className="text-[12px] text-muted-foreground font-medium mb-3">Team Members · {members.length}</p>
         <div className="space-y-1">
-          {members.map((m: any) => (
+          {members.map((m) => (
             <div key={m.user_id} className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-muted/30">
               <div className="flex items-center gap-2">
                 <Avatar className="h-5 w-5">
@@ -378,16 +381,6 @@ function GeneralTab({ theme, onThemeChange }: { theme: string; onThemeChange: (v
       </div>
 
       <div className="px-4 md:px-6 py-4">
-        <p className="text-[12px] text-muted-foreground font-medium mb-3">Defaults</p>
-        <div className="grid gap-3 sm:grid-cols-2 max-w-lg">
-          <div className="space-y-1"><Label className="text-[12px]">Default Severity</Label>
-            <Select defaultValue="medium"><SelectTrigger className="h-8 text-[13px]"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="low">Low</SelectItem><SelectItem value="medium">Medium</SelectItem><SelectItem value="high">High</SelectItem><SelectItem value="critical">Critical</SelectItem></SelectContent></Select></div>
-          <div className="space-y-1"><Label className="text-[12px]">Default Environment</Label>
-            <Select defaultValue="production"><SelectTrigger className="h-8 text-[13px]"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="production">Production</SelectItem><SelectItem value="staging">Staging</SelectItem><SelectItem value="development">Development</SelectItem><SelectItem value="qa">QA</SelectItem></SelectContent></Select></div>
-        </div>
-      </div>
-
-      <div className="px-4 md:px-6 py-4">
         <p className="text-[12px] text-destructive font-medium mb-3">Danger Zone</p>
         <div className="flex items-center justify-between max-w-lg border border-destructive/20 rounded-md p-3">
           <div>
@@ -474,15 +467,6 @@ export default function Settings() {
               <TabsList className="flex md:flex-col items-stretch w-full bg-transparent h-auto p-1.5 gap-px">
                 <TabsTrigger value="profile" className="justify-start gap-1.5 text-[12px] h-7 px-2 data-[state=active]:bg-muted w-full">
                   <User className="h-3.5 w-3.5" /> Profile
-                </TabsTrigger>
-                <TabsTrigger value="company" className="justify-start gap-1.5 text-[12px] h-7 px-2 data-[state=active]:bg-muted w-full">
-                  <Building2 className="h-3.5 w-3.5" /> Company
-                </TabsTrigger>
-                <TabsTrigger value="team" className="justify-start gap-1.5 text-[12px] h-7 px-2 data-[state=active]:bg-muted w-full">
-                  <Users className="h-3.5 w-3.5" /> Team
-                </TabsTrigger>
-                <TabsTrigger value="email" className="justify-start gap-1.5 text-[12px] h-7 px-2 data-[state=active]:bg-muted w-full">
-                  <Bell className="h-3.5 w-3.5" /> Notifications
                 </TabsTrigger>
                 <TabsTrigger value="general" className="justify-start gap-1.5 text-[12px] h-7 px-2 data-[state=active]:bg-muted w-full">
                   <SettingsIcon className="h-3.5 w-3.5" /> General
