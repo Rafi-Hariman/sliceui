@@ -277,6 +277,67 @@ export type Database = {
         }
         Relationships: []
       }
+      // Entitlement + metering for the freemium/credits model (Phase 0).
+      credits: {
+        Row: {
+          id: string
+          user_id: string
+          balance: number
+          plan: string // "free" | "pro"
+          period_reset_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          balance?: number
+          plan?: string
+          period_reset_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          balance?: number
+          plan?: string
+          period_reset_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      usage_log: {
+        Row: {
+          id: string
+          user_id: string
+          framework: string
+          model: string // "gemini" | "claude" | "groq"
+          status: string // "success" | "failed"
+          tokens: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          framework?: string
+          model?: string
+          status?: string
+          tokens?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          framework?: string
+          model?: string
+          status?: string
+          tokens?: number | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       invitations: {
         Row: {
           created_at: string
