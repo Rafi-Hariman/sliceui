@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef } from "react"
 import { imageToCode } from "@/lib/aiService"
 import { uploadSliceImage } from "@/lib/storageService"
 import { createConversion } from "@/lib/conversionService"
@@ -21,15 +21,23 @@ export default function useConvert(): UseConvertReturn {
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
 
+  // Monotonic request id so a newer Generate (or rapid re-click) supersedes an
+  // in-flight one — stale results never overwrite current state.
+  const requestIdRef = useRef(0)
+
   const convert = useCallback(async (
     file: File,
     framework: Framework,
     options: ConversionOptions
   ) => {
+    // Defense-in-depth: /slice is route-protected, but generation itself still
+    // requires an authenticated user.
     if (!user) {
       setError("You must be logged in to convert images")
       return
     }
+
+    const myRequestId = ++requestIdRef.current
 
     setIsLoading(true)
     setError(null)
@@ -37,7 +45,9 @@ export default function useConvert(): UseConvertReturn {
     setLoadingMessage("Analyzing UI layout...")
 
     const loadingTimer = setTimeout(() => {
-      setLoadingMessage(`Generating ${framework} code...`)
+      if (myRequestId === requestIdRef.current) {
+        setLoadingMessage(`Generating ${framework} code...`)
+      }
     }, 1800)
 
     try {
@@ -54,21 +64,30 @@ export default function useConvert(): UseConvertReturn {
       const base64 = await base64Promise
       const generatedCode = await imageToCode(base64, framework, options)
 
+      // A newer request superseded this one — discard the result.
+      if (myRequestId !== requestIdRef.current) return
+
       setCode(generatedCode)
 
-      const { url: imageUrl } = await uploadSliceImage(file, user.id)
-
-      await createConversion(
-        user.id,
-        imageUrl,
-        file.name,
-        framework,
-        options,
-        generatedCode
-      )
-    } catch (err: any) {
+      // Persist to Supabase. Isolated so a storage hiccup never discards the
+      // generated code that the user already sees.
+      try {
+        const { url: imageUrl } = await uploadSliceImage(file, user.id)
+        await createConversion(
+          user.id,
+          imageUrl,
+          file.name,
+          framework,
+          options,
+          generatedCode
+        )
+      } catch (persistErr: unknown) {
+        console.error("Failed to persist conversion:", persistErr)
+      }
+    } catch (err: unknown) {
+      if (myRequestId !== requestIdRef.current) return
       console.error("Conversion error:", err)
-      const errorMessage = err?.message || "Conversion failed. Please try again."
+      const errorMessage = err instanceof Error ? err.message : "Conversion failed. Please try again."
 
       if (errorMessage.includes("quota") || errorMessage.includes("limit")) {
         setError("Daily limit reached. Please try again tomorrow.")
@@ -78,12 +97,16 @@ export default function useConvert(): UseConvertReturn {
         setError(errorMessage)
       }
     } finally {
-      clearTimeout(loadingTimer)
-      setIsLoading(false)
+      if (myRequestId === requestIdRef.current) {
+        clearTimeout(loadingTimer)
+        setIsLoading(false)
+      }
     }
   }, [user])
 
   const reset = useCallback(() => {
+    requestIdRef.current++ // invalidate any in-flight request
+    setIsLoading(false)
     setCode(null)
     setError(null)
     setLoadingMessage("")

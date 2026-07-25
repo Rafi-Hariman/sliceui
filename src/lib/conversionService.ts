@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client"
+import type { Json } from "@/integrations/supabase/types"
 import type { Conversion, Framework, ConversionOptions } from "./types"
 
 export async function createConversion(
@@ -16,7 +17,7 @@ export async function createConversion(
       original_image_url: imageUrl,
       original_image_name: imageName,
       framework,
-      options: options as any,
+      options: options as unknown as Json,
       generated_code: code,
       status: "completed",
       error_message: null
@@ -28,7 +29,7 @@ export async function createConversion(
     throw new Error(`Failed to create conversion: ${error.message}`)
   }
 
-  return data
+  return data as unknown as Conversion
 }
 
 export async function getConversions(userId: string): Promise<Conversion[]> {
@@ -42,7 +43,7 @@ export async function getConversions(userId: string): Promise<Conversion[]> {
     throw new Error(`Failed to fetch conversions: ${error.message}`)
   }
 
-  return data || []
+  return (data || []) as unknown as Conversion[]
 }
 
 export async function getConversionById(id: string): Promise<Conversion | null> {
@@ -59,7 +60,7 @@ export async function getConversionById(id: string): Promise<Conversion | null> 
     throw new Error(`Failed to fetch conversion: ${error.message}`)
   }
 
-  return data
+  return data as unknown as Conversion
 }
 
 export async function deleteConversion(id: string): Promise<void> {

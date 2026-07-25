@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Search, Loader2, Code2, Sun, Moon, Settings as SettingsIcon } from "lucide-react"
-import { getConversions } from "@/lib/conversionService"
+import { Search, Loader2, Trash2, Sun, Moon, Settings as SettingsIcon } from "lucide-react"
+import { getConversions, deleteConversion } from "@/lib/conversionService"
+import { deleteSliceImage } from "@/lib/storageService"
+import { toast } from "sonner"
 import type { Conversion } from "@/lib/types"
 import { FRAMEWORKS } from "@/lib/frameworks"
 import { formatDistanceToNow } from "date-fns"
@@ -57,9 +59,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchConversions = async () => {
-      if (!profile?.id) return
+      if (!user?.id) return
       try {
-        const data = await getConversions(profile.id)
+        const data = await getConversions(user.id)
         setConversions(data)
       } catch (err) {
         console.error("Failed to fetch conversions:", err)
@@ -68,7 +70,22 @@ export default function Dashboard() {
       }
     }
     fetchConversions()
-  }, [profile])
+  }, [user])
+
+  const handleDelete = async (e: React.MouseEvent, id: string, imageUrl: string) => {
+    e.stopPropagation()
+    try {
+      // Best-effort storage cleanup: derive object path from the public URL.
+      const path = imageUrl.split("/object/public/sliceui-images/")[1]
+      if (path) await deleteSliceImage(path)
+      await deleteConversion(id)
+      setConversions(prev => prev.filter(c => c.id !== id))
+      toast.success("Conversion deleted")
+    } catch (err) {
+      console.error("Failed to delete conversion:", err)
+      toast.error("Failed to delete conversion")
+    }
+  }
 
   const filtered = conversions.filter(c =>
     c.original_image_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -81,8 +98,11 @@ export default function Dashboard() {
       const createdAt = new Date(c.created_at)
       const now = new Date()
       return createdAt.getMonth() === now.getMonth() && createdAt.getFullYear() === now.getFullYear()
-    }).length
+    }).length,
+    completed: conversions.filter(c => c.status === "completed").length
   }
+
+  const successRate = counts.total === 0 ? "—" : `${Math.round((counts.completed / counts.total) * 100)}%`
 
   const frameworkData = useMemo(() => {
     const c: Record<string, number> = {}
@@ -169,7 +189,7 @@ export default function Dashboard() {
                 { label: "Total conversions", value: counts.total },
                 { label: "This month", value: counts.thisMonth },
                 { label: "Frameworks used", value: frameworkData.length },
-                { label: "Success rate", value: "100%" }
+                { label: "Success rate", value: successRate }
               ].map((stat) => (
                 <div key={stat.label} className="bg-background p-4">
                   <p className="text-[12px] text-muted-foreground">{stat.label}</p>
@@ -231,12 +251,13 @@ export default function Dashboard() {
                     <th className="text-left font-medium text-muted-foreground px-3 py-2">Options</th>
                     <th className="text-left font-medium text-muted-foreground px-3 py-2">Created</th>
                     <th className="text-left font-medium text-muted-foreground px-3 py-2">Status</th>
+                    <th className="text-left font-medium text-muted-foreground px-3 py-2 w-10">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="text-center py-8 text-muted-foreground text-[13px]">
+                      <td colSpan={6} className="text-center py-8 text-muted-foreground text-[13px]">
                         {conversions.length === 0 ? (
                           <div className="space-y-2">
                             <p>No conversions yet</p>
@@ -284,6 +305,17 @@ export default function Dashboard() {
                           <Badge variant={conv.status === "completed" ? "default" : "destructive"} className="text-xs">
                             {conv.status}
                           </Badge>
+                        </td>
+                        <td className="px-3 py-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={(e) => handleDelete(e, conv.id, conv.original_image_url)}
+                            title="Delete conversion"
+                          >
+                            <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+                          </Button>
                         </td>
                       </tr>
                     ))

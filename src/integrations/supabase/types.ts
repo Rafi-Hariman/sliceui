@@ -235,6 +235,48 @@ export type Database = {
         }
         Relationships: []
       }
+      // NOTE: manually added — `conversions` exists in the live DB but the rest
+      // of this file is a stale bug-tracker schema. Regenerate via
+      // `supabase gen types` (Phase P3) to replace this whole file.
+      conversions: {
+        Row: {
+          id: string
+          user_id: string
+          original_image_url: string
+          original_image_name: string
+          framework: string
+          options: Json | null
+          generated_code: string
+          status: string
+          error_message: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          original_image_url: string
+          original_image_name: string
+          framework?: string
+          options?: Json | null
+          generated_code: string
+          status?: string
+          error_message?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          original_image_url?: string
+          original_image_name?: string
+          framework?: string
+          options?: Json | null
+          generated_code?: string
+          status?: string
+          error_message?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       invitations: {
         Row: {
           created_at: string

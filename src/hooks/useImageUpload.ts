@@ -26,6 +26,9 @@ export default function useImageUpload(): UseImageUploadReturn {
     if (!ALLOWED_TYPES.includes(f.type)) {
       return { valid: false, error: "Invalid file type. Please upload PNG, JPG, or WebP." }
     }
+    if (f.size === 0) {
+      return { valid: false, error: "File is empty. Please upload a valid image." }
+    }
     if (f.size > MAX_SIZE) {
       return { valid: false, error: "File too large. Maximum size is 10MB." }
     }
