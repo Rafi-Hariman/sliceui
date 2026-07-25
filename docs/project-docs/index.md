@@ -61,6 +61,7 @@ directly from the browser, with Supabase for auth and conversion history.
 | :--- | :--- |
 | [operations/ci-cd.md](./operations/ci-cd.md) | Build, test gates, deploy, secrets. |
 | [operations/deploy-metered-convert.md](./operations/deploy-metered-convert.md) | Phase 0 runbook: deploy the metered `/convert` edge function. |
+| [operations/backend-audit.md](./operations/backend-audit.md) | Backend audit (B1–B14) + Gherkin test matrix + fixes. |
 
 ### Technical Guidelines
 | Document | Purpose |
