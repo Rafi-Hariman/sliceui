@@ -1,41 +1,54 @@
 // SliceUI /convert edge function (Deno). Run on Supabase Edge Functions.
 //
-// This is the metered, key-hiding proxy for image→code generation:
+// Metered, key-hiding proxy for image→code generation:
 //   - authenticates the user from their Supabase JWT
-//   - reads their entitlement (free | pro) from the `credits` table
-//   - enforces the free daily limit OR the Pro credit balance
+//   - reads entitlement (free | pro) from `credits`
+//   - free: daily limit counting successes only; pro: atomic credit reserve
 //   - routes free→Gemini, Pro→Claude (tiered quality)
-//   - decrements Pro balance + writes usage_log
+//   - writes usage_log
 //
 // Keys live in Deno env (server-side) — never shipped to the browser.
 //
-// Required env (set via `supabase secrets set`):
-//   ANTHROPIC_API_KEY, GEMINI_API_KEY
+// Required env (supabase secrets set):  ANTHROPIC_API_KEY, GEMINI_API_KEY
 // Optional env (defaults shown):
-//   CLAUDE_MODEL=claude-sonnet-4-6   (use claude-opus-4-8 for a premium tier)
+//   CLAUDE_MODEL=claude-sonnet-4-6   (claude-opus-4-8 for a premium tier)
 //   GEMINI_MODEL=gemini-2.0-flash
 //   FREE_DAILY_LIMIT=5
+//   MAX_IMAGE_BYTES=10485760         (10 MiB; server-side cap)
+//   ALLOWED_ORIGINS=https://app.example.com  (comma list; unset → "*" for dev)
 // (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY are injected by the runtime.)
 
 // @ts-expect-error — Deno global, absent in the editor's TS env.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const FREE_DAILY_LIMIT = Number(Deno.env.get("FREE_DAILY_LIMIT") ?? 5);
-const CLAUDE_MODEL = Deno.env.get("CLAUDE_MODEL") ?? "claude-sonnet-4-6";
-const GEMINI_MODEL = Deno.env.get("GEMINI_MODEL") ?? "gemini-2.0-flash";
+// @ts-expect-error — Deno global.
+const env = (k: string, d: string) => Deno.env.get(k) ?? d;
 
-const cors = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Content-Type": "application/json",
-};
+const FREE_DAILY_LIMIT = Number(env("FREE_DAILY_LIMIT", "5"));
+const CLAUDE_MODEL = env("CLAUDE_MODEL", "claude-sonnet-4-6");
+const GEMINI_MODEL = env("GEMINI_MODEL", "gemini-2.0-flash");
+const MAX_IMAGE_BYTES = Number(env("MAX_IMAGE_BYTES", String(10 * 1024 * 1024)));
+const ALLOWED_ORIGINS = env("ALLOWED_ORIGINS", "").split(",").map((s) => s.trim()).filter(Boolean);
 
-const json = (body: unknown, status: number) =>
-  new Response(JSON.stringify(body), { status, headers: cors });
+function corsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin") ?? "";
+  // Unset allowlist → "*" (local dev). Set → echo Origin only if allowlisted.
+  const allow = ALLOWED_ORIGINS.length
+    ? (ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0])
+    : "*";
+  return {
+    "Access-Control-Allow-Origin": allow,
+    "Access-Control-Allow-Headers": "authorization, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Content-Type": "application/json",
+    Vary: "Origin",
+  };
+}
+
+const json = (req: Request, body: unknown, status: number) =>
+  new Response(JSON.stringify(body), { status, headers: corsHeaders(req) });
 
 // ── Prompt builder (server-authoritative; mirrors src/lib/prompts.ts) ─────────
-// Duplicated because Deno can't import the Vite app's extension-less modules.
 function frameworkRules(fw: string): string {
   switch (fw) {
     case "tailwind":
@@ -99,7 +112,7 @@ function clean(raw: string): string {
 
 // ── Provider calls (raw HTTP) ─────────────────────────────────────────────────
 async function callGemini(base64: string, prompt: string): Promise<string> {
-  const key = Deno.env.get("GEMINI_API_KEY");
+  const key = env("GEMINI_API_KEY", "");
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`;
   const res = await fetch(url, {
     method: "POST",
@@ -116,11 +129,11 @@ async function callGemini(base64: string, prompt: string): Promise<string> {
 }
 
 async function callClaude(base64: string, prompt: string): Promise<string> {
-  const key = Deno.env.get("ANTHROPIC_API_KEY");
+  const key = env("ANTHROPIC_API_KEY", "");
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
-      "x-api-key": key!,
+      "x-api-key": key,
       "anthropic-version": "2023-06-01",
       "Content-Type": "application/json",
     },
@@ -146,47 +159,58 @@ async function callClaude(base64: string, prompt: string): Promise<string> {
 // ── Main ──────────────────────────────────────────────────────────────────────
 // @ts-expect-error — Deno global.
 Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
-  if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(req) });
+  if (req.method !== "POST") return json(req, { error: "method_not_allowed" }, 405);
 
-  const authHeader = req.headers.get("Authorization") ?? "";
-  const jwt = authHeader.replace(/^Bearer\s+/i, "");
-  if (!jwt) return json({ error: "unauthorized" }, 401);
+  const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+  if (!jwt) return json(req, { error: "unauthorized" }, 401);
 
   const supabase = createClient(
     // @ts-expect-error — Deno global.
-    Deno.env.get("SUPABASE_URL")!,
+    env("SUPABASE_URL", ""),
     // @ts-expect-error — Deno global.
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    env("SUPABASE_SERVICE_ROLE_KEY", ""),
     { auth: { persistSession: false } },
   );
 
   const { data: { user } } = await supabase.auth.getUser(jwt);
-  if (!user) return json({ error: "unauthorized" }, 401);
+  if (!user) return json(req, { error: "unauthorized" }, 401);
 
   let body: { image?: string; framework?: string; options?: Record<string, boolean> };
-  try { body = await req.json(); } catch { return json({ error: "invalid_json" }, 400); }
+  try { body = await req.json(); } catch { return json(req, { error: "invalid_json" }, 400); }
   const { image, framework, options } = body;
-  if (!image || !framework) return json({ error: "missing_image_or_framework" }, 400);
+  if (!image || !framework) return json(req, { error: "missing_image_or_framework" }, 400);
+
+  // B13: server-side size cap (base64 length ≈ 4/3 of decoded bytes).
+  if (image.length > Math.ceil(MAX_IMAGE_BYTES * 4 / 3)) {
+    return json(req, { error: "payload_too_large", message: "Image exceeds the size limit." }, 400);
+  }
 
   // Entitlement
   const { data: credits } = await supabase.from("credits").select("*").eq("user_id", user.id).maybeSingle();
   const plan: "free" | "pro" = credits?.plan === "pro" ? "pro" : "free";
   const useClaude = plan === "pro";
 
-  // Quota / balance
+  // Quota / balance — enforced BEFORE generation (reserve).
   if (plan === "free") {
     const today = new Date().toISOString().slice(0, 10);
+    // B4: count successes only — failed attempts don't consume the daily quota.
     const { count } = await supabase
       .from("usage_log")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id)
+      .eq("status", "success")
       .gte("created_at", today);
     if ((count ?? 0) >= FREE_DAILY_LIMIT) {
-      return json({ error: "daily_limit_reached", message: `Free tier: ${FREE_DAILY_LIMIT} conversions/day. Upgrade for more.`, plan }, 429);
+      return json(req, { error: "daily_limit_reached", message: `Free tier: ${FREE_DAILY_LIMIT} conversions/day. Upgrade for more.`, plan }, 429);
     }
-  } else if ((credits?.balance ?? 0) <= 0) {
-    return json({ error: "no_credits", message: "Out of credits — top up to continue.", plan }, 402);
+  } else {
+    // B5: atomic decrement via SQL — returns the new balance, or null if no row /
+    // balance is 0. Prevents over-spend under concurrent requests.
+    const { data: newBalance } = await supabase.rpc("decrement_credit", { p_user_id: user.id });
+    if (newBalance === null || newBalance === undefined) {
+      return json(req, { error: "no_credits", message: "Out of credits — top up to continue.", plan }, 402);
+    }
   }
 
   const prompt = buildPrompt(framework, options ?? {});
@@ -194,17 +218,12 @@ Deno.serve(async (req: Request) => {
   try {
     const raw = useClaude ? await callClaude(image, prompt) : await callGemini(image, prompt);
     const code = clean(raw);
-
-    // Meter: decrement Pro balance, log usage (best-effort, non-blocking).
-    if (plan === "pro" && credits) {
-      await supabase.from("credits").update({ balance: credits.balance - 1 }).eq("user_id", user.id);
-    }
     await supabase.from("usage_log").insert({ user_id: user.id, framework, model, status: "success" });
-
-    return json({ code, model, plan }, 200);
+    return json(req, { code, model, plan }, 200);
   } catch (err) {
+    // Generation failed after a Pro credit was reserved — logged as failed.
     await supabase.from("usage_log").insert({ user_id: user.id, framework, model, status: "failed" });
     const message = err instanceof Error ? err.message : "Generation failed";
-    return json({ error: "generation_failed", message, plan }, 500);
+    return json(req, { error: "generation_failed", message, plan }, 500);
   }
 });

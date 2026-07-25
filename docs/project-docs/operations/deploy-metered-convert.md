@@ -9,10 +9,11 @@ quality (free=Gemini, Pro=Claude). This is a runbook, not code.
 
 ## Steps
 
-1. **Apply the schema** (creates `credits` + `usage_log`, RLS, signup trigger):
+1. **Apply the schema** (creates `credits` + `usage_log`, then RLS + atomic decrement +
+   signup trigger):
    ```sh
    supabase db push
-   # or paste supabase/migrations/20260725000000_credits_usage.sql into the SQL editor
+   # applies: 20260725000000_credits_usage.sql + 20260725100000_rls_and_triggers.sql
    ```
 2. **Deploy the function**:
    ```sh
@@ -23,6 +24,8 @@ quality (free=Gemini, Pro=Claude). This is a runbook, not code.
    supabase secrets set ANTHROPIC_API_KEY=sk-ant-... GEMINI_API_KEY=AIza...
    # optional overrides (defaults shown):
    supabase secrets set CLAUDE_MODEL=claude-sonnet-4-6 GEMINI_MODEL=gemini-2.0-flash FREE_DAILY_LIMIT=5
+   # CORS allowlist (comma list; unset → "*" for dev) + image size cap (bytes):
+   supabase secrets set ALLOWED_ORIGINS=https://your-app.com MAX_IMAGE_BYTES=10485760
    ```
 4. **Point the client at the proxy** — in `.env.local`:
    ```env
