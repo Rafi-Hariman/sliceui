@@ -7,14 +7,16 @@
 -- This makes the privileges explicit so the schema is reproducible anywhere.
 -- Idempotent.
 
-grant usage on schema public to anon, authenticated;
+grant usage on schema public to anon, authenticated, service_role;
 
-grant select, insert, update, delete on public.conversions to anon, authenticated;
-grant select, insert, update, delete on public.profiles    to anon, authenticated;
-grant select, insert, update, delete on public.credits     to anon, authenticated;
-grant select, insert, update, delete on public.usage_log   to anon, authenticated;
+-- anon/authenticated: row access is gated by RLS policies.
+-- service_role: bypasses RLS — needed because the /convert edge function writes
+-- usage_log and decrements credits as service_role. Without this, metering
+-- silently 403s (every conversion logged as failed, credits never decrement).
+grant select, insert, update, delete on public.conversions to anon, authenticated, service_role;
+grant select, insert, update, delete on public.profiles    to anon, authenticated, service_role;
+grant select, insert, update, delete on public.credits     to anon, authenticated, service_role;
+grant select, insert, update, delete on public.usage_log   to anon, authenticated, service_role;
 
--- decrement_credit is called by the edge function (service_role). Grant execute
--- to service_role (used) and authenticated (harmless — the function is SECURITY
--- INVOKER-safe via the where clause; only service_role bypasses RLS in practice).
+-- decrement_credit is called by the edge function (service_role).
 grant execute on function public.decrement_credit(text) to anon, authenticated, service_role;
