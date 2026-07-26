@@ -117,10 +117,11 @@ The remote project `heaqfnzfxlrsxxckjsix` is not used this cycle.
 | Owner reads / anon blocked | RLS + grants | ✅ authenticated reads return own rows; anon gets `[]` |
 | `decrement_credit` RPC | exists | ✅ |
 | Storage bucket | `sliceui-images` (public) | ✅ created |
-| `convert` served locally | `/functions/v1/convert` 200 | ⚠️ **pending** — CLI can't see the running stack (container-naming mismatch: `config.toml` `project_id` ≠ running stack suffix). Needs a `supabase` stop/start from this dir to serve the function. App currently runs the client-side Gemini path (proxy unset). |
-| Concurrency test | 3 ok / 2×402, balance 0 | ⏳ pending function serve |
-| Free smoke (metered) | model=gemini, usage_log row | ⏳ pending function serve (client-side Gemini key verified valid) |
-| Pro smoke | model=claude, balance−1 | ⏳ pending `ANTHROPIC_API_KEY` + function serve |
+| `convert` served locally | `/functions/v1/convert` reachable | ✅ served via `supabase functions serve convert --env-file supabase/.env` (after `supabase stop`/`start` from this dir to align container names with `config.toml`). Docker `start` doesn't load `supabase/.env`, so dev serving uses `functions serve`. |
+| Metering writes (`usage_log`) | row per attempt | ✅ after `service_role` grant fix (6c85a22) — was silently 403. Verified: failed attempt logged `tailwind/groq/failed`. |
+| Concurrency test | 3 ok / 2 denied, balance 0 | ✅ 5 concurrent `decrement_credit` RPCs from balance 3 → `2,1,null,0,null`; final balance 0, never negative |
+| Free smoke (metered) | model=gemini, usage_log row | ⚠️ mechanics verified end-to-end (auth→entitlement→routing→key passed [403→429]→Groq fallback). **AI success blocked by external quota:** Gemini key `RESOURCE_EXHAUSTED` (quota 0); Groq account has **no vision model** (15 models, all text/audio). |
+| Pro smoke | model=claude, balance−1 | ⏳ pending a valid `ANTHROPIC_API_KEY` (then set `credits.plan='pro'` + balance) |
 | `get_advisors` (security) | clean/triaged | n/a on local (MCP scoped to remote) |
 
 ### Local reproducer
