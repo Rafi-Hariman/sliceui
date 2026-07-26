@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect } from "react"
-import { Link, useSearchParams } from "react-router-dom"
+import { useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { toast } from "sonner"
 import { AppLayout } from "@/components/AppLayout"
+import { AppHeader } from "@/components/AppHeader"
 import CodeOutput from "@/components/CodeOutput"
 import OptionsBar from "@/components/OptionsBar"
 import useImageUpload from "@/hooks/useImageUpload"
@@ -12,7 +11,7 @@ import useConvert from "@/hooks/useConvert"
 import { FRAMEWORKS } from "@/lib/frameworks"
 import { getConversionById } from "@/lib/conversionService"
 import type { Framework, ConversionOptions, Conversion } from "@/lib/types"
-import { Plus, ArrowUp, X, Image as ImageIcon, Sun, Moon, Settings as SettingsIcon } from "lucide-react"
+import { Plus, ArrowUp, X, Image as ImageIcon } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
 
 const DEFAULT_OPTIONS: ConversionOptions = {
@@ -36,32 +35,14 @@ const FRAMEWORK_GLYPH: Record<string, string> = {
 const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 
 export default function Slice() {
-  const { profile, user } = useAuth()
+  const { user } = useAuth()
   const [framework, setFramework] = useState<Framework>("tailwind")
   const [options, setOptions] = useState<ConversionOptions>(DEFAULT_OPTIONS)
   const [showCanvasPreview, setShowCanvasPreview] = useState(false)
   const [loaded, setLoaded] = useState<Conversion | null>(null)
-  const [theme, setThemeState] = useState<string>(() => {
-    if (typeof window !== "undefined") return document.documentElement.classList.contains("dark") ? "dark" : "light"
-    return "dark"
-  })
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const reranRef = useRef<string | null>(null)
   const [params] = useSearchParams()
-
-  const initials = profile?.full_name
-    ? profile.full_name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
-    : "U"
-
-  const toggleTheme = (value: string) => {
-    setThemeState(value)
-    if (value === "dark") {
-      document.documentElement.classList.add("dark")
-      localStorage.setItem("theme", "dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-      localStorage.setItem("theme", "light")
-    }
-  }
 
   const {
     file,
@@ -84,14 +65,38 @@ export default function Slice() {
     reset
   } = useConvert()
 
-  // P0-2: deep-link from Dashboard — /slice?conversion=<id> loads a past conversion.
+  // P0-2: deep-link — /slice?conversion=<id> loads a past conversion.
+  // C1: &rerun=1 re-runs it against the current model. reranRef guards against
+  // double-fire across re-renders.
   useEffect(() => {
     const id = params.get("conversion")
+    const rerun = params.get("rerun") === "1"
     if (!id || !user) return
+
     getConversionById(id)
-      .then((c) => { if (c) setLoaded(c) })
+      .then(async (c) => {
+        if (!c) return
+        if (rerun) {
+          if (reranRef.current === id) return
+          reranRef.current = id
+          setLoaded(null)
+          reset()
+          try {
+            const res = await fetch(c.original_image_url)
+            const blob = await res.blob()
+            const file = new File([blob], c.original_image_name, {
+              type: blob.type || "image/png",
+            })
+            await convert(file, c.framework as Framework, c.options)
+          } catch {
+            /* ignore — user can still generate manually */
+          }
+        } else {
+          setLoaded(c)
+        }
+      })
       .catch(() => { /* ignore — user can still upload fresh */ })
-  }, [params, user])
+  }, [params, user, convert, reset])
 
   const effectiveFramework: Framework = loaded?.framework as Framework ?? framework
   const effectiveCode: string | null = loaded?.generated_code ?? code
@@ -114,56 +119,7 @@ export default function Slice() {
   return (
     <AppLayout>
       <div className="flex flex-col h-full relative">
-        {/* Header Navbar - Like Dashboard/Settings */}
-        <div className="flex items-center justify-between px-4 md:px-6 h-11 border-b border-border shrink-0">
-          <h1 className="text-[13px] font-medium">Slice</h1>
-
-          <div className="flex items-center gap-2">
-            {/* Theme Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => toggleTheme(theme === "dark" ? "light" : "dark")}
-              className="h-8 w-8"
-              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-              aria-pressed={theme === "dark"}
-              title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-            >
-              {theme === "dark" ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )}
-            </Button>
-
-            {/* Avatar with Popover */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" aria-label={profile?.full_name ? `Account: ${profile.full_name}` : "Account"}>
-                  <Avatar className="h-6 w-6">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-[10px] leading-none">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-48 p-0" align="end">
-                <div className="p-3 border-b border-border">
-                  <p className="text-[13px] font-medium">{profile?.full_name || "User"}</p>
-                  <p className="text-xs text-muted-foreground truncate">{user?.email || ""}</p>
-                </div>
-                <div className="p-1">
-                  <Link to="/settings">
-                    <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs gap-1.5">
-                      <SettingsIcon className="h-3.5 w-3.5" />
-                      Settings
-                    </Button>
-                  </Link>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
+        <AppHeader title="Slice" />
 
         {/* Drag Overlay */}
         {isDragging && (

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Scissors, Settings, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Scissors, History, Settings, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
 import { StackedLogo } from "./StackedLogo";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 export const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: Scissors, label: "Slice", path: "/slice" },
+  { icon: History, label: "History", path: "/history" },
   { icon: Settings, label: "Settings", path: "/settings" },
 ];
 

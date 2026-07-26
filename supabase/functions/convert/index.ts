@@ -13,6 +13,8 @@
 // Optional env (defaults shown):
 //   CLAUDE_MODEL=claude-sonnet-4-6   (claude-opus-4-8 for a premium tier)
 //   GEMINI_MODEL=gemini-2.0-flash
+//   GROQ_MODEL=pixtral-12b-2409      (free-tier fallback when Gemini 429s)
+//   GROQ_API_KEY=...                 (set to enable the Gemini→Groq fallback)
 //   FREE_DAILY_LIMIT=5
 //   MAX_IMAGE_BYTES=10485760         (10 MiB; server-side cap)
 //   ALLOWED_ORIGINS=https://app.example.com  (comma list; unset → "*" for dev)
@@ -27,6 +29,7 @@ const env = (k: string, d: string) => Deno.env.get(k) ?? d;
 const FREE_DAILY_LIMIT = Number(env("FREE_DAILY_LIMIT", "5"));
 const CLAUDE_MODEL = env("CLAUDE_MODEL", "claude-sonnet-4-6");
 const GEMINI_MODEL = env("GEMINI_MODEL", "gemini-2.0-flash");
+const GROQ_MODEL = env("GROQ_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct");
 const MAX_IMAGE_BYTES = Number(env("MAX_IMAGE_BYTES", String(10 * 1024 * 1024)));
 const ALLOWED_ORIGINS = env("ALLOWED_ORIGINS", "").split(",").map((s) => s.trim()).filter(Boolean);
 
@@ -156,6 +159,33 @@ async function callClaude(base64: string, prompt: string): Promise<string> {
   return text as string;
 }
 
+async function callGroq(base64: string, prompt: string): Promise<string> {
+  const key = env("GROQ_API_KEY", "");
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: GROQ_MODEL,
+      max_tokens: 4096,
+      messages: [{
+        role: "user",
+        content: [
+          { type: "text", text: prompt },
+          { type: "image_url", image_url: { url: `data:image/png;base64,${base64}` } },
+        ],
+      }],
+    }),
+  });
+  if (!res.ok) throw new Error(`Groq error ${res.status}: ${await res.text()}`);
+  const data = await res.json();
+  const text = data?.choices?.[0]?.message?.content;
+  if (!text) throw new Error("Groq returned no content");
+  return text as string;
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 // @ts-expect-error — Deno global.
 Deno.serve(async (req: Request) => {
@@ -214,9 +244,27 @@ Deno.serve(async (req: Request) => {
   }
 
   const prompt = buildPrompt(framework, options ?? {});
-  const model = useClaude ? "claude" : "gemini";
+  let model: "claude" | "gemini" | "groq" = useClaude ? "claude" : "gemini";
   try {
-    const raw = useClaude ? await callClaude(image, prompt) : await callGemini(image, prompt);
+    let raw: string;
+    if (useClaude) {
+      raw = await callClaude(image, prompt);
+    } else {
+      try {
+        raw = await callGemini(image, prompt);
+      } catch (geminiErr) {
+        // Free-tier resilience: when Gemini is rate-limited, fall back to Groq
+        // (mirrors the client-side Gemini→Groq fallback) — only if a Groq key
+        // is configured. Keeps free users working through Gemini quota spikes.
+        const msg = geminiErr instanceof Error ? geminiErr.message : String(geminiErr);
+        if (env("GROQ_API_KEY", "") && /429|RESOURCE_EXHAUSTED|quota/i.test(msg)) {
+          model = "groq";
+          raw = await callGroq(image, prompt);
+        } else {
+          throw geminiErr;
+        }
+      }
+    }
     const code = clean(raw);
     await supabase.from("usage_log").insert({ user_id: user.id, framework, model, status: "success" });
     return json(req, { code, model, plan }, 200);

@@ -8,13 +8,18 @@ in flight, and the delta between the implemented product and the older
 
 ## 2. Important
 
-- **Last commit:** 2026-05-11. **Working tree:** uncommitted changes today to
-  `src/App.tsx`, `src/components/CodeOutput.tsx`, `src/hooks/useConvert.ts`,
-  plus an untracked `QA_TEST_DOCUMENT.md`. Development is active locally but has
-  not been committed in ~2.5 months.
-- Several items the v1 `CLAUDE.md` checklist marked "out of scope" (login,
-  history) are **already implemented**, while items it assumed (server route,
-  rate limiting, `sharp` normalization) are **not**. See [Risks/Blockers](#risksblockers).
+- **Active branch:** `feat/sliceui-mvp-cleanup` — 13 commits ahead of `main`,
+  not merged. A large cleanup + hardening pass landed here (rebrand, route
+  protection, metered `/convert` edge function, `credits`/`usage_log` + RLS,
+  WCAG 2.2 AA remediation, Vitest + Playwright smoke + CI). See the
+  [session handoff (2026-07-26)](./session-handoff-2026-07-26.md).
+- **Active cycle:** [**C1 — Functional Production (Local)**](./phases/phase-C1-functional-production.md)
+  stands the backend up live and ships the History page + entitlement UX +
+  targeted polish. Public deploy + key scrub are deferred to the next cycle.
+- The top-level `CLAUDE.md` describes a Next.js design that was **never built**
+  (the real app is Vite/React). It is non-authoritative; this file + the
+  codebase are truth. The original build spec lives in
+  [`reference/prompt.md`](../reference/prompt.md).
 
 ## 3. Table of Contents
 
@@ -51,15 +56,20 @@ Project execution state: implemented features, gaps, risks, and near-term plan.
 
 ## Current State
 
-- **Working, end-to-end MVP** on `/slice`: upload → generate (Gemini, Groq
-  fallback) → highlighted code + live preview + copy/download.
-- **Auth + history** implemented (Supabase email/password, `conversions` table,
-  dashboard) but the **login guard is disabled locally** (guest mode).
-- **No server** of any kind; all AI calls are client-side.
-- **Tests:** scaffolded only (one trivial Vitest case; Playwright installed but
-  unconfigured).
-- **CI/CD:** none configured (no `.github/workflows`). Deploy assumed via
-  Lovable Publish or manual static host.
+- **Working app** on the cleanup branch: `/` landing, `/auth` (email/password
+  signup/login/logout + forgot-password), `/slice` upload → generate → code,
+  `/dashboard` (analytics + conversions table), `/settings`. Routes protected by
+  `ProtectedRoute`.
+- **AI pipeline** dual-mode: client-side Gemini/Groq for local dev, or the
+  **metered `/convert` edge function** (keys hidden, free=Gemini/Pro=Claude,
+  `credits`/`usage_log` metering) when `VITE_CONVERT_PROXY_URL` is set.
+- **Backend:** edge function + 2 migrations exist in-repo; **not yet verified
+  live** (C1.1 applies migrations, deploys the function, sets secrets, and
+  introspects RLS). Supabase MCP read calls returned permission errors in the
+  2026-07-26 planning session — re-auth at execution.
+- **Tests + CI:** 15 Vitest cases + Playwright smoke; `.github/workflows/ci.yml`
+  runs lint · tsc · test · build (+ non-blocking Playwright).
+- **Not deployed:** the app has no public host; backend deploy is the C1.1 step.
 
 ## Recent Accomplishments
 
@@ -87,10 +97,15 @@ Project execution state: implemented features, gaps, risks, and near-term plan.
 
 ## Roadmap
 
-1. **Harden:** server-side key proxy + rate limiting; fix RLS/storage policies.
-2. **Quality:** meaningful unit/component tests; CI on PRs.
-3. **Schema integrity:** regenerate Supabase types; reconcile `flutter` drift.
-4. **Polish:** unify preview runtime; revisit model pinning; a11y pass.
+1. **[Active — C1] Functional production, local:** stand backend up live, ship
+   the History page + entitlement UX + regenerate, tighten UX/a11y. See
+   [phase-C1](./phases/phase-C1-functional-production.md).
+2. **Next cycle — go public:** rotate leaked keys + scrub git history; deploy
+   the app to a host (Vercel/Netlify) + minimal analytics.
+3. **Then — monetize:** Phase 1 Stripe billing (Pro $19/mo + credit packs) +
+   Chrome extension.
+4. **Ongoing hardening:** signed URLs (B2), idempotency (B6), token/COGS capture
+   (B7), observability (B14) — gate on real usage.
 
 ## Epics
 
@@ -104,13 +119,14 @@ Project execution state: implemented features, gaps, risks, and near-term plan.
 
 | Risk | Severity | Detail |
 | :--- | :--- | :--- |
-| **AI keys exposed client-side** | High | Gemini/Groq keys ship in the bundle; abusable. No server-side rate limiting. |
-| **Live secrets in `CLAUDE.md`** | High | Real-looking Gemini/Groq/Supabase keys are committed in the doc. Rotate + remove. |
-| **Supabase types drift** | Med | `src/integrations/supabase/types.ts` describes a bug-tracker schema; `conversions` table is not typed. |
-| **Guest mode in dev** | Med | Login guard commented out; persistence conditional. **Confirmed P1 target: re-enable required login** (QA TC-007/AC-004). |
-| **No CI / thin tests** | Med | Only a trivial test; no pipeline; regressions slip silently. E2E target = **Playwright** (QA plan's Cypress superseded); `data-testid` hooks still missing. |
-| **Planning docs ↔ code mismatch** | Low/Med | `CLAUDE.md` + original build spec `reference/prompt.md` + `reference/QA_TEST_DOCUMENT.md` describe the Next.js/server design; migrated to `docs/project-docs/reference/` as non-authoritative source. SDD docs are truth. |
-| **Framework drift** | Low | `flutter` in `Framework` type but not in picker; `native-html` preview tab shows but has no preview renderer. |
+| **Leaked keys in `main` git history** | High | Gemini/Groq/Supabase keys were committed on `main`. Redacted on the branch tip, but history still holds them. Rotate + scrub history before any public push (next cycle). |
+| **AI keys exposed client-side** | Med → mitigated | The metered `/convert` edge function hides keys when `VITE_CONVERT_PROXY_URL` is set (C1.1 deploys it). Client-side keys remain only as a local-dev fallback when the proxy is unset. |
+| **Backend not verified live** | Med | Migrations + edge function exist in-repo but were never applied/deployed. C1.1 applies them, sets secrets, and introspects RLS. Supabase MCP read calls errored in planning — re-auth at execution. |
+| **Supabase types drift** | Med | `src/integrations/supabase/types.ts` predates `conversions`/`credits`/`usage_log`. C1.1 regenerates it. |
+| **~~Guest mode in dev~~** | Resolved | `ProtectedRoute` now enforces auth on `/dashboard`, `/slice`, `/settings`. |
+| **~~No CI / thin tests~~** | Resolved | `.github/workflows/ci.yml` runs lint · tsc · test · build; 15 Vitest cases + Playwright smoke. `data-testid` hooks present on the slice flow. |
+| **Planning docs ↔ code mismatch** | Low | Top-level `CLAUDE.md` still describes the unbuilt Next.js design; treat as non-authoritative (SDD docs + codebase are truth). |
+| **Framework drift** | Low | `flutter` was dropped from the `Framework` type + picker (7 web frameworks remain); `Dashboard` `FRAMEWORK_COLORS` still has a harmless `flutter` entry. |
 
 ## Success Metrics
 

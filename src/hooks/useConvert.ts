@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import { imageToCode } from "@/lib/aiService"
 import { uploadSliceImage } from "@/lib/storageService"
 import { createConversion } from "@/lib/conversionService"
@@ -20,6 +21,7 @@ export default function useConvert(): UseConvertReturn {
   const [loadingMessage, setLoadingMessage] = useState("")
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
+  const queryClient = useQueryClient()
 
   // Monotonic request id so a newer Generate (or rapid re-click) supersedes an
   // in-flight one — stale results never overwrite current state.
@@ -69,6 +71,9 @@ export default function useConvert(): UseConvertReturn {
 
       setCode(generatedCode)
 
+      // A generation consumed quota server-side — refresh the usage indicator.
+      queryClient.invalidateQueries({ queryKey: ["entitlement"] })
+
       // Persist to Supabase. Isolated so a storage hiccup never discards the
       // generated code that the user already sees.
       try {
@@ -84,6 +89,9 @@ export default function useConvert(): UseConvertReturn {
       } catch (persistErr: unknown) {
         console.error("Failed to persist conversion:", persistErr)
       }
+      // Either way, the conversions list (Dashboard recent + History) may have
+      // changed — refresh the shared cache.
+      queryClient.invalidateQueries({ queryKey: ["conversions"] })
     } catch (err: unknown) {
       if (myRequestId !== requestIdRef.current) return
       console.error("Conversion error:", err)
@@ -102,7 +110,7 @@ export default function useConvert(): UseConvertReturn {
         setIsLoading(false)
       }
     }
-  }, [user])
+  }, [user, queryClient])
 
   const reset = useCallback(() => {
     requestIdRef.current++ // invalidate any in-flight request

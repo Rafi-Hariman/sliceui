@@ -104,7 +104,7 @@ async function callGroq(
   const prompt = buildPrompt(framework, options)
 
   const res = await groq.chat.completions.create({
-    model: "pixtral-12b-2409",
+    model: "meta-llama/llama-4-scout-17b-16e-instruct",
     messages: [
       {
         role: "user",

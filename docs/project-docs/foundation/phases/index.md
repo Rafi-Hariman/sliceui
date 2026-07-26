@@ -10,16 +10,19 @@ and the roadmap in `foundation/status.md`.
 ## Overall Timeline
 
 - **Planning baseline:** 2026-07-24.
-- **Sequencing:** P1 (security) → P2 (QA/CI) and P3 (schema) can run in
-  parallel → P4 (polish) after P3.
-- **End dates:** TBD (no committed schedule yet).
+- **Active cycle:** **C1 — Functional Production (Local)** (2026-07-26). C1 is a
+  delivery cycle that stands up the backend (subsuming much of P1's scope), adds
+  the History page + entitlement UX, and tightens quality. Its execution briefs
+  live in [`c1/`](./c1/).
+- **Sequencing:** C1 (active) → P2/P3/P4 detail items remaining after C1.
 
 ## Phase Registry
 
 | Phase | Title | Status | File |
 | :--- | :--- | :--- | :--- |
-| P1 | Security & Production Hardening | Not Started | [phase-P1-security-hardening.md](./phase-P1-security-hardening.md) |
-| P2 | Reliability & QA (tests + CI) | Not Started | [phase-P2-reliability-qa.md](./phase-P2-reliability-qa.md) |
+| **C1** | **Functional Production (Local)** | **In Progress** | [phase-C1-functional-production.md](./phase-C1-functional-production.md) |
+| P1 | Security & Production Hardening | Largely covered by C1.1 | [phase-P1-security-hardening.md](./phase-P1-security-hardening.md) |
+| P2 | Reliability & QA (tests + CI) | Partially covered by C1.4 | [phase-P2-reliability-qa.md](./phase-P2-reliability-qa.md) |
 | P3 | Schema Integrity | Not Started | [phase-P3-schema-integrity.md](./phase-P3-schema-integrity.md) |
 | P4 | Polish & Framework Parity | Not Started | [phase-P4-polish-parity.md](./phase-P4-polish-parity.md) |
 

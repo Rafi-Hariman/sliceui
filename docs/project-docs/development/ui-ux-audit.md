@@ -155,3 +155,20 @@ shared shell (`AppLayout`, `AppSidebar`), feature components (`CodeOutput`,
 ## Open Questions
 - AAA target size (44px) on primary CTAs only, or broadly? (Recommended: CTAs only.)
 - Should the before/after hero cycle real examples statically, or fetch live from the product? (Static first.)
+
+## Cycle C1 remediation notes
+
+Carried the WCAG 2.2 AA bar onto the new C1 surfaces (History, Dashboard-split,
+entitlement indicator, shared `AppHeader`):
+
+- Every new History control (search, framework/range selects, actions menu,
+  export) has a visible `focus-visible` ring and an `aria-label`/`title`.
+- Icon-only buttons carry `aria-label`; the row actions menu is a Radix
+  `DropdownMenu` (keyboard-navigable).
+- Delete is confirm-gated (`AlertDialog`), never one-click.
+- The entitlement chip is a `role="status"` region with a full-state
+  `aria-label`; amber/destructive tones chosen for contrast on both themes.
+- `tabular-nums` on the chip so the count doesn't reflow as it increments.
+- Theme control is now singular (`next-themes`), removing the duplicated
+  per-page toggles that previously drifted from the system theme.
+- Open: AAA 44px target on the primary Generate CTA (currently 36px) — parked.
