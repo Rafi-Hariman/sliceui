@@ -44,6 +44,7 @@ directly from the browser, with Supabase for auth and conversion history.
 | [foundation/architecture.md](./foundation/architecture.md) | Stack, architecture, system/data flow, ADRs. |
 | [foundation/workflow.md](./foundation/workflow.md) | Dev loop, branching, PR/review. |
 | [foundation/status.md](./foundation/status.md) | Current state, recent wins, roadmap, risks. |
+| [foundation/session-handoff-2026-07-26.md](./foundation/session-handoff-2026-07-26.md) | Session handoff — resume a fresh session from here. |
 | [foundation/phases/](./foundation/phases/index.md) | Phase registry (P1–P4) + individual phase files. |
 | [foundation/changelog.md](./foundation/changelog.md) | Change log ([Unreleased]). |
 
