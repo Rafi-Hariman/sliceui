@@ -21,7 +21,7 @@ const DEFAULT_OPTIONS: ConversionOptions = {
   a11y: false
 }
 
-// Two-letter glyph per framework — single token color (on-brand indigo).
+// Two-letter glyph per framework. Single accent color.
 const FRAMEWORK_GLYPH: Record<string, string> = {
   "tailwind": "TW",
   "react-tsx": "Re",
@@ -65,7 +65,7 @@ export default function Slice() {
     reset
   } = useConvert()
 
-  // P0-2: deep-link — /slice?conversion=<id> loads a past conversion.
+  // P0-2: deep-link - /slice?conversion=<id> loads a past conversion.
   // C1: &rerun=1 re-runs it against the current model. reranRef guards against
   // double-fire across re-renders.
   useEffect(() => {
@@ -89,13 +89,13 @@ export default function Slice() {
             })
             await convert(file, c.framework as Framework, c.options)
           } catch {
-            /* ignore — user can still generate manually */
+            /* ignore - user can still generate manually */
           }
         } else {
           setLoaded(c)
         }
       })
-      .catch(() => { /* ignore — user can still upload fresh */ })
+      .catch(() => { /* ignore - user can still upload fresh */ })
   }, [params, user, convert, reset])
 
   const effectiveFramework: Framework = loaded?.framework as Framework ?? framework
@@ -123,7 +123,7 @@ export default function Slice() {
 
         {/* Drag Overlay */}
         {isDragging && (
-          <div className="fixed inset-0 bg-primary/10 backdrop-blur-sm z-50 flex items-center justify-center pointer-events-none">
+          <div className="fixed inset-0 bg-primary/10 z-50 flex items-center justify-center pointer-events-none">
             <div className="bg-background border-2 border-dashed border-primary rounded-xl p-12 text-center">
               <ImageIcon className="w-16 h-16 text-primary mx-auto mb-4" />
               <p className="text-lg font-medium">Drop your image here</p>
@@ -133,13 +133,13 @@ export default function Slice() {
 
         {/* Main Content: Left Panel + Right Canvas */}
         <div
-          className="flex-1 flex flex-col md:flex-row overflow-auto md:overflow-hidden p-4 gap-4 bg-sidebar min-h-0"
+          className="flex-1 flex flex-col md:flex-row overflow-auto md:overflow-hidden p-5 md:p-6 gap-5 bg-background min-h-0"
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
           {/* Left Panel Card - Not attached to sidebar/header */}
-          <div data-testid="upload-zone" className="w-full md:w-80 md:shrink-0 bg-sidebar border border-border rounded-xl shadow-sm flex flex-col min-h-0">
+          <div data-testid="upload-zone" className="w-full md:w-80 md:shrink-0 bg-card border border-border rounded-xl shadow-elev-1 flex flex-col min-h-0">
             {/* Upload + Generate Bar */}
             <div className="p-3 border-b border-border">
               <div className="bg-background border border-border rounded-xl p-2 flex items-center gap-2">
@@ -166,7 +166,7 @@ export default function Slice() {
                   onClick={handleGenerate}
                   disabled={!file || isLoading}
                   data-testid="generate-button"
-                  className={`flex-1 h-9 bg-primary hover:bg-primary/90 ${FOCUS_RING}`}
+                  className={`flex-1 h-9 bg-primary hover:bg-primary/90 hover:shadow-elev-2 transition-all ${FOCUS_RING}`}
                   aria-label="Generate code"
                   title="Generate code"
                 >
@@ -193,9 +193,9 @@ export default function Slice() {
                       aria-pressed={selected}
                       data-testid={`framework-${fw.id}`}
                       className={`
-                        flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-colors ${FOCUS_RING}
+                        flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all ${FOCUS_RING}
                         ${selected
-                          ? "border-primary bg-primary/15 shadow-sm"
+                          ? "border-primary bg-primary/12 shadow-[0_8px_24px_-12px_hsl(var(--primary)/0.5)]"
                           : "border-border bg-sidebar hover:border-muted-foreground/40 hover:bg-muted/30"
                         }
                       `}
@@ -222,7 +222,7 @@ export default function Slice() {
               <div className="p-3 border-t border-border shrink-0">
                 <button
                   onClick={() => setShowCanvasPreview(!showCanvasPreview)}
-                  aria-label={`${file.name} — ${showCanvasPreview ? "hide" : "show"} preview`}
+                  aria-label={`${file.name}: ${showCanvasPreview ? "hide" : "show"} preview`}
                   className={`w-full flex items-center gap-2 p-2 rounded-lg border border-border hover:border-muted-foreground/40 hover:bg-muted/30 transition-colors ${FOCUS_RING}`}
                 >
                   <div className="w-12 h-12 rounded-lg overflow-hidden border border-border shrink-0">
@@ -245,7 +245,7 @@ export default function Slice() {
           </div>
 
           {/* Right Canvas: Code Output */}
-          <div className="flex-1 min-h-[420px] md:min-h-0 bg-sidebar border border-border rounded-xl shadow-sm overflow-hidden flex flex-col">
+          <div className="flex-1 min-h-[420px] md:min-h-0 bg-card border border-border rounded-xl shadow-elev-1 overflow-hidden flex flex-col">
             {!file && !effectiveCode ? (
               // Empty State
               <div className="h-full flex flex-col items-center justify-center text-center space-y-4 p-8">

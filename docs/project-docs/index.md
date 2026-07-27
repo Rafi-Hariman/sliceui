@@ -1,8 +1,8 @@
-# SliceUI — Project Docs Index
+# SliceUI - Project Docs Index
 
 > Spec-Driven Development (SDD) documentation hub for the SliceUI repository.
 > This index is the catalog of all active project documents. It is **not** a
-> template — each linked file contains project-specific truth.
+> template - each linked file contains project-specific truth.
 
 ## What is SliceUI?
 
@@ -18,8 +18,8 @@ directly from the browser, with Supabase for auth and conversion history.
 ## Authority & conflict note
 
 - **Authority order:** project docs → codebase → agent judgment.
-- The repository's original planning material — top-level `CLAUDE.md`, the
-  original Next.js build spec, and the QA plan — described an **intended
+- The repository's original planning material - top-level `CLAUDE.md`, the
+  original Next.js build spec, and the QA plan - described an **intended
   Next.js 14 / server-side** architecture that the current code does **not**
   implement (the real app is Vite/React with client-side AI calls). Those
   artifacts have been migrated to
@@ -28,7 +28,7 @@ directly from the browser, with Supabase for auth and conversion history.
   the original design as future intent (`architecture.md` ADRs, `status.md`,
   and the planned `/api/convert` contract in `api-contract.md`).
 - When code and docs conflict and authority is unclear, surface the conflict to
-  the maintainer — do not guess.
+  the maintainer - do not guess.
 
 ## Document catalog
 
@@ -44,8 +44,8 @@ directly from the browser, with Supabase for auth and conversion history.
 | [foundation/architecture.md](./foundation/architecture.md) | Stack, architecture, system/data flow, ADRs. |
 | [foundation/workflow.md](./foundation/workflow.md) | Dev loop, branching, PR/review. |
 | [foundation/status.md](./foundation/status.md) | Current state, recent wins, roadmap, risks. |
-| [foundation/session-handoff-2026-07-26.md](./foundation/session-handoff-2026-07-26.md) | Session handoff — resume a fresh session from here. |
-| [foundation/phases/](./foundation/phases/index.md) | Phase registry (P1–P4) + individual phase files. |
+| [foundation/session-handoff-2026-07-26.md](./foundation/session-handoff-2026-07-26.md) | Session handoff - resume a fresh session from here. |
+| [foundation/phases/](./foundation/phases/index.md) | Phase registry (P1-P4) + individual phase files. |
 | [foundation/changelog.md](./foundation/changelog.md) | Change log ([Unreleased]). |
 
 ### Development
@@ -62,7 +62,7 @@ directly from the browser, with Supabase for auth and conversion history.
 | :--- | :--- |
 | [operations/ci-cd.md](./operations/ci-cd.md) | Build, test gates, deploy, secrets. |
 | [operations/deploy-metered-convert.md](./operations/deploy-metered-convert.md) | Phase 0 runbook: deploy the metered `/convert` edge function. |
-| [operations/backend-audit.md](./operations/backend-audit.md) | Backend audit (B1–B14) + Gherkin test matrix + fixes. |
+| [operations/backend-audit.md](./operations/backend-audit.md) | Backend audit (B1-B14) + Gherkin test matrix + fixes. |
 
 ### Technical Guidelines
 | Document | Purpose |
@@ -72,13 +72,13 @@ directly from the browser, with Supabase for auth and conversion history.
 | [technical-guidelines/data-access.md](./technical-guidelines/data-access.md) | Supabase service pattern + error mapping. |
 | [technical-guidelines/code-style.md](./technical-guidelines/code-style.md) | Naming, layout, `@` alias. |
 
-### Reference (migration source — non-authoritative)
+### Reference (migration source - non-authoritative)
 | Document | Origin | Why kept |
 | :--- | :--- | :--- |
 | [reference/prompt.md](./reference/prompt.md) | Original Next.js build spec (committed) | Source of `CLAUDE.md`; documents intended server-side design. |
 | [reference/QA_TEST_DOCUMENT.md](./reference/QA_TEST_DOCUMENT.md) | QA plan | Full test matrix, ACs, checklists; mined into `development/testing.md`. |
 
-> Per EHA rules, `reference/` is secondary migration input only — never treated
+> Per EHA rules, `reference/` is secondary migration input only - never treated
 > as authoritative active truth. When this content conflicts with the SDD docs
 > or codebase, the SDD docs + codebase win.
 

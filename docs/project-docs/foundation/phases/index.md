@@ -1,4 +1,4 @@
-# Phase Registry — SliceUI
+# Phase Registry - SliceUI
 
 ## Project Type
 
@@ -10,7 +10,7 @@ and the roadmap in `foundation/status.md`.
 ## Overall Timeline
 
 - **Planning baseline:** 2026-07-24.
-- **Active cycle:** **C1 — Functional Production (Local)** (2026-07-26). C1 is a
+- **Active cycle:** **C1 - Functional Production (Local)** (2026-07-26). C1 is a
   delivery cycle that stands up the backend (subsuming much of P1's scope), adds
   the History page + entitlement UX, and tightens quality. Its execution briefs
   live in [`c1/`](./c1/).

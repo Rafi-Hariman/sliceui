@@ -1,4 +1,4 @@
-# Product Requirements Document (PRD) — SliceUI
+# Product Requirements Document (PRD) - SliceUI
 
 ## 1. Description
 
@@ -9,7 +9,7 @@ scaffold generator.
 
 ## 2. Important
 
-- Output is always a **single self-contained component** — never `html`/`body`/
+- Output is always a **single self-contained component** - never `html`/`body`/
   `main` entry points, never a full app.
 - The generator is instructed to use the **exact text** visible in the image as
   placeholder content, match **hex colors** from the image, and represent images
@@ -110,8 +110,8 @@ delivery into a single upload-and-generate action.
   framework-specific prompt.
 - **FR-4** Support target frameworks: Tailwind, React TSX, Vue 3 SFC, Bootstrap
   5, HTML+CSS, Next.js, Svelte 5. (Flutter type exists but is not surfaced in the
-  picker — see Open Questions.)
-- **FR-5** Options: responsive, semantic HTML, dark mode, a11y — injected into
+  picker - see Open Questions.)
+- **FR-5** Options: responsive, semantic HTML, dark mode, a11y - injected into
   the prompt when enabled.
 - **FR-6** Automatic provider fallback Gemini → Groq on rate-limit/quota errors.
 - **FR-7** Display generated code with syntax highlighting; show line count.
@@ -127,7 +127,7 @@ delivery into a single upload-and-generate action.
 - **NFR-2 Cost:** rely on free tiers (Gemini + Groq). TBD hard quotas.
 - **NFR-3 Resilience:** degrade gracefully on provider rate-limit with fallback
   + user-facing messages.
-- **NFR-4 Security:** minimize key exposure (currently client-side — see risks).
+- **NFR-4 Security:** minimize key exposure (currently client-side - see risks).
 - **NFR-5 A11y:** UI built on accessible Radix primitives; generated code can
   include a11y attributes on demand.
 
@@ -141,10 +141,10 @@ delivery into a single upload-and-generate action.
 
 ## External Dependencies & Partners
 
-- **Google Gemini** — primary vision + codegen model (`gemini-flash-latest`).
-- **Groq** — fallback vision model (`pixtral-12b-2409`).
-- **Supabase** — auth, Postgres (`conversions`, `profiles`), Storage bucket.
-- **Lovable** — origin of the project scaffold (`@lovable.dev/cloud-auth-js`,
+- **Google Gemini** - primary vision + codegen model (`gemini-flash-latest`).
+- **Groq** - fallback vision model (`pixtral-12b-2409`).
+- **Supabase** - auth, Postgres (`conversions`, `profiles`), Storage bucket.
+- **Lovable** - origin of the project scaffold (`@lovable.dev/cloud-auth-js`,
   `lovable-tagger` dev plugin).
 
 ## Success Metrics
@@ -156,9 +156,9 @@ delivery into a single upload-and-generate action.
 
 ## Related Documents
 
-- [architecture.md](./architecture.md) — how the pipeline is wired.
-- [api-contract.md](../development/api-contract.md) — provider contracts.
-- [status.md](./status.md) — what is implemented vs. planned.
+- [architecture.md](./architecture.md) - how the pipeline is wired.
+- [api-contract.md](../development/api-contract.md) - provider contracts.
+- [status.md](./status.md) - what is implemented vs. planned.
 
 ## Open Questions
 

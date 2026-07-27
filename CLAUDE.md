@@ -1,10 +1,14 @@
-# CLAUDE.md — SliceUI: Image to Code Converter
+# CLAUDE.md (non-authoritative) - SliceUI
+
+> **Stale spec.** This file describes a Next.js design that was never built.
+> The real app is Vite + React. For current truth, see `docs/project-docs/` and
+> the codebase. Kept for historical context only.
 
 ## Project overview
 
 SliceUI converts UI screenshots into clean, framework-specific frontend code.
 Target users: frontend engineers who need a jump-start when slicing a new UI
-feature into an existing project. Output is always a self-contained component —
+feature into an existing project. Output is always a self-contained component -
 never a full app scaffold.
 
 ---
@@ -25,27 +29,27 @@ Gemini 2.0 Flash free tier:
 - 1.500 requests/day, 15 RPM
 - Supports vision (image input) AND text generation
 - Quality comparable to paid vision models
-- No credit card required — get key at aistudio.google.com
+- No credit card required - get key at aistudio.google.com
 
 Groq free tier (automatic fallback when Gemini hits 429):
 - 14.400 requests/day, 30 RPM
 - Uses llava-v1.5-7b-4096-preview for vision
-- Kicks in automatically — user never notices
+- Kicks in automatically - user never notices
 
 ---
 
-## Pipeline — single-stage (vision + codegen in one call)
+## Pipeline - single-stage (vision + codegen in one call)
 
 Unlike two-stage approaches, we send the image AND get code back in one request.
-Gemini 2.0 Flash is multimodal — it can analyze the image AND generate
+Gemini 2.0 Flash is multimodal - it can analyze the image AND generate
 framework-specific code simultaneously. This is faster and simpler.
 
 ```
 [Image + Framework choice]
         ↓
-[Gemini 2.0 Flash — one call]
+[Gemini 2.0 Flash - one call]
         ↓
-[Component code — ready to paste]
+[Component code - ready to paste]
 ```
 
 Fallback chain (automatic, no user action needed):
@@ -75,7 +79,7 @@ export async function imageToCode(
     return await callGemini(base64Image, framework, options)
   } catch (err: any) {
     if (err?.status === 429 || err?.message?.includes("quota")) {
-      console.warn("Gemini rate limit — switching to Groq")
+      console.warn("Gemini rate limit - switching to Groq")
       return await callGroq(base64Image, framework, options)
     }
     throw err
@@ -151,7 +155,7 @@ production-ready ${framework} component code.
 CRITICAL OUTPUT RULES:
 1. Output ONLY the component code. No explanation, no markdown fences.
    First character of your response must be the first character of the code.
-2. Self-contained component — not a full app. No html/body/main entry points.
+2. Self-contained component - not a full app. No html/body/main entry points.
 3. Use the exact text visible in the image as placeholder content.
 4. For images in the UI: use a gray div with descriptive alt text.
 5. For icons: use a comment /* icon: {description} */ as placeholder.
@@ -204,7 +208,7 @@ Use <script lang="ts">. Use Tailwind classes.`,
   "flutter": `
 Output a Flutter StatelessWidget. Use Material 3 components.
 Use Color(0xFFHEXHEX) for colors. Use Column/Row/Expanded for layout.
-Output only the widget class body — not a full app.`
+Output only the widget class body - not a full app.`
 }
 ```
 
@@ -284,14 +288,14 @@ export async function POST(req: NextRequest) {
 ## Environment variables
 
 ```bash
-# .env.local (gitignored — NEVER commit real values)
+# .env.local (gitignored - NEVER commit real values)
 # Copy from .env.local.example and fill in your own keys.
 # Note: the app reads these client-side (VITE_ prefix), so they are bundle-exposed.
 
-# Gemini (primary) — FREE, get at aistudio.google.com
+# Gemini (primary) - FREE, get at aistudio.google.com
 VITE_GEMINI_API_KEY=your_gemini_key_here
 
-# Groq (fallback) — FREE, get at console.groq.com
+# Groq (fallback) - FREE, get at console.groq.com
 VITE_GROQ_API_KEY=your_groq_key_here
 
 # Supabase (auth + DB + storage)
@@ -301,7 +305,7 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key_here
 
 > SECURITY: live keys were previously committed here and must be **rotated**
 > (revoked at Google / Groq / Supabase). Removing them from this file does not
-> un-leak them — git history still contains the originals.
+> un-leak them - git history still contains the originals.
 ---
 
 ## File structure
@@ -389,8 +393,8 @@ npm install -D @types/react-syntax-highlighter
 
 ## v1 scope checklist
 
-- [ ] `/` — upload zone, framework picker, options bar, generate button
-- [ ] `/api/convert` — POST route dengan Gemini + Groq fallback
+- [ ] `/` - upload zone, framework picker, options bar, generate button
+- [ ] `/api/convert` - POST route dengan Gemini + Groq fallback
 - [ ] Image upload: drag-drop + click + Ctrl+V paste
 - [ ] Code output dengan syntax highlighting
 - [ ] Copy to clipboard button

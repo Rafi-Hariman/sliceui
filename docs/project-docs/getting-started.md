@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - **Node.js 18+** and npm (the repo also ships `bun.lock`/`bun.lockb`, so Bun works too).
-- A Supabase project (URL + anon/publishable key) — used for auth, the
+- A Supabase project (URL + anon/publishable key) - used for auth, the
   `conversions` table, and the `sliceui-images` storage bucket.
 - A **Gemini API key** (free tier, https://aistudio.google.com/app/apikey).
 - A **Groq API key** (free fallback, https://console.groq.com/keys).
@@ -37,7 +37,7 @@
 
 ## Local Setup
 
-- Core converter page: **`/slice`** — upload a screenshot, pick a target
+- Core converter page: **`/slice`** - upload a screenshot, pick a target
   framework, toggle options (responsive / semantic HTML / dark mode / a11y),
   then Generate.
 - Auth page: **`/auth`** (Supabase email/password). The login guard is currently

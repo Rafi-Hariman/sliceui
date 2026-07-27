@@ -2,13 +2,14 @@ import { useMemo } from "react"
 import { Link } from "react-router-dom"
 import { formatDistanceToNow } from "date-fns"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell } from "recharts"
-import { ArrowRight, Loader2 } from "lucide-react"
+import { ArrowRight, Loader2, Scissors, CalendarDays, Layers3, TrendingUp } from "lucide-react"
 
 import { AppLayout } from "@/components/AppLayout"
 import { AppHeader } from "@/components/AppHeader"
 import { NeonPatternDefs } from "@/components/NeonPatternDefs"
 import { useNeonCharts } from "@/hooks/use-neon-charts"
 import { useConversions } from "@/hooks/useConversions"
+import { useAuth } from "@/contexts/AuthContext"
 import { FRAMEWORKS, getFramework } from "@/lib/frameworks"
 import type { Framework } from "@/lib/types"
 
@@ -30,6 +31,8 @@ const FRAMEWORK_COLORS: Record<string, string> = {
 export default function Dashboard() {
   const { data: conversions = [], isLoading } = useConversions()
   const { getFill } = useNeonCharts()
+  const { profile } = useAuth()
+  const firstName = profile?.full_name?.split(" ")[0]
 
   const counts = useMemo(() => {
     const thisMonth = conversions.filter((c) => {
@@ -45,7 +48,7 @@ export default function Dashboard() {
     }
   }, [conversions])
 
-  const successRate = counts.total === 0 ? "—" : `${Math.round((counts.completed / counts.total) * 100)}%`
+  const successRate = counts.total === 0 ? "-" : `${Math.round((counts.completed / counts.total) * 100)}%`
 
   const frameworkData = useMemo(() => {
     const c: Record<string, number> = {}
@@ -71,11 +74,21 @@ export default function Dashboard() {
         <AppHeader title="Dashboard" />
 
         <div className="flex-1 overflow-auto">
-          <div className="p-4 md:p-6 space-y-6 max-w-[1400px]">
+          <div className="p-5 md:p-8 space-y-7 max-w-[1400px]">
             <NeonPatternDefs colors={Object.values(FRAMEWORK_COLORS)} />
 
+            {/* Greeting */}
+            <div>
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                Welcome back{firstName ? `, ${firstName}` : ""}
+              </h2>
+              <p className="mt-0.5 text-[13.5px] text-muted-foreground">
+                Your slicing activity at a glance.
+              </p>
+            </div>
+
             {/* Stat cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border rounded-md overflow-hidden">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border rounded-lg overflow-hidden">
               {isLoading ? (
                 Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="bg-background p-4">
@@ -85,14 +98,19 @@ export default function Dashboard() {
                 ))
               ) : (
                 [
-                  { label: "Total conversions", value: counts.total },
-                  { label: "This month", value: counts.thisMonth },
-                  { label: "Frameworks used", value: frameworkData.length },
-                  { label: "Success rate", value: successRate },
+                  { label: "Total conversions", value: counts.total, Icon: Scissors },
+                  { label: "This month", value: counts.thisMonth, Icon: CalendarDays },
+                  { label: "Frameworks used", value: frameworkData.length, Icon: Layers3 },
+                  { label: "Success rate", value: successRate, Icon: TrendingUp },
                 ].map((stat) => (
-                  <div key={stat.label} className="bg-background p-4">
-                    <p className="text-[12px] text-muted-foreground">{stat.label}</p>
-                    <p className="text-2xl font-medium mt-1">{stat.value}</p>
+                  <div key={stat.label} className="bg-background p-5 flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-[12.5px] text-muted-foreground">{stat.label}</p>
+                      <p className="text-[26px] font-semibold mt-1.5 tabular-nums">{stat.value}</p>
+                    </div>
+                    <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15">
+                      <stat.Icon className="h-4 w-4" />
+                    </div>
                   </div>
                 ))
               )}
@@ -110,7 +128,7 @@ export default function Dashboard() {
                 {/* Charts */}
                 {frameworkData.length > 0 && (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-border rounded-md overflow-hidden">
-                    <div className="bg-background p-4">
+                    <div className="bg-background p-5">
                       <p className="text-[13px] font-medium mb-1">Conversions by framework</p>
                       <p className="text-[12px] text-muted-foreground mb-4">Most used frameworks</p>
                       <ChartContainer config={frameworkChartConfig} className="h-[200px] w-full">
@@ -125,7 +143,7 @@ export default function Dashboard() {
                         </BarChart>
                       </ChartContainer>
                     </div>
-                    <div className="bg-background p-4">
+                    <div className="bg-background p-5">
                       <p className="text-[13px] font-medium mb-1">Framework distribution</p>
                       <p className="text-[12px] text-muted-foreground mb-4">Breakdown by framework</p>
                       <ChartContainer config={frameworkChartConfig} className="h-[200px] w-full">
@@ -142,7 +160,7 @@ export default function Dashboard() {
 
                 {/* Recent activity */}
                 <div className="border border-border rounded-md overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-border">
+                  <div className="flex items-center justify-between px-5 py-3 border-b border-border">
                     <p className="text-[13px] font-medium">Recent activity</p>
                     <Button asChild variant="link" size="sm" className="h-auto p-0 text-[12px] gap-1">
                       <Link to="/history">
@@ -171,7 +189,7 @@ export default function Dashboard() {
                         <Link
                           key={conv.id}
                           to={`/slice?conversion=${conv.id}`}
-                          className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                          className="flex items-center gap-3 px-5 py-3 hover:bg-muted/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                         >
                           <div className="w-8 h-8 rounded bg-muted overflow-hidden shrink-0">
                             <img src={conv.original_image_url} alt="" className="w-full h-full object-cover" />

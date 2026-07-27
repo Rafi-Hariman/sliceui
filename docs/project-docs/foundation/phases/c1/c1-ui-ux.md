@@ -1,4 +1,4 @@
-# C1 — UI/UX execution brief
+# C1 - UI/UX execution brief
 
 > **Role:** UI/UX designer (sub-agent). **Master plan:**
 > [`../phase-C1-functional-production.md`](../phase-C1-functional-production.md).
@@ -12,7 +12,7 @@ Define the interaction + visual design for the three new C1 surfaces (History,
 Dashboard-split, entitlement indicator), run a consistency/a11y pass, and update
 the design docs. Frontend implements to these wireframes.
 
-## Design system constraints (existing — do not invent new)
+## Design system constraints (existing - do not invent new)
 
 - One font, token-only colors (no raw hex in components), single on-brand indigo
   primary, dark-first with a light theme. Target sizes ≥ 24px. Focus rings on
@@ -21,7 +21,7 @@ the design docs. Frontend implements to these wireframes.
 - Compact, dense aesthetic already established on Dashboard/Settings
   (text-[13px], h-8 controls, h-11 headers). Match it.
 
-## History page — wireframe
+## History page - wireframe
 
 ```
 ┌─ AppLayout (sidebar: Dashboard · Slice · History · Settings) ──────────────┐
@@ -43,10 +43,10 @@ the design docs. Frontend implements to these wireframes.
   `.json` (array of `{ name, framework, options, code, created_at }`).
 - **Responsive:** table on `md+`; on mobile collapse each row to a card
   (thumb + name + framework badge + a `⋯` menu).
-- **States:** loading skeletons (3–5 shimmer rows); "filtered to 0" (keep filters
+- **States:** loading skeletons (3-5 shimmer rows); "filtered to 0" (keep filters
   visible + a "Clear filters" action); error row with Retry.
 
-## Dashboard-split — wireframe
+## Dashboard-split - wireframe
 
 ```
 ┌─ AppLayout ────────────────────────────────────────────────────────────────┐
@@ -71,7 +71,7 @@ the design docs. Frontend implements to these wireframes.
 - Empty state: when there are zero conversions, replace charts with a friendly
   CTA → `/slice`.
 
-## Entitlement indicator — design
+## Entitlement indicator - design
 
 Placement: a compact chip in the page header (primary) next to the theme toggle.
 States:
@@ -91,7 +91,7 @@ States:
 
 ## Consistency & a11y checklist (this cycle)
 
-- [ ] **Single theme control** — one header toggle driven by `next-themes`;
+- [ ] **Single theme control** - one header toggle driven by `next-themes`;
       remove the per-page `toggleTheme` copies.
 - [ ] **Desktop sign-out** in the avatar popover on Slice + Dashboard.
 - [ ] Every new History control has a visible `focus-visible` ring + `aria-label`.
@@ -100,11 +100,11 @@ States:
 - [ ] Action menu is keyboard-navigable (Arrow / Enter / Esc), with `role="menu"`.
 - [ ] Amber/red quota states meet 4.5:1 contrast on both themes.
 - [ ] Target sizes ≥ 24×24px (44×44 ideal for primary actions).
-- [ ] Delete is never one-click — confirm before destroying.
+- [ ] Delete is never one-click - confirm before destroying.
 
 ## Doc updates (when design is finalized)
 
-- Append a **"C1 — History, Dashboard-split, Entitlement"** section to
+- Append a **"C1 - History, Dashboard-split, Entitlement"** section to
   [`../../development/ui-ux.md`](../../development/ui-ux.md) with the wireframes
   above and the indicator state table.
 - Append C1 remediation notes to

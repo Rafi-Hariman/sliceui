@@ -1,4 +1,4 @@
-# Guideline — Code Style & Conventions
+# Guideline - Code Style & Conventions
 
 ## 1. Summary
 
@@ -13,28 +13,28 @@ ESLint config, Prettier/editor settings, and shadcn defaults.
 
 ## 3. Rules
 
-- **R1 — Path alias.** Import via `@/...` (resolves to `src/`), configured in
+- **R1 - Path alias.** Import via `@/...` (resolves to `src/`), configured in
   `vite.config.ts`, `tsconfig*`, and `vitest.config.ts`. Avoid deep relative
   paths (`../../..`) when an alias exists.
-- **R2 — File naming.**
+- **R2 - File naming.**
   - Components: `PascalCase.tsx` (`CodeOutput.tsx`, `UploadZone.tsx`).
   - shadcn primitives: lowercase-hyphen (`alert-dialog.tsx`) under
     `src/components/ui/`.
-  - Hooks: `use-thing.ts` or `useThing.ts` — **both exist today** (`use-mobile.tsx`,
+  - Hooks: `use-thing.ts` or `useThing.ts` - **both exist today** (`use-mobile.tsx`,
     `useImageUpload.ts`); pick one and migrate (see Open Questions).
   - Services: `*Service.ts` (`conversionService.ts`, `storageService.ts`).
   - Pages: `PascalCase.tsx` under `src/pages/`.
-- **R3 — Export style.** Feature components/hooks default-export; shadcn
+- **R3 - Export style.** Feature components/hooks default-export; shadcn
   primitives use named exports; services use named exports.
-- **R4 — Types live in `src/lib/types.ts`.** Domain types (`Framework`,
+- **R4 - Types live in `src/lib/types.ts`.** Domain types (`Framework`,
   `ConversionOptions`, `Conversion`) are centralized there, not scattered.
-- **R5 — Strict TypeScript.** `tsconfig` is strict-ish; `npm run build` must
+- **R5 - Strict TypeScript.** `tsconfig` is strict-ish; `npm run build` must
   stay green. Prefer `unknown` over `any` in `catch` (the codebase already
   uses `catch (err: unknown)` in `aiService`).
-- **R6 — Styling.** Tailwind utilities + HSL CSS-variable tokens only; no
+- **R6 - Styling.** Tailwind utilities + HSL CSS-variable tokens only; no
   inline color literals in the app shell (use tokens). `cn()` from
   `@/lib/utils` for conditional classes.
-- **R7 — Keep the Lovable scaffolding intentional.** `lovable-tagger` is
+- **R7 - Keep the Lovable scaffolding intentional.** `lovable-tagger` is
   dev-only (gated on `mode === "development"`); do not enable it in production
   builds.
 
@@ -57,9 +57,9 @@ ESLint config, Prettier/editor settings, and shadcn defaults.
 
 ## 6. Related Docs
 
-- [workflow.md](../foundation/workflow.md) — lint/build gates.
-- [ui-ux.md](../development/ui-ux.md) — token/color usage.
-- [testing.md](../development/testing.md) — test file conventions.
+- [workflow.md](../foundation/workflow.md) - lint/build gates.
+- [ui-ux.md](../development/ui-ux.md) - token/color usage.
+- [testing.md](../development/testing.md) - test file conventions.
 
 ## 7. Open Questions
 

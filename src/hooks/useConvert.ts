@@ -24,7 +24,7 @@ export default function useConvert(): UseConvertReturn {
   const queryClient = useQueryClient()
 
   // Monotonic request id so a newer Generate (or rapid re-click) supersedes an
-  // in-flight one — stale results never overwrite current state.
+  // in-flight one - stale results never overwrite current state.
   const requestIdRef = useRef(0)
 
   const convert = useCallback(async (
@@ -66,12 +66,12 @@ export default function useConvert(): UseConvertReturn {
       const base64 = await base64Promise
       const generatedCode = await imageToCode(base64, framework, options)
 
-      // A newer request superseded this one — discard the result.
+      // A newer request superseded this one - discard the result.
       if (myRequestId !== requestIdRef.current) return
 
       setCode(generatedCode)
 
-      // A generation consumed quota server-side — refresh the usage indicator.
+      // A generation consumed quota server-side - refresh the usage indicator.
       queryClient.invalidateQueries({ queryKey: ["entitlement"] })
 
       // Persist to Supabase. Isolated so a storage hiccup never discards the
@@ -90,7 +90,7 @@ export default function useConvert(): UseConvertReturn {
         console.error("Failed to persist conversion:", persistErr)
       }
       // Either way, the conversions list (Dashboard recent + History) may have
-      // changed — refresh the shared cache.
+      // changed - refresh the shared cache.
       queryClient.invalidateQueries({ queryKey: ["conversions"] })
     } catch (err: unknown) {
       if (myRequestId !== requestIdRef.current) return

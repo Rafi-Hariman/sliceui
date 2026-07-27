@@ -1,4 +1,4 @@
-# Claude Code Build Prompts — SliceUI
+# Claude Code Build Prompts - SliceUI
 
 Jalankan **satu prompt per sesi**. Tunggu selesai sebelum lanjut.
 
@@ -22,7 +22,7 @@ npm install @google/generative-ai groq-sdk sharp \
 
 ---
 
-## ► PROMPT 1 — Baca konteks, buat semua file kosong
+## ► PROMPT 1 - Baca konteks, buat semua file kosong
 
 ```
 Kamu adalah senior fullstack engineer. Kamu akan membangun aplikasi bernama SliceUI dari nol.
@@ -34,7 +34,7 @@ komponen yang langsung bisa di-paste ke project mereka yang sudah ada.
 
 === AI ENGINE ===
 - PRIMARY: Google Gemini 2.0 Flash (gratis, aistudio.google.com)
-- FALLBACK: Groq (gratis, console.groq.com) — otomatis jika Gemini 429
+- FALLBACK: Groq (gratis, console.groq.com) - otomatis jika Gemini 429
 - Gemini bisa vision + codegen dalam SATU call (multimodal)
 - Tidak ada dua-stage pipeline, satu call langsung dapat kode
 
@@ -84,7 +84,7 @@ Setelah membuat semua file, tampilkan daftar file yang sudah dibuat dan konfirma
 
 ---
 
-## ► PROMPT 2 — Types, frameworks, imageUtils
+## ► PROMPT 2 - Types, frameworks, imageUtils
 
 ```
 Isi tiga file berikut dengan implementasi lengkap.
@@ -93,16 +93,16 @@ Isi tiga file berikut dengan implementasi lengkap.
 
 Export type dan interface berikut:
 
-1. Framework — union type:
+1. Framework - union type:
    "tailwind" | "react-tsx" | "vue-sfc" | "bootstrap5" | "native-html" | "nextjs" | "svelte" | "flutter"
 
-2. ConversionOptions — interface:
+2. ConversionOptions - interface:
    { responsive: boolean; semanticHtml: boolean; darkMode: boolean; a11y: boolean }
 
-3. ConvertResponse — interface:
+3. ConvertResponse - interface:
    { code: string; error?: string }
 
-4. FrameworkMeta — interface:
+4. FrameworkMeta - interface:
    { id: Framework; label: string; desc: string; ext: string; lang: string }
 
 === FILE 2: lib/frameworks.ts ===
@@ -140,7 +140,7 @@ Export function validateImageFile(file: File): { valid: boolean; error?: string 
 
 ---
 
-## ► PROMPT 3 — AI engine (Gemini + Groq + prompts)
+## ► PROMPT 3 - AI engine (Gemini + Groq + prompts)
 
 ```
 Isi dua file berikut dengan implementasi lengkap.
@@ -252,7 +252,7 @@ Private function clean(raw: string): string
 
 ---
 
-## ► PROMPT 4 — API Route
+## ► PROMPT 4 - API Route
 
 ```
 Isi file app/api/convert/route.ts dengan implementasi lengkap.
@@ -274,7 +274,7 @@ const DAY_MS = 24 * 60 * 60 * 1000
 
 Export async function POST(req: NextRequest):
 
-Step 1 — Rate limiting:
+Step 1 - Rate limiting:
 - ip = req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? "unknown"
 - now = Date.now()
 - Ambil entry dari rateLimitMap
@@ -283,22 +283,22 @@ Step 1 — Rate limiting:
     - Else: entry.count++
 - Jika tidak ada atau expired: set entry baru { count: 1, resetAt: now + DAY_MS }
 
-Step 2 — Parse form:
+Step 2 - Parse form:
 - const form = await req.formData()
 - const file = form.get("image") as File
 - const framework = form.get("framework") as Framework
 - const options = JSON.parse(form.get("options") as string) as ConversionOptions
 
-Step 3 — Validasi:
+Step 3 - Validasi:
 - Jika !file atau !framework: return 400 { error: "Missing required fields" }
 - const check = validateImageFile(file)
 - Jika !check.valid: return 400 { error: check.error }
 
-Step 4 — Proses:
+Step 4 - Proses:
 - const buf = Buffer.from(await file.arrayBuffer())
 - const base64 = await normalizeImage(buf)
 
-Step 5 — Generate:
+Step 5 - Generate:
 - Bungkus dalam try/catch
 - const code = await imageToCode(base64, framework, options)
 - Return 200 { code }
@@ -307,7 +307,7 @@ Step 5 — Generate:
 
 ---
 
-## ► PROMPT 5 — Hooks
+## ► PROMPT 5 - Hooks
 
 ```
 Isi dua file hooks dengan implementasi lengkap. Semua file hooks wajib 'use client' di baris pertama.
@@ -385,7 +385,7 @@ reset(): set semua ke null/false/""
 
 ---
 
-## ► PROMPT 6 — Komponen UI
+## ► PROMPT 6 - Komponen UI
 
 ```
 Buat semua komponen berikut. Semua wajib 'use client' di baris pertama.
@@ -478,7 +478,7 @@ Tampilan:
 
 ---
 
-## ► PROMPT 7 — Layout & Halaman Utama
+## ► PROMPT 7 - Layout & Halaman Utama
 
 ```
 Isi app/layout.tsx dan app/page.tsx.
@@ -490,7 +490,7 @@ Import type Metadata dari next.
 Import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "SliceUI — Image to Code",
+  title: "SliceUI - Image to Code",
   description: "Convert UI screenshots into frontend code instantly. Supports Tailwind, React, Vue, Bootstrap, and more.",
 }
 
@@ -548,35 +548,35 @@ useEffect(() => {
 
 ---
 
-## ► PROMPT 8 — Environment & Final Check
+## ► PROMPT 8 - Environment & Final Check
 
 ```
 Lakukan langkah-langkah berikut secara berurutan:
 
-LANGKAH 1 — Buat file .env.local di root project:
+LANGKAH 1 - Buat file .env.local di root project:
 GEMINI_API_KEY=GANTI_DENGAN_API_KEY_GEMINI_KAMU
 GROQ_API_KEY=GANTI_DENGAN_API_KEY_GROQ_KAMU
 
-LANGKAH 2 — Pastikan .env.local ada di .gitignore. Jika belum ada baris ".env.local", tambahkan.
+LANGKAH 2 - Pastikan .env.local ada di .gitignore. Jika belum ada baris ".env.local", tambahkan.
 
-LANGKAH 3 — Cek next.config.ts atau next.config.js. Pastikan file ini valid. Jika ada error konfigurasi, perbaiki. Jika file belum mengizinkan body size besar untuk upload, tambahkan:
+LANGKAH 3 - Cek next.config.ts atau next.config.js. Pastikan file ini valid. Jika ada error konfigurasi, perbaiki. Jika file belum mengizinkan body size besar untuk upload, tambahkan:
 const nextConfig = {
   experimental: {
     serverActions: { bodySizeLimit: "10mb" }
   }
 }
 
-LANGKAH 4 — Jalankan TypeScript check:
+LANGKAH 4 - Jalankan TypeScript check:
 npx tsc --noEmit
 
 Tampilkan semua error yang muncul dan perbaiki satu per satu hingga tidak ada error TypeScript.
 
-LANGKAH 5 — Jalankan dev server:
+LANGKAH 5 - Jalankan dev server:
 npm run dev
 
 Jika ada error saat start, tampilkan dan perbaiki.
 
-LANGKAH 6 — Laporkan:
+LANGKAH 6 - Laporkan:
 - Apakah server berjalan di http://localhost:3000 ?
 - File apa saja yang sudah dibuat?
 - Ada TypeScript error yang belum terselesaikan?
@@ -587,7 +587,7 @@ Perbaiki semua issue yang ditemukan sebelum konfirmasi selesai.
 
 ---
 
-## ► PROMPT 9 — Polish & Bug Fix
+## ► PROMPT 9 - Polish & Bug Fix
 
 ```
 Sekarang lakukan review menyeluruh dan perbaiki semua issue berikut:
@@ -637,7 +637,7 @@ Setelah semua diperbaiki, tampilkan ringkasan perubahan yang dilakukan.
 
 ---
 
-## ► PROMPT 10 (opsional) — Test generate nyata
+## ► PROMPT 10 (opsional) - Test generate nyata
 
 ```
 Lakukan test end-to-end dengan gambar nyata.
@@ -660,7 +660,7 @@ CARA TEST:
 
 Jika ada error:
 - Jika 401: API key belum diset atau salah
-- Jika 429: Rate limit — tunggu 1 menit atau cek apakah Groq fallback berfungsi
+- Jika 429: Rate limit - tunggu 1 menit atau cek apakah Groq fallback berfungsi
 - Jika 500: Lihat console server (terminal npm run dev) dan tampilkan error
 
 Laporkan hasil test secara detail.
@@ -673,10 +673,10 @@ Laporkan hasil test secara detail.
 - Semua file `components/` dan `hooks/` wajib `'use client'` di baris pertama
 - Tidak boleh ada `any` kecuali benar-benar tidak bisa dihindari
 - Semua fetch ke `/api/convert` harus handle error response
-- Image preview menggunakan `URL.createObjectURL` — wajib di-revoke saat unmount
-- `sharp` hanya berjalan di Node.js runtime — pastikan `export const runtime = "nodejs"` ada di route.ts
-- Jangan install library UI tambahan (shadcn, radix, dll) — Tailwind saja
+- Image preview menggunakan `URL.createObjectURL` - wajib di-revoke saat unmount
+- `sharp` hanya berjalan di Node.js runtime - pastikan `export const runtime = "nodejs"` ada di route.ts
+- Jangan install library UI tambahan (shadcn, radix, dll) - Tailwind saja
 - Jika Gemini API key belum diisi, app tetap harus bisa dibuka tanpa crash
 
 
-"You are a senior frontend engineer. Analyze this UI screenshot and generate production-ready react-tsx component code.\n\nCRITICAL OUTPUT RULES:\n1. Output ONLY the component code. No explanation, no markdown fences.\n   First character of your response must be the first character of the code.\n2. Self-contained component — not a full app. No html/body/main entry points.\n3. Use the exact text visible in the image as placeholder content.\n4. For images in the UI: use a gray div with descriptive alt text.\n5. For icons: use a comment /* icon: {description} */ as placeholder.\n6. Match colors from the image exactly using hex values.\n7. First line must be: // Generated by SliceUI\n\n- Add responsive breakpoints (mobile-first, sm: md: lg:)\n- Use semantic HTML5 elements (nav, main, section, article, header, footer)\n\nFRAMEWORK: react-tsx\nSPECIFIC RULES:\n- React functional component with TypeScript.\n- Name it based on dominant type (HeroSection, NavBar, CardGrid, etc).\n- Use className not class. Tailwind for styling. Export as default.\n"
+"You are a senior frontend engineer. Analyze this UI screenshot and generate production-ready react-tsx component code.\n\nCRITICAL OUTPUT RULES:\n1. Output ONLY the component code. No explanation, no markdown fences.\n   First character of your response must be the first character of the code.\n2. Self-contained component - not a full app. No html/body/main entry points.\n3. Use the exact text visible in the image as placeholder content.\n4. For images in the UI: use a gray div with descriptive alt text.\n5. For icons: use a comment /* icon: {description} */ as placeholder.\n6. Match colors from the image exactly using hex values.\n7. First line must be: // Generated by SliceUI\n\n- Add responsive breakpoints (mobile-first, sm: md: lg:)\n- Use semantic HTML5 elements (nav, main, section, article, header, footer)\n\nFRAMEWORK: react-tsx\nSPECIFIC RULES:\n- React functional component with TypeScript.\n- Name it based on dominant type (HeroSection, NavBar, CardGrid, etc).\n- Use className not class. Tailwind for styling. Export as default.\n"

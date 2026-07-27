@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
 import { StackedLogo } from "@/components/StackedLogo";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,69 +74,72 @@ export default function Auth() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="w-full max-w-[420px] border border-border rounded-md p-8 space-y-6">
-        {/* Logo */}
+    <div className="relative flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="relative z-10 w-full max-w-[420px] surface p-8 animate-fade-up">
+        {/* Brand */}
         <div className="flex flex-col items-start gap-3">
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <StackedLogo size={16} />
-            <span className="text-[14px] font-bold text-foreground tracking-[0.08em] uppercase">SliceUI</span>
+            <StackedLogo size={18} />
+            <span className="text-[15px] font-semibold text-foreground tracking-[0.08em] uppercase">SliceUI</span>
           </Link>
-          <p className="text-[13px] text-muted-foreground">Convert UI screenshots into clean, production-ready code</p>
+          <p className="text-[13px] text-muted-foreground leading-relaxed">
+            Convert UI screenshots into clean, production-ready code.
+          </p>
         </div>
 
-        {/* Email auth */}
-        <Tabs defaultValue="login">
+        <Tabs defaultValue="login" className="mt-7">
           <TabsList className="grid w-full grid-cols-2 h-9 p-0.5">
             <TabsTrigger value="login" className="text-[12px]">Sign in</TabsTrigger>
             <TabsTrigger value="signup" className="text-[12px]">Sign up</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="login" className="mt-4">
-            <form onSubmit={handleLogin} className="space-y-3">
-              <div className="space-y-1">
+          <TabsContent value="login" className="mt-5">
+            <form onSubmit={handleLogin} className="space-y-3.5">
+              <div className="space-y-1.5">
                 <Label className="text-[12px]" htmlFor="login-email">Email</Label>
-                <Input id="login-email" type="email" placeholder="you@example.com" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required className="h-8 text-[13px]" />
+                <Input id="login-email" type="email" placeholder="you@example.com" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required className="h-9 text-[13px]" />
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <Label className="text-[12px]" htmlFor="login-password">Password</Label>
-                <Input id="login-password" type="password" placeholder="••••••••" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required className="h-8 text-[13px]" />
+                <Input id="login-password" type="password" placeholder="••••••••" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required className="h-9 text-[13px]" />
               </div>
               <div className="flex justify-end">
                 <button type="button" onClick={handleForgotPassword} className="text-[11px] text-muted-foreground hover:text-foreground underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
                   Forgot password?
                 </button>
               </div>
-              <Button type="submit" className="w-full h-8 text-[13px]" disabled={isSubmitting}>
+              <Button type="submit" className="w-full h-9 text-[13px] group hover:shadow-elev-2 transition-all" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
                 Sign In
+                {!isSubmitting && <ArrowRight className="ml-1.5 h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />}
               </Button>
             </form>
           </TabsContent>
 
-          <TabsContent value="signup" className="mt-4">
-            <form onSubmit={handleSignup} className="space-y-3">
-              <div className="space-y-1">
+          <TabsContent value="signup" className="mt-5">
+            <form onSubmit={handleSignup} className="space-y-3.5">
+              <div className="space-y-1.5">
                 <Label className="text-[12px]" htmlFor="signup-name">Full Name</Label>
-                <Input id="signup-name" type="text" placeholder="Jane Doe" value={signupName} onChange={(e) => setSignupName(e.target.value)} required className="h-8 text-[13px]" />
+                <Input id="signup-name" type="text" placeholder="Jane Doe" value={signupName} onChange={(e) => setSignupName(e.target.value)} required className="h-9 text-[13px]" />
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <Label className="text-[12px]" htmlFor="signup-email">Email</Label>
-                <Input id="signup-email" type="email" placeholder="you@example.com" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} required className="h-8 text-[13px]" />
+                <Input id="signup-email" type="email" placeholder="you@example.com" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} required className="h-9 text-[13px]" />
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <Label className="text-[12px]" htmlFor="signup-password">Password</Label>
-                <Input id="signup-password" type="password" placeholder="Min 6 characters" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required minLength={6} className="h-8 text-[13px]" />
+                <Input id="signup-password" type="password" placeholder="Min 6 characters" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required minLength={6} className="h-9 text-[13px]" />
               </div>
-              <Button type="submit" className="w-full h-8 text-[13px]" disabled={isSubmitting}>
+              <Button type="submit" className="w-full h-9 text-[13px] group hover:shadow-elev-2 transition-all" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
                 Create Account
+                {!isSubmitting && <ArrowRight className="ml-1.5 h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />}
               </Button>
             </form>
           </TabsContent>
         </Tabs>
 
-        <p className="text-left text-[11px] text-muted-foreground pt-2">
+        <p className="mt-6 text-left text-[11px] text-muted-foreground">
           © {new Date().getFullYear()} SliceUI
         </p>
       </div>

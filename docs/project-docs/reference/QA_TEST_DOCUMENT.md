@@ -3,7 +3,7 @@
 **Project:** SliceUI  
 **Tech Stack:** React 18 + TypeScript + Vite, shadcn/ui, Tailwind CSS, Supabase Auth  
 **Auth Method:** Supabase Auth (OAuth)  
-**Target Browsers:** Chrome, Firefox, Safari, Edge — latest 2 versions  
+**Target Browsers:** Chrome, Firefox, Safari, Edge - latest 2 versions  
 **Screen Sizes:** 320px, 768px, 1024px, 1440px  
 **Environment:** Local → Staging → Production  
 **Feature:** All features (Image Upload, Framework Selection, Code Generation, Preview)

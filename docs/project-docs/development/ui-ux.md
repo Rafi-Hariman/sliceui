@@ -1,4 +1,4 @@
-# UI/UX — SliceUI
+# UI/UX - SliceUI
 
 ## 1. Description
 
@@ -72,7 +72,7 @@ framework-specific and model-authored).
 - **Theming:** `darkMode: ["class"]`; tokens in `src/index.css` under `:root`
   (light) and `.dark`.
 - **Key tokens (HSL):**
-  - `--primary` `234 55% 58%` (light) / `234 55% 60%` (dark) — indigo.
+  - `--primary` `234 55% 58%` (light) / `234 55% 60%` (dark) - indigo.
   - `--ring` mirrors primary.
   - Semantic: `--success 142 70% 40%`, `--warning 38 92% 50%`, `--info 199 89%
     48%`, `--destructive 345 72% 51%`.
@@ -105,7 +105,7 @@ Shared chrome: `AppLayout`, `AppSidebar`, `NavLink`, `ThemeToggle`/`NeonToggle`,
 
 ## Component Library
 
-- **App primitives (`src/components/ui/`):** full shadcn set — accordion,
+- **App primitives (`src/components/ui/`):** full shadcn set - accordion,
   alert-dialog, avatar, button (via cva), card, dialog, dropdown, tabs, select,
   tooltip, toast/sonner, table, form, etc.
 - **Feature components (`src/components/`):** `UploadZone`, `FrameworkPicker`,
@@ -117,7 +117,7 @@ Shared chrome: `AppLayout`, `AppSidebar`, `NavLink`, `ThemeToggle`/`NeonToggle`,
 ## Responsive
 
 - Tailwind mobile-first; option rule "responsive" instructs the **generated
-  output** to add breakpoints (`sm:`/`md:`/`lg:`) — this is about output, not
+  output** to add breakpoints (`sm:`/`md:`/`lg:`) - this is about output, not
   the app shell.
 - App shell responsive behavior is inherited from shadcn/container defaults;
   TBD explicit breakpoint testing for `/slice` on narrow screens.
@@ -129,7 +129,7 @@ Shared chrome: `AppLayout`, `AppSidebar`, `NavLink`, `ThemeToggle`/`NeonToggle`,
 - **Generated output:** the `a11y` option asks the model to emit `aria-label`,
   `role`, `alt`.
 - **Gaps:** preview iframe relies on `sandbox="allow-scripts"` (no
-  `allow-same-origin`) — verify it remains accessible/usable; color contrast of
+  `allow-same-origin`) - verify it remains accessible/usable; color contrast of
   generated code is theme-dependent.
 
 ## Design Handoff
@@ -147,9 +147,9 @@ Shared chrome: `AppLayout`, `AppSidebar`, `NavLink`, `ThemeToggle`/`NeonToggle`,
 
 ## Related Documents
 
-- [architecture.md](../foundation/architecture.md) — component/module layout.
-- [prd.md](../foundation/prd.md) — feature workflows per screen.
-- [status.md](../foundation/status.md) — template-leftover tokens noted.
+- [architecture.md](../foundation/architecture.md) - component/module layout.
+- [prd.md](../foundation/prd.md) - feature workflows per screen.
+- [status.md](../foundation/status.md) - template-leftover tokens noted.
 
 ## Open Questions
 
@@ -157,24 +157,24 @@ Shared chrome: `AppLayout`, `AppSidebar`, `NavLink`, `ThemeToggle`/`NeonToggle`,
 - Keep the bug-tracker-derived `severity-*` and sidebar tokens, or prune them?
 - Add a Figma/design source and formal wireframes?
 
-## Cycle C1 — History, Dashboard-split, Entitlement
+## Cycle C1 - History, Dashboard-split, Entitlement
 
 New/changed screens shipped in [Cycle C1](../foundation/phases/c1/c1-ui-ux.md):
 
-- **Sidebar** — `Dashboard · Slice · History · Settings` (Dashboard is the
+- **Sidebar** - `Dashboard · Slice · History · Settings` (Dashboard is the
   post-login landing). Single source in `AppSidebar.navItems`.
-- **History (`/history`)** — dedicated conversions list (extracted out of the
+- **History (`/history`)** - dedicated conversions list (extracted out of the
   Dashboard). Toolbar: search · framework `<Select>` · date-range `<Select>`
   (7d/30d/All) · Export-all. Per-row actions menu: Open · Regenerate · Copy ·
   Download · Export JSON · Delete (confirm-gated). States: empty CTA, skeleton
   rows, "filtered to 0" with Clear-filters.
-- **Dashboard split** — analytics only now: stat cards (Total / This month /
+- **Dashboard split** - analytics only now: stat cards (Total / This month /
   Frameworks / Success rate) + framework bar/pie charts + a top-5 **Recent
   activity** panel linking to `/slice?conversion=<id>` with a "View all →"
   link to History. Empty state CTA → `/slice`.
-- **Entitlement indicator** — header chip (shared `AppHeader`): free
+- **Entitlement indicator** - header chip (shared `AppHeader`): free
   `used / 5 today`, pro `N credits`. Tone: neutral → amber (near-limit/pro-low)
   → destructive (exhausted); full state in `aria-label`; tooltip explains reset.
-- **Consolidated header** — one theme toggle (via `next-themes`) + avatar popover
+- **Consolidated header** - one theme toggle (via `next-themes`) + avatar popover
   (Settings + Sign out) shared by Dashboard/Slice/History via `AppHeader`,
   replacing the per-page `toggleTheme` copies.

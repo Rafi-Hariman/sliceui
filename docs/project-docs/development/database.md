@@ -1,4 +1,4 @@
-# Database — SliceUI
+# Database - SliceUI
 
 ## 1. Description
 
@@ -19,7 +19,7 @@ generated TypeScript types.
 - Because `conversions` is not typed, `conversionService.ts` inserts/select it
   without compile-time safety (`options: options as any`).
 - No migrations are checked into the repo (`supabase/` contains only
-  `config.toml`). Schema lives in the Supabase dashboard — TBD whether to adopt
+  `config.toml`). Schema lives in the Supabase dashboard - TBD whether to adopt
   `supabase/migrations`.
 
 ## 3. Table of Contents
@@ -51,7 +51,7 @@ provider AI APIs (`api-contract.md`) and auth UX (`prd.md`).
 
 ## 6. Non Goals
 
-- Not redesigning the schema — only documenting current + drift.
+- Not redesigning the schema - only documenting current + drift.
 - Not covering Supabase Auth internals (managed).
 
 ## DB Architecture
@@ -60,12 +60,12 @@ provider AI APIs (`api-contract.md`) and auth UX (`prd.md`).
 - **Access pattern:** PostgREST via `@supabase/supabase-js` from the browser,
   using the **publishable/anon** key (`VITE_SUPABASE_PUBLISHABLE_KEY`).
 - **Security model:** Row Level Security is assumed to be enabled (standard
-  Supabase), but policies are **not defined in-repo** — verify in the dashboard.
+  Supabase), but policies are **not defined in-repo** - verify in the dashboard.
 - **Auth:** Supabase Auth, email/password; session persisted in `localStorage`.
 
 ## Schema Definitions
 
-### `conversions` (used by code; NOT in generated types — Inferred from `types.ts` + `conversionService.ts`)
+### `conversions` (used by code; NOT in generated types - Inferred from `types.ts` + `conversionService.ts`)
 
 | Column | Type | Nullable | Notes |
 | :--- | :--- | :--- | :--- |
@@ -85,7 +85,7 @@ provider AI APIs (`api-contract.md`) and auth UX (`prd.md`).
 `id`, `user_id`, `full_name`, `job_title`, `avatar_url`, `created_at`,
 `updated_at`. Fetched via `.eq("user_id", userId).single()`.
 
-### Other generated tables (from stale types — verify whether they exist in this project)
+### Other generated tables (from stale types - verify whether they exist in this project)
 
 `bugs`, `attachments`, `comments`, `projects`, `activity_log`,
 `company_settings`, `invitations`, `notification_preferences`, `user_roles`.
@@ -119,7 +119,7 @@ from; do not rely on them.
 ## Data Dictionary
 
 - `ConversionOptions` (jsonb `options`): `{ responsive, semanticHtml,
-  darkMode, a11y }` — all booleans. See `src/lib/types.ts`.
+  darkMode, a11y }` - all booleans. See `src/lib/types.ts`.
 - `Framework` enum domain: `tailwind | react-tsx | vue-sfc | bootstrap5 |
   native-html | nextjs | svelte | flutter`.
 
@@ -132,9 +132,9 @@ from; do not rely on them.
 
 ## Related Documents
 
-- [api-contract.md](./api-contract.md) — Supabase + AI provider access.
-- [architecture.md](../foundation/architecture.md) — data flow.
-- [status.md](../foundation/status.md) — drift listed as a risk.
+- [api-contract.md](./api-contract.md) - Supabase + AI provider access.
+- [architecture.md](../foundation/architecture.md) - data flow.
+- [status.md](../foundation/status.md) - drift listed as a risk.
 
 ## Open Questions
 

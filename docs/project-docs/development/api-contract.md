@@ -1,4 +1,4 @@
-# API Contract — SliceUI
+# API Contract - SliceUI
 
 ## 1. Description
 
@@ -13,7 +13,7 @@ the env variables that configure them.
   client-visible. Treat the "auth" below as API-key auth, not user-scoped.
 - All keys are `VITE_*` env vars (bundled into the client). Never assume secrecy.
 - Model identifiers are **aliases** (`gemini-flash-latest`) or specific
-  (`pixtral-12b-2409`); aliases can change upstream — pin for reproducibility.
+  (`pixtral-12b-2409`); aliases can change upstream - pin for reproducibility.
 
 ## 3. Table of Contents
 
@@ -59,7 +59,7 @@ shapes as invoked by `src/lib/aiService.ts`, `src/lib/storageService.ts`,
 
 ## Request/Response Format
 
-### Gemini — `generateContent` (multimodal)
+### Gemini - `generateContent` (multimodal)
 
 - **Request parts:** `[ promptString, { inlineData: { mimeType: "image/png",
   data: <base64> } } ]`.
@@ -67,7 +67,7 @@ shapes as invoked by `src/lib/aiService.ts`, `src/lib/storageService.ts`,
 - **Response:** `result.response.text()` → raw string (may include code fences,
   stripped by `clean()`).
 
-### Groq — `chat.completions.create` (OpenAI shape)
+### Groq - `chat.completions.create` (OpenAI shape)
 
 - **Messages:** single `user` message with `content: [ {type:"text", text:
   prompt}, {type:"image_url", image_url:{ url: "data:image/png;base64,<b64>" }} ]`.
@@ -85,7 +85,7 @@ shapes as invoked by `src/lib/aiService.ts`, `src/lib/storageService.ts`,
 
 ## Endpoints
 
-N/A as REST routes — all access is via SDKs. The only "endpoint" the app exposes
+N/A as REST routes - all access is via SDKs. The only "endpoint" the app exposes
 is the SPA route `/slice` (UI), not an API.
 
 ## Webhooks
@@ -113,23 +113,23 @@ None. The app is purely request/response and pull-based (no inbound webhooks).
 > §6). It is the target for **Phase P1** (see
 > [`foundation/phases/phase-P1-security-hardening.md`](../foundation/phases/phase-P1-security-hardening.md)).
 
-- **Route:** `POST /api/convert` — Next.js App Router, `runtime = "nodejs"`,
+- **Route:** `POST /api/convert` - Next.js App Router, `runtime = "nodejs"`,
   `maxDuration = 60`.
-- **Auth (target):** user JWT required — `401 unauthorized` /
+- **Auth (target):** user JWT required - `401 unauthorized` /
   `401 token_expired` (QA API-006/007). Aligns with the resolved auth-gate
   decision (login required).
-- **Request:** multipart form — `image` (File), `framework` (Framework),
+- **Request:** multipart form - `image` (File), `framework` (Framework),
   `options` (JSON string of `ConversionOptions`).
 - **Server-side normalization:** `sharp` resize ≤1600px (fit inside, no
   enlargement) → PNG → base64, before calling the AI provider.
-- **Rate limiting (target):** in-memory (Redis later) — 5 free conversions/day
+- **Rate limiting (target):** in-memory (Redis later) - 5 free conversions/day
   per IP via `x-forwarded-for` / `x-real-ip`; over limit →
   `429 daily_limit_reached`.
 - **Error responses:** `400 missing_image` / `missing_framework` /
   `invalid_framework` / `invalid_image_format` / `invalid_image_data`;
   `429 daily_limit_reached`; `500 generation_failed` (provider timeout/failure).
 - **Success response:** `200 { code }` (QA also shows `{ code, success: true }`
-  — pick one when implementing).
+  - pick one when implementing).
 
 Adopting this moves AI keys server-side (fixes the client-side key exposure
 risk) and reintroduces the rate limiter the CLAUDE.md plan specified.
@@ -142,13 +142,13 @@ risk) and reintroduces the rate limiter the CLAUDE.md plan specified.
 
 ## Related Documents
 
-- [architecture.md](../foundation/architecture.md) — system flow + ADR-2.
-- [database.md](./database.md) — Supabase schema/storage.
-- [testing.md](./testing.md) — what to mock.
+- [architecture.md](../foundation/architecture.md) - system flow + ADR-2.
+- [database.md](./database.md) - Supabase schema/storage.
+- [testing.md](./testing.md) - what to mock.
 
 ## Open Questions
 
-- Move keys behind an edge function (recommended) — what shape should that
+- Move keys behind an edge function (recommended) - what shape should that
   thin proxy take (single `/api/convert` + rate limit)?
 - Pin Gemini/Groq model versions instead of aliases?
 - Enforce a SliceUI-side rate limit once a server exists?

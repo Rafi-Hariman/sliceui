@@ -27,7 +27,7 @@ quality (free=Gemini, Pro=Claude). This is a runbook, not code.
    # CORS allowlist (comma list; unset → "*" for dev) + image size cap (bytes):
    supabase secrets set ALLOWED_ORIGINS=https://your-app.com MAX_IMAGE_BYTES=10485760
    ```
-4. **Point the client at the proxy** — in `.env.local`:
+4. **Point the client at the proxy** - in `.env.local`:
    ```env
    VITE_CONVERT_PROXY_URL=https://<project-ref>.functions.supabase.co/convert
    ```
@@ -37,13 +37,13 @@ quality (free=Gemini, Pro=Claude). This is a runbook, not code.
 
 ## Behavior
 - Without `VITE_CONVERT_PROXY_URL`, the app falls back to client-side
-  Gemini/Groq (local dev) — keys still browser-exposed, so only use behind the
+  Gemini/Groq (local dev) - keys still browser-exposed, so only use behind the
   proxy in production.
 - Model defaults: Pro → `claude-sonnet-4-6` (~$0.03/conv, ~55% margin at $19);
   set `CLAUDE_MODEL=claude-opus-4-8` for a future premium tier.
 - Free tier: 5 conversions/day (server-enforced). Pro: credit balance, decremented per success.
 
-## Phase 1 (next) — billing
+## Phase 1 (next) - billing
 Stripe Checkout: Pro subscription ($19/mo, 300 credits/mo) + credit packs
 ($5 / 50 credits). Webhook sets `credits.plan='pro'` and tops up `balance`.
 

@@ -1,4 +1,4 @@
-# Phase P3 — Schema Integrity
+# Phase P3 - Schema Integrity
 
 ## Phase Goal
 

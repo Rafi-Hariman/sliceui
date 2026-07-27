@@ -1,73 +1,55 @@
-# Welcome to your Lovable project
+# SliceUI
 
-## Project info
+SliceUI turns a UI screenshot into a self-contained frontend component, in the
+framework your project already uses: React, Vue, Tailwind, Next.js, Bootstrap,
+Svelte, or plain HTML. Paste the result into an existing codebase. It returns
+one component, not a full app scaffold.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Stack
 
-## How can I edit this code?
+- Vite 5, React 18, TypeScript (strict)
+- Tailwind CSS, shadcn/ui (Radix primitives)
+- Supabase (auth, Postgres, storage, edge functions)
+- AI: Gemini (free tier) with a Groq fallback, Claude on the paid tier
 
-There are several ways of editing your application.
+## Local setup
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Requirements: Node 20+ and npm.
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+npm install
+npm run dev      # app on http://localhost:8080
 ```
 
-**Edit a file directly in GitHub**
+Copy `.env.local.example` to `.env.local` and fill in:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (Supabase project)
+- `VITE_GEMINI_API_KEY` (Gemini, for the client-side dev path)
+- `VITE_GROQ_API_KEY` (Groq, optional fallback)
+- `VITE_CONVERT_PROXY_URL` (the metered `/convert` edge function, for production mode)
 
-**Use GitHub Codespaces**
+## Scripts
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```sh
+npm run dev        # dev server
+npm run build      # production build (runs tsc)
+npm run test       # vitest
+npm run lint       # eslint
+```
 
-## What technologies are used for this project?
+## Backend (metered `/convert`)
 
-This project is built with:
+The Supabase edge function in `supabase/functions/convert` hides the AI keys,
+meters usage, and routes free tier to Gemini (with Groq fallback) and paid tier
+to Claude. Schema, RLS, and the deploy runbook live under `supabase/migrations`
+and `docs/project-docs/operations/deploy-metered-convert.md`.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Project docs
 
-## How can I deploy this project?
+Source of truth for design and scope is under `docs/project-docs/`, not the
+top-level `CLAUDE.md` (which is a stale Next.js spec kept for history).
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## Status
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Functional end to end locally against a local Supabase stack. Public deploy,
+Stripe billing, and the Chrome extension are not built yet.

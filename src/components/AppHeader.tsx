@@ -34,8 +34,8 @@ export function AppHeader({ title }: AppHeaderProps) {
   const initials = initialsOf(profile?.full_name)
 
   return (
-    <div className="flex items-center justify-between px-4 md:px-6 h-11 border-b border-border shrink-0">
-      <h1 className="text-[13px] font-medium">{title}</h1>
+    <div className="sticky top-0 z-30 flex items-center justify-between px-5 md:px-8 h-14 border-b border-border bg-background shrink-0">
+      <h1 className="text-[15px] font-semibold tracking-tight">{title}</h1>
       <div className="flex items-center gap-2">
         <UsageIndicator />
 
@@ -43,7 +43,7 @@ export function AppHeader({ title }: AppHeaderProps) {
           variant="ghost"
           size="icon"
           onClick={() => setTheme(current === "dark" ? "light" : "dark")}
-          className="h-8 w-8"
+          className="h-9 w-9"
           aria-label={`Switch to ${current === "dark" ? "light" : "dark"} mode`}
           aria-pressed={current === "dark"}
           title={`Switch to ${current === "dark" ? "light" : "dark"} mode`}
@@ -60,12 +60,12 @@ export function AppHeader({ title }: AppHeaderProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-full"
+              className="h-9 w-9 rounded-full"
               aria-label={
                 profile?.full_name ? `Account: ${profile.full_name}` : "Account"
               }
             >
-              <Avatar className="h-6 w-6">
+              <Avatar className="h-7 w-7">
                 <AvatarFallback className="bg-primary text-primary-foreground text-[10px] leading-none">
                   {initials}
                 </AvatarFallback>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
+import { AppHeader } from "@/components/AppHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,15 +9,24 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { toast } from "@/hooks/use-toast";
 import {
-  User, Building2, Users, Bell, Settings as SettingsIcon,
-  Mail, Trash2, Shield, Send, AlertTriangle, Loader2, Camera, Sun, Moon
+  User, Mail, Trash2, Shield, Send, AlertTriangle, Loader2, Camera, Settings as SettingsIcon,
 } from "lucide-react";
+
+// ─── shared form primitives ────────────────────────────────────────────────────
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="p-6">
+      <p className="text-[13px] font-medium text-muted-foreground mb-4">{title}</p>
+      {children}
+    </div>
+  );
+}
 
 // ─── Profile Tab ────────────────────────────────────────────────────────────────
 
@@ -91,49 +100,47 @@ function ProfileTab() {
 
   return (
     <div className="divide-y divide-border">
-      <div className="px-4 md:px-6 py-4">
-        <p className="text-[12px] text-muted-foreground font-medium mb-3">Profile Information</p>
-        <div className="flex items-center gap-3 mb-4">
+      <Section title="Profile information">
+        <div className="flex items-center gap-4 mb-6">
           <div className="relative group">
-            <Avatar className="h-10 w-10">
+            <Avatar className="h-14 w-14 ring-1 ring-border">
               <AvatarImage src={profile?.avatar_url || ""} className="object-contain" />
-              <AvatarFallback className="text-[12px]">{initials || "?"}</AvatarFallback>
+              <AvatarFallback className="text-[14px]">{initials || "?"}</AvatarFallback>
             </Avatar>
-            <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-              {uploadingAvatar ? <Loader2 className="h-3.5 w-3.5 animate-spin text-white" /> : <Camera className="h-3.5 w-3.5 text-white" />}
+            <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center rounded-full bg-black/55 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+              {uploadingAvatar ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : <Camera className="h-4 w-4 text-white" />}
             </label>
             <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} disabled={uploadingAvatar} />
           </div>
           <div>
-            <p className="text-[13px] font-medium">{fullName || "Your Name"}</p>
-            <p className="text-[12px] text-muted-foreground">{user?.email}</p>
+            <p className="text-[13.5px] font-medium">{fullName || "Your Name"}</p>
+            <p className="text-[12.5px] text-muted-foreground">{user?.email}</p>
           </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 max-w-lg">
-          <div className="space-y-1">
-            <Label className="text-[12px]">Full Name</Label>
-            <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" className="h-8 text-[13px]" />
+        <div className="grid gap-4 sm:grid-cols-2 max-w-xl">
+          <div className="space-y-1.5">
+            <Label className="text-[12.5px]">Full name</Label>
+            <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" className="h-9 text-[13.5px]" />
           </div>
-          <div className="space-y-1">
-            <Label className="text-[12px]">Job Title</Label>
-            <Input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="Software Engineer" className="h-8 text-[13px]" />
+          <div className="space-y-1.5">
+            <Label className="text-[12.5px]">Job title</Label>
+            <Input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="Software Engineer" className="h-9 text-[13.5px]" />
           </div>
         </div>
-        <Button onClick={handleSaveProfile} disabled={saving} size="sm" className="h-7 text-[12px] mt-3">
-          {saving && <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />} Save
+        <Button onClick={handleSaveProfile} disabled={saving} size="sm" className="h-9 text-[13px] mt-5">
+          {saving && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />} Save changes
         </Button>
-      </div>
+      </Section>
 
-      <div className="px-4 md:px-6 py-4">
-        <p className="text-[12px] text-muted-foreground font-medium mb-3">Change Password</p>
-        <div className="max-w-xs space-y-1">
-          <Label className="text-[12px]">New Password</Label>
-          <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="••••••••" className="h-8 text-[13px]" />
+      <Section title="Change password">
+        <div className="max-w-sm space-y-1.5">
+          <Label className="text-[12.5px]">New password</Label>
+          <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="••••••••" className="h-9 text-[13.5px]" />
         </div>
-        <Button onClick={handleChangePassword} disabled={changingPassword} variant="outline" size="sm" className="h-7 text-[12px] mt-3">
-          {changingPassword && <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />} Update Password
+        <Button onClick={handleChangePassword} disabled={changingPassword} variant="outline" size="sm" className="h-9 text-[13px] mt-5">
+          {changingPassword && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />} Update password
         </Button>
-      </div>
+      </Section>
     </div>
   );
 }
@@ -170,25 +177,24 @@ function CompanyTab() {
 
   const update = (key: string, value: string) => setForm(prev => ({ ...prev, [key]: value }));
 
-  if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>;
+  if (loading) return <div className="flex justify-center py-16"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
 
   return (
-    <div className="px-4 md:px-6 py-4">
-      <p className="text-[12px] text-muted-foreground font-medium mb-3">Company Information</p>
-      <div className="grid gap-3 sm:grid-cols-2 max-w-lg">
-        <div className="space-y-1"><Label className="text-[12px]">Company Name</Label><Input value={form.company_name} onChange={(e) => update("company_name", e.target.value)} placeholder="Acme Inc." className="h-8 text-[13px]" /></div>
-        <div className="space-y-1"><Label className="text-[12px]">Website</Label><Input value={form.company_website} onChange={(e) => update("company_website", e.target.value)} placeholder="https://acme.com" className="h-8 text-[13px]" /></div>
-        <div className="space-y-1"><Label className="text-[12px]">Industry</Label>
-          <Select value={form.industry} onValueChange={(v) => update("industry", v)}><SelectTrigger className="h-8 text-[13px]"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent>{["Technology","Healthcare","Finance","Education","Retail","Manufacturing","Other"].map(i => <SelectItem key={i} value={i.toLowerCase()}>{i}</SelectItem>)}</SelectContent></Select></div>
-        <div className="space-y-1"><Label className="text-[12px]">Company Size</Label>
-          <Select value={form.company_size} onValueChange={(v) => update("company_size", v)}><SelectTrigger className="h-8 text-[13px]"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent>{["1-10","11-50","51-200","201-500","501-1000","1000+"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select></div>
-        <div className="space-y-1 sm:col-span-2"><Label className="text-[12px]">Address</Label><Input value={form.address} onChange={(e) => update("address", e.target.value)} placeholder="123 Main St" className="h-8 text-[13px]" /></div>
-        <div className="space-y-1"><Label className="text-[12px]">Phone</Label><Input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="+1 (555) 000-0000" className="h-8 text-[13px]" /></div>
+    <Section title="Company information">
+      <div className="grid gap-4 sm:grid-cols-2 max-w-xl">
+        <div className="space-y-1.5"><Label className="text-[12.5px]">Company name</Label><Input value={form.company_name} onChange={(e) => update("company_name", e.target.value)} placeholder="Your company" className="h-9 text-[13.5px]" /></div>
+        <div className="space-y-1.5"><Label className="text-[12.5px]">Website</Label><Input value={form.company_website} onChange={(e) => update("company_website", e.target.value)} placeholder="https://example.com" className="h-9 text-[13.5px]" /></div>
+        <div className="space-y-1.5"><Label className="text-[12.5px]">Industry</Label>
+          <Select value={form.industry} onValueChange={(v) => update("industry", v)}><SelectTrigger className="h-9 text-[13.5px]"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent>{["Technology","Healthcare","Finance","Education","Retail","Manufacturing","Other"].map(i => <SelectItem key={i} value={i.toLowerCase()}>{i}</SelectItem>)}</SelectContent></Select></div>
+        <div className="space-y-1.5"><Label className="text-[12.5px]">Company size</Label>
+          <Select value={form.company_size} onValueChange={(v) => update("company_size", v)}><SelectTrigger className="h-9 text-[13.5px]"><SelectValue placeholder="Select" /></SelectTrigger><SelectContent>{["1-10","11-50","51-200","201-500","501-1000","1000+"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select></div>
+        <div className="space-y-1.5 sm:col-span-2"><Label className="text-[12.5px]">Address</Label><Input value={form.address} onChange={(e) => update("address", e.target.value)} placeholder="123 Main St" className="h-9 text-[13.5px]" /></div>
+        <div className="space-y-1.5"><Label className="text-[12.5px]">Phone</Label><Input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="+1 (555) 000-0000" className="h-9 text-[13.5px]" /></div>
       </div>
-      <Button onClick={handleSave} disabled={saving} size="sm" className="h-7 text-[12px] mt-3">
-        {saving && <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />} Save
+      <Button onClick={handleSave} disabled={saving} size="sm" className="h-9 text-[13px] mt-5">
+        {saving && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />} Save
       </Button>
-    </div>
+    </Section>
   );
 }
 
@@ -232,67 +238,64 @@ function TeamTab() {
     else { toast({ title: "Invitation revoked" }); fetchData(); }
   };
 
-  if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>;
+  if (loading) return <div className="flex justify-center py-16"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
 
   return (
     <div className="divide-y divide-border">
-      <div className="px-4 md:px-6 py-4">
-        <p className="text-[12px] text-muted-foreground font-medium mb-3">Invite Team Member</p>
-        <div className="flex gap-2 max-w-lg">
-          <Input placeholder="colleague@company.com" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} className="h-8 text-[13px] flex-1" />
+      <Section title="Invite team member">
+        <div className="flex gap-2 max-w-xl">
+          <Input placeholder="colleague@company.com" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} className="h-9 text-[13.5px] flex-1" />
           <Select value={inviteRole} onValueChange={setInviteRole}>
-            <SelectTrigger className="w-[100px] h-8 text-[12px]"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-[110px] h-9 text-[13px]"><SelectValue /></SelectTrigger>
             <SelectContent><SelectItem value="user">User</SelectItem><SelectItem value="moderator">Moderator</SelectItem><SelectItem value="admin">Admin</SelectItem></SelectContent>
           </Select>
-          <Button onClick={handleInvite} disabled={sending || !inviteEmail} size="sm" className="h-8 text-[12px] gap-1">
-            {sending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />} Invite
+          <Button onClick={handleInvite} disabled={sending || !inviteEmail} size="sm" className="h-9 text-[13px] gap-1.5">
+            {sending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />} Invite
           </Button>
         </div>
-      </div>
+      </Section>
 
       {invitations.length > 0 && (
-        <div className="px-4 md:px-6 py-4">
-          <p className="text-[12px] text-muted-foreground font-medium mb-3">Pending Invitations</p>
-          <div className="space-y-1">
+        <Section title="Pending invitations">
+          <div className="space-y-1.5 max-w-xl">
             {invitations.map((inv) => (
-              <div key={inv.id} className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-muted/30">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-[13px]">{inv.email}</span>
-                  <Badge variant="outline" className="text-[10px] h-4 px-1">{inv.role}</Badge>
+              <div key={inv.id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/30">
+                <div className="flex items-center gap-2.5">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-[13.5px]">{inv.email}</span>
+                  <Badge variant="outline" className="text-[10px] h-5 px-1.5">{inv.role}</Badge>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => handleRevoke(inv.id)} className="h-6 w-6 p-0">
-                  <Trash2 className="h-3 w-3" />
+                <Button variant="ghost" size="sm" onClick={() => handleRevoke(inv.id)} className="h-8 w-8 p-0" aria-label="Revoke invitation">
+                  <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
             ))}
           </div>
-        </div>
+        </Section>
       )}
 
-      <div className="px-4 md:px-6 py-4">
-        <p className="text-[12px] text-muted-foreground font-medium mb-3">Team Members · {members.length}</p>
-        <div className="space-y-1">
+      <Section title={`Team members · ${members.length}`}>
+        <div className="space-y-1.5 max-w-xl">
           {members.map((m) => (
-            <div key={m.user_id} className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-muted/30">
-              <div className="flex items-center gap-2">
-                <Avatar className="h-5 w-5">
+            <div key={m.user_id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/30">
+              <div className="flex items-center gap-2.5">
+                <Avatar className="h-7 w-7">
                   <AvatarImage src={m.avatar_url || ""} />
                   <AvatarFallback className="text-2xs">{(m.full_name || "?").split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}</AvatarFallback>
                 </Avatar>
-                <span className="text-[13px] font-medium">{m.full_name || "Unnamed"}</span>
-                <span className="text-[12px] text-muted-foreground">{m.job_title || ""}</span>
+                <span className="text-[13.5px] font-medium">{m.full_name || "Unnamed"}</span>
+                <span className="text-[12.5px] text-muted-foreground">{m.job_title || ""}</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <Badge variant="outline" className="text-[10px] h-4 px-1 gap-0.5">
+                <Badge variant="outline" className="text-[10px] h-5 px-1.5 gap-0.5">
                   <Shield className="h-2.5 w-2.5" />{m.role}
                 </Badge>
-                {m.user_id === user?.id && <Badge variant="secondary" className="text-[10px] h-4 px-1">You</Badge>}
+                {m.user_id === user?.id && <Badge variant="secondary" className="text-[10px] h-5 px-1.5">You</Badge>}
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </Section>
     </div>
   );
 }
@@ -338,58 +341,61 @@ function EmailTab() {
     { key: "daily_digest" as const, label: "Daily Digest" },
   ];
 
-  if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>;
+  if (loading) return <div className="flex justify-center py-16"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
 
   return (
     <div className="divide-y divide-border">
-      <div className="px-4 md:px-6 py-3 flex items-start gap-2 bg-muted/30">
-        <AlertTriangle className="h-3.5 w-3.5 text-muted-foreground mt-0.5 shrink-0" />
-        <p className="text-[12px] text-muted-foreground">Email delivery not yet connected. Preferences will take effect once an email provider is configured.</p>
+      <div className="p-6 pb-4 flex items-start gap-2.5 bg-muted/20">
+        <AlertTriangle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+        <p className="text-[12.5px] text-muted-foreground">Email delivery not yet connected. Preferences will take effect once an email provider is configured.</p>
       </div>
-      <div className="px-4 md:px-6 py-4">
-        <p className="text-[12px] text-muted-foreground font-medium mb-3">Email Notifications</p>
-        <div className="space-y-1">
+      <Section title="Email notifications">
+        <div className="space-y-1.5 max-w-xl">
           {items.map(item => (
-            <div key={item.key} className="flex items-center justify-between py-2 px-2 rounded hover:bg-muted/30">
-              <span className="text-[13px]">{item.label}</span>
-              <Switch checked={prefs[item.key]} onCheckedChange={() => togglePref(item.key)} className="scale-90" />
+            <div key={item.key} className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-muted/30">
+              <span className="text-[13.5px]">{item.label}</span>
+              <Switch checked={prefs[item.key]} onCheckedChange={() => togglePref(item.key)} />
             </div>
           ))}
         </div>
-        <Button onClick={handleSave} disabled={saving} size="sm" className="h-7 text-[12px] mt-3">
-          {saving && <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />} Save Preferences
+        <Button onClick={handleSave} disabled={saving} size="sm" className="h-9 text-[13px] mt-5">
+          {saving && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />} Save preferences
         </Button>
-      </div>
+      </Section>
     </div>
   );
 }
 
 // ─── General Tab ────────────────────────────────────────────────────────────────
 
-function GeneralTab({ theme, onThemeChange }: { theme: string; onThemeChange: (value: string) => void }) {
+function GeneralTab() {
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const current = (theme === "system" ? resolvedTheme : theme) ?? "dark";
+
   return (
     <div className="divide-y divide-border">
-      <div className="px-4 md:px-6 py-4">
-        <p className="text-[12px] text-muted-foreground font-medium mb-3">Appearance</p>
-        <div className="flex items-center justify-between max-w-lg">
-          <span className="text-[13px]">Theme</span>
-          <Select value={theme} onValueChange={onThemeChange}>
-            <SelectTrigger className="w-[100px] h-7 text-[12px]"><SelectValue /></SelectTrigger>
-            <SelectContent><SelectItem value="light">Light</SelectItem><SelectItem value="dark">Dark</SelectItem></SelectContent>
+      <Section title="Appearance">
+        <div className="flex items-center justify-between max-w-xl">
+          <div>
+            <p className="text-[13.5px] font-medium">Theme</p>
+            <p className="text-[12.5px] text-muted-foreground">Switch between light and dark, or follow your system.</p>
+          </div>
+          <Select value={current} onValueChange={setTheme}>
+            <SelectTrigger className="w-[120px] h-9 text-[13px]"><SelectValue /></SelectTrigger>
+            <SelectContent><SelectItem value="light">Light</SelectItem><SelectItem value="dark">Dark</SelectItem><SelectItem value="system">System</SelectItem></SelectContent>
           </Select>
         </div>
-      </div>
+      </Section>
 
-      <div className="px-4 md:px-6 py-4">
-        <p className="text-[12px] text-destructive font-medium mb-3">Danger Zone</p>
-        <div className="flex items-center justify-between max-w-lg border border-destructive/20 rounded-md p-3">
+      <Section title="Danger zone">
+        <div className="flex items-center justify-between max-w-xl border border-destructive/25 rounded-lg p-4">
           <div>
-            <p className="text-[13px] font-medium">Delete Account</p>
-            <p className="text-[12px] text-muted-foreground">Permanently delete your account and all data.</p>
+            <p className="text-[13.5px] font-medium">Delete account</p>
+            <p className="text-[12.5px] text-muted-foreground">Permanently delete your account and all data.</p>
           </div>
-          <Button variant="destructive" size="sm" disabled className="h-7 text-[12px]">Coming Soon</Button>
+          <Button variant="destructive" size="sm" disabled className="h-9 text-[13px]">Coming soon</Button>
         </div>
-      </div>
+      </Section>
     </div>
   );
 }
@@ -397,81 +403,20 @@ function GeneralTab({ theme, onThemeChange }: { theme: string; onThemeChange: (v
 // ─── Main Settings Page ─────────────────────────────────────────────────────────
 
 export default function Settings() {
-  const { profile, user } = useAuth()
-  const [theme, setThemeState] = useState<string>(() => {
-    if (typeof window !== "undefined") return document.documentElement.classList.contains("dark") ? "dark" : "light";
-    return "dark";
-  });
-
-  const initials = profile?.full_name
-    ? profile.full_name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
-    : "U";
-
-  const toggleTheme = (value: string) => {
-    setThemeState(value);
-    if (value === "dark") { document.documentElement.classList.add("dark"); localStorage.setItem("theme", "dark"); }
-    else { document.documentElement.classList.remove("dark"); localStorage.setItem("theme", "light"); }
-  };
-
   return (
     <AppLayout>
       <div className="flex flex-col h-full">
-        <div className="px-4 md:px-6 h-11 border-b border-border flex items-center justify-between shrink-0">
-          <h1 className="text-[13px] font-medium">Settings</h1>
-          <div className="flex items-center gap-2">
-            {/* Theme Toggle - Single Icon */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => toggleTheme(theme === "dark" ? "light" : "dark")}
-              className="h-8 w-8"
-              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-              aria-pressed={theme === "dark"}
-              title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-            >
-              {theme === "dark" ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )}
-            </Button>
-
-            {/* Avatar with Popover */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" aria-label={profile?.full_name ? `Account: ${profile.full_name}` : "Account"}>
-                  <Avatar className="h-6 w-6">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-[10px] leading-none">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-48 p-0" align="end">
-                <div className="p-3 border-b border-border">
-                  <p className="text-[13px] font-medium">{profile?.full_name || "User"}</p>
-                  <p className="text-[11px] text-muted-foreground truncate">{user?.email || ""}</p>
-                </div>
-                <div className="p-1">
-                  <Button variant="ghost" size="sm" disabled className="w-full justify-start h-7 text-[12px] gap-1.5">
-                    <SettingsIcon className="h-3 w-3" />
-                    Settings
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
+        <AppHeader title="Settings" />
 
         <div className="flex-1 overflow-auto">
           <Tabs defaultValue="profile" className="flex flex-col md:flex-row h-full">
-            <div className="md:w-44 shrink-0 border-b md:border-b-0 md:border-r border-border">
-              <TabsList className="flex md:flex-col items-stretch w-full bg-transparent h-auto p-1.5 gap-px">
-                <TabsTrigger value="profile" className="justify-start gap-1.5 text-[12px] h-7 px-2 data-[state=active]:bg-muted w-full">
-                  <User className="h-3.5 w-3.5" /> Profile
+            <div className="md:w-56 shrink-0 border-b md:border-b-0 md:border-r border-border p-3">
+              <TabsList className="flex md:flex-col items-stretch w-full bg-transparent h-auto gap-1">
+                <TabsTrigger value="profile" className="justify-start gap-2.5 text-[13px] h-9 px-3 font-medium data-[state=active]:bg-sidebar-accent data-[state=active]:text-sidebar-accent-foreground w-full">
+                  <User className="h-4 w-4" /> Profile
                 </TabsTrigger>
-                <TabsTrigger value="general" className="justify-start gap-1.5 text-[12px] h-7 px-2 data-[state=active]:bg-muted w-full">
-                  <SettingsIcon className="h-3.5 w-3.5" /> General
+                <TabsTrigger value="general" className="justify-start gap-2.5 text-[13px] h-9 px-3 font-medium data-[state=active]:bg-sidebar-accent data-[state=active]:text-sidebar-accent-foreground w-full">
+                  <SettingsIcon className="h-4 w-4" /> General
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -481,7 +426,7 @@ export default function Settings() {
               <TabsContent value="company" className="m-0"><CompanyTab /></TabsContent>
               <TabsContent value="team" className="m-0"><TeamTab /></TabsContent>
               <TabsContent value="email" className="m-0"><EmailTab /></TabsContent>
-              <TabsContent value="general" className="m-0"><GeneralTab theme={theme} onThemeChange={toggleTheme} /></TabsContent>
+              <TabsContent value="general" className="m-0"><GeneralTab /></TabsContent>
             </div>
           </Tabs>
         </div>

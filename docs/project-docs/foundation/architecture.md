@@ -1,10 +1,10 @@
-# Architecture — SliceUI
+# Architecture - SliceUI
 
 ## 1. Description
 
 SliceUI is a client-side-heavy **Vite + React 18 SPA**. The browser reads the
 image, calls vision LLMs directly (Gemini primary, Groq fallback), renders the
-returned code, and — when the user is signed in — persists the conversion to
+returned code, and - when the user is signed in - persists the conversion to
 Supabase. There is no SliceUI-owned server.
 
 ## 2. Important
@@ -12,7 +12,7 @@ Supabase. There is no SliceUI-owned server.
 - This document describes the **implemented architecture** (Inferred from
   codebase). It intentionally diverges from `CLAUDE.md`, which sketches a
   Next.js App Router app with a `/api/convert` server route, `sharp`
-  normalization, and IP rate limiting — **none of which exist in the code**.
+  normalization, and IP rate limiting - **none of which exist in the code**.
   That sketch is preserved as a future option in [Architecture Decision
   Records](#architecture-decision-records) and `status.md`.
 - All AI calls happen in the browser (`dangerouslyAllowBrowser: true` for Groq;
@@ -141,19 +141,19 @@ requirements (see `prd.md`) or deploy pipeline (see `operations/ci-cd.md`).
 
 ## Architecture Decision Records
 
-- **ADR-1 — Vite SPA (not Next.js).** *Status: implemented.* The repo was
+- **ADR-1 - Vite SPA (not Next.js).** *Status: implemented.* The repo was
   scaffolded via Lovable, which emits a Vite/React SPA. The original build spec
   ([`reference/prompt.md`](../reference/prompt.md)) and `CLAUDE.md` describe a
   Next.js 14 App Router design that was **never built**. *Consequence:* no
   server route, no server-side rate limiting or normalization.
-- **ADR-2 — Client-side AI calls.** *Status: implemented.* Gemini/Groq are
+- **ADR-2 - Client-side AI calls.** *Status: implemented.* Gemini/Groq are
   called from the browser to avoid a backend. *Consequence:* API keys are
   exposed to users; free-tier abuse is bounded only by provider quotas, not by
   a SliceUI rate limiter. Revisit before any public launch.
-- **ADR-3 — Single multimodal call.** *Status: implemented.* One request does
+- **ADR-3 - Single multimodal call.** *Status: implemented.* One request does
   vision + codegen, with automatic Groq fallback on 429/quota. No two-stage
   OCR→codegen pipeline.
-- **ADR-4 — Guest mode (local dev).** *Status: implemented, guarded by comment.*
+- **ADR-4 - Guest mode (local dev).** *Status: implemented, guarded by comment.*
   The login check in `useConvert` is commented out so generation works without
   auth; persistence is conditional on `user`. Re-enable before production.
 
@@ -165,10 +165,10 @@ requirements (see `prd.md`) or deploy pipeline (see `operations/ci-cd.md`).
 
 ## Related Documents
 
-- [prd.md](./prd.md) — what the architecture delivers.
-- [api-contract.md](../development/api-contract.md) — provider + Supabase APIs.
-- [database.md](../development/database.md) — schema and storage.
-- [status.md](./status.md) — implemented vs. planned (incl. CLAUDE.md delta).
+- [prd.md](./prd.md) - what the architecture delivers.
+- [api-contract.md](../development/api-contract.md) - provider + Supabase APIs.
+- [database.md](../development/database.md) - schema and storage.
+- [status.md](./status.md) - implemented vs. planned (incl. CLAUDE.md delta).
 
 ## Open Questions
 

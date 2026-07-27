@@ -1,4 +1,4 @@
-# Guideline — Data Access & Error Mapping
+# Guideline - Data Access & Error Mapping
 
 ## 1. Summary
 
@@ -15,30 +15,30 @@ or schema design (see [database.md](../development/database.md)).
 
 ## 3. Rules
 
-- **R1 — Services wrap Supabase.** All PostgREST/Storage/Auth access goes
+- **R1 - Services wrap Supabase.** All PostgREST/Storage/Auth access goes
   through a `*Service.ts` function (e.g. `createConversion`,
   `uploadSliceImage`). Components/hooks must not call `supabase.from(...)`
   directly.
-- **R2 — One operation per function.** Each service function does one thing
+- **R2 - One operation per function.** Each service function does one thing
   (create / list / get / delete / upload) and returns typed data or throws.
-- **R3 — Error envelope via thrown `Error`.** On `{ error }`, throw
+- **R3 - Error envelope via thrown `Error`.** On `{ error }`, throw
   `new Error("Failed to <action>: ${error.message}")`. Keep the
-  `"Failed to <verb> ..."` prefix consistent — hooks rely on it.
-- **R4 — User-owned rows are filtered by `user_id`.** List/get queries must
+  `"Failed to <verb> ..."` prefix consistent - hooks rely on it.
+- **R4 - User-owned rows are filtered by `user_id`.** List/get queries must
   scope by the authenticated user's id; rely on RLS as the backstop, not the
   only control.
-- **R5 — Translate errors at the hook layer.** Map provider/service messages to
+- **R5 - Translate errors at the hook layer.** Map provider/service messages to
   user-safe strings in hooks (e.g. `useConvert`): `quota`/`limit` → "Daily
   limit reached…", `API key` → "API configuration error…". Never surface raw
   internals to end users.
-- **R6 — No `as any` for typed payloads.** Type Supabase payloads with the
-  generated `Database` types. (Known violation: `options: options as any` —
+- **R6 - No `as any` for typed payloads.** Type Supabase payloads with the
+  generated `Database` types. (Known violation: `options: options as any` -
   fix blocked on regenerating `types.ts`; see P3.)
-- **R7 — Storage paths are user-scoped.** Upload under `{userId}/...` and clean
+- **R7 - Storage paths are user-scoped.** Upload under `{userId}/...` and clean
   up with `deleteSliceImage` when deleting the parent conversion.
-- **R8 — Auth gating is explicit.** Persistence must be conditional on a
+- **R8 - Auth gating is explicit.** Persistence must be conditional on a
   present `user`. Guest paths must not write to Supabase. (Today the login
-  guard is disabled — see P1.)
+  guard is disabled - see P1.)
 
 ## 4. Preferred Patterns
 
@@ -71,9 +71,9 @@ try { /* ... */ } catch (err: any) {
 
 ## 6. Related Docs
 
-- [database.md](../development/database.md) — schema, RLS, storage bucket.
-- [api-contract.md](../development/api-contract.md) — Supabase client usage.
-- [code-style.md](./code-style.md) — `*Service.ts` naming.
+- [database.md](../development/database.md) - schema, RLS, storage bucket.
+- [api-contract.md](../development/api-contract.md) - Supabase client usage.
+- [code-style.md](./code-style.md) - `*Service.ts` naming.
 
 ## 7. Open Questions
 

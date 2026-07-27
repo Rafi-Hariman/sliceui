@@ -230,7 +230,7 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
         </div>
       `
     } else if (fw === "native-html") {
-      // Generated native-html includes its own <style> block — render as-is.
+      // Generated native-html includes its own <style> block - render as-is.
       bodyContent = code
     } else {
       // Unknown framework - show message

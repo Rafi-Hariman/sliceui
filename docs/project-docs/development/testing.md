@@ -1,4 +1,4 @@
-# Testing — SliceUI
+# Testing - SliceUI
 
 ## 1. Description
 
@@ -16,7 +16,7 @@ and how the plan maps onto the real codebase.
   runs today.
 - **No CI** yet; gates run only locally (see [operations/ci-cd.md](../operations/ci-cd.md)).
 - **E2E framework decision (resolved):** standardize on **Playwright** (already
-  installed). The QA plan's Cypress suite is superseded — do not adopt Cypress.
+  installed). The QA plan's Cypress suite is superseded - do not adopt Cypress.
 - **`data-testid` hooks do not exist yet.** The QA plan's selectors
   (`upload-zone`, `framework-{name}`, `generate-button`, `code-output`,
   `copy-button`, `preview-tab`, `preview-iframe`, `loading-state`,
@@ -24,7 +24,7 @@ and how the plan maps onto the real codebase.
   components before E2E can run.
 - **Auth-gate decision (resolved):** login-required generation (QA TC-007 /
   AC-004) is the **target**. The current code has the guard disabled (guest
-  mode) — treat those auth-gated test cases as blocked until Phase P1
+  mode) - treat those auth-gated test cases as blocked until Phase P1
   re-enables auth.
 
 ## 3. Table of Contents
@@ -62,12 +62,12 @@ the SliceUI SPA. Source plan:
 
 - Not testing third-party model output quality (non-deterministic).
 - Not full visual regression (no tooling yet).
-- Not load-testing a server (none exists; perf scenarios are aspirational —
+- Not load-testing a server (none exists; perf scenarios are aspirational -
   see [Manual Checks & Fallbacks](#manual-checks--fallbacks)).
 
 ## Verification Policy & Objectives
 
-- **Type safety first:** `npm run build` runs `tsc` — keep it green; strongest
+- **Type safety first:** `npm run build` runs `tsc` - keep it green; strongest
   current gate.
 - **Lint next:** `npm run lint` (ESLint flat config).
 - **Unit/component** for pure logic and presentational components (Vitest).
@@ -94,7 +94,7 @@ Functional cases (full detail in
 | TC-014/015 | Empty image / no framework guard | P1 | High | ❌ none |
 | TC-016 | Gemini 429 → Groq fallback | P1 | Med | ❌ none |
 | TC-017 | Auth failure | P1 | Med | ❌ none |
-| TC-018/019/020 | Timeout / corrupted / rapid uploads | P2 | Low–Med | ❌ none |
+| TC-018/019/020 | Timeout / corrupted / rapid uploads | P2 | Low-Med | ❌ none |
 
 Acceptance criteria (Gherkin AC-001..008) are in the reference QA doc §2. Key
 ones to wire into tests: AC-001 (upload→generate→copy), AC-002/003 (file
@@ -124,7 +124,7 @@ Unit/component coverage targets (not in QA doc, inferred from code):
   `data-testid` attributes to components first.
 - **Cross-browser/responsive:** Chrome, Firefox, Safari, Edge (latest 2);
   sizes 320 / 768 / 1024 / 1440 px (QA doc §3).
-- **Envs:** tests must not hit real AI providers — stub Gemini/Groq responses
+- **Envs:** tests must not hit real AI providers - stub Gemini/Groq responses
   (the QA doc's `cy.intercept` approach maps to Playwright `page.route`).
 
 ## Commands & CI Gates
@@ -145,7 +145,7 @@ Unit/component coverage targets (not in QA doc, inferred from code):
 - Co-locate Vitest tests: `src/**/*.{test,spec}.{ts,tsx}` (matches `include`).
 - Playwright specs: `tests/e2e/*.spec.ts` (TBD location).
 - **`data-testid` convention (to adopt):** stable kebab-case ids matching the
-  QA selectors — `upload-zone`, `framework-<id>`, `generate-button`,
+  QA selectors - `upload-zone`, `framework-<id>`, `generate-button`,
   `code-output`, `copy-button`, `preview-tab`, `preview-iframe`,
   `loading-state`, `error-message`, `image-preview`.
 - Use `describe`/`it` (Vitest globals enabled).
@@ -176,10 +176,10 @@ token storage, IDOR) overlaps with `foundation/status.md` risks.
 
 ## Related Documents
 
-- [reference/QA_TEST_DOCUMENT.md](../reference/QA_TEST_DOCUMENT.md) — full QA plan (source).
-- [workflow.md](../foundation/workflow.md) — local loop + PR checks.
-- [ci-cd.md](../operations/ci-cd.md) — where gates should run.
-- [api-contract.md](./api-contract.md) — what to mock + planned `/api/convert`.
+- [reference/QA_TEST_DOCUMENT.md](../reference/QA_TEST_DOCUMENT.md) - full QA plan (source).
+- [workflow.md](../foundation/workflow.md) - local loop + PR checks.
+- [ci-cd.md](../operations/ci-cd.md) - where gates should run.
+- [api-contract.md](./api-contract.md) - what to mock + planned `/api/convert`.
 
 ## Open Questions
 

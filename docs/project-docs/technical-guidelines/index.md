@@ -1,9 +1,9 @@
-# Guidelines Registry — SliceUI
+# Guidelines Registry - SliceUI
 
 ## 1. Description
 
 Authoritative catalog of SliceUI's durable, cross-cutting technical
-guidelines — the codebase-level rules developers and AI agents must follow
+guidelines - the codebase-level rules developers and AI agents must follow
 during implementation. Each entry below links to a guideline file with real,
 inferred-from-code rules (never placeholders).
 
@@ -64,7 +64,7 @@ Not general project setup, business logic, or operations (see the master
   `technical-guidelines/`.
 - Add a row (and create the file with real rules) when a new durable
   cross-cutting pattern is identified.
-- Owners are `TBD` until assigned — assign before relying on a guideline.
+- Owners are `TBD` until assigned - assign before relying on a guideline.
 
 ## 9. Guideline Stable Headings
 
@@ -80,9 +80,9 @@ any change to the affected domains.
 ## 11. Related Documents
 
 - [Master Project Registry](../index.md)
-- [architecture.md](../foundation/architecture.md) — ADRs these rules support.
+- [architecture.md](../foundation/architecture.md) - ADRs these rules support.
 - [api-contract.md](../development/api-contract.md) and
-  [database.md](../development/database.md) — the contracts these rules operate on.
+  [database.md](../development/database.md) - the contracts these rules operate on.
 
 ## 12. Open Questions
 

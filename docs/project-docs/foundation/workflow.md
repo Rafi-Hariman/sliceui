@@ -1,4 +1,4 @@
-# Workflow — SliceUI
+# Workflow - SliceUI
 
 ## 1. Description
 
@@ -13,7 +13,7 @@ prompting, and local IDE + git.
   editor before relying on it.
 - `bun.lock`, `bun.lockb`, and `package-lock.json` all exist. Pick **one**
   package manager and delete the stale lockfiles to avoid drift (Inferred from
-  codebase — current de facto choice appears to be npm).
+  codebase - current de facto choice appears to be npm).
 
 ## 3. Table of Contents
 
@@ -66,7 +66,7 @@ npm run build          # tsc + vite build (type-check + bundle)
 Other scripts: `npm run build:dev`, `npm run preview`, `npm run test:watch`.
 
 > Dev-only plugin: `lovable-tagger` (`componentTagger`) is enabled in
-> `vite.config.ts` during development — it injects Lovable component tagging.
+> `vite.config.ts` during development - it injects Lovable component tagging.
 > Harmless for local dev; ensure it is excluded from production builds (it is
 > gated on `mode === "development"`).
 
@@ -85,7 +85,7 @@ Other scripts: `npm run build:dev`, `npm run preview`, `npm run test:watch`.
   screenshot/recording for UI changes.
 - Required reviewer checks:
   - `npm run lint`, `npm run test`, `npm run build` pass locally.
-  - No secrets/keys committed (watch `.env*` — they are gitignored via
+  - No secrets/keys committed (watch `.env*` - they are gitignored via
     `*.local`, but `CLAUDE.md` currently contains live keys; do not add more).
   - Generated Supabase types regenerated if schema changed (see
     `development/database.md`).
@@ -107,10 +107,10 @@ Other scripts: `npm run build:dev`, `npm run preview`, `npm run test:watch`.
 
 ## Related Documents
 
-- [getting-started.md](../getting-started.md) — environment setup.
-- [testing.md](../development/testing.md) — verification commands and policy.
-- [ci-cd.md](../operations/ci-cd.md) — build/deploy pipeline (to be added).
-- [status.md](./status.md) — current branch/commit state.
+- [getting-started.md](../getting-started.md) - environment setup.
+- [testing.md](../development/testing.md) - verification commands and policy.
+- [ci-cd.md](../operations/ci-cd.md) - build/deploy pipeline (to be added).
+- [status.md](./status.md) - current branch/commit state.
 
 ## Open Questions
 

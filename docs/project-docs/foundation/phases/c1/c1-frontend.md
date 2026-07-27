@@ -1,4 +1,4 @@
-# C1 — Frontend execution brief
+# C1 - Frontend execution brief
 
 > **Role:** Frontend engineer (sub-agent). **Master plan:**
 > [`../phase-C1-functional-production.md`](../phase-C1-functional-production.md).
@@ -8,7 +8,7 @@
 ## Goal
 
 Ship the authenticated app shell, a dedicated rich History page, entitlement
-visibility, and the regenerate flow — at production standard, reusing existing
+visibility, and the regenerate flow - at production standard, reusing existing
 services. Do **not** duplicate logic that already exists.
 
 ## Reuse first (do not re-implement)
@@ -33,12 +33,12 @@ services. Do **not** duplicate logic that already exists.
      `[ Dashboard /dashboard, Scissors /slice, History /history, Settings /settings ]`
      (import `History` from `lucide-react`). Dashboard remains the landing page.
 
-2. **Shared conversions hook** — add `src/hooks/useConversions.ts` (react-query):
+2. **Shared conversions hook** - add `src/hooks/useConversions.ts` (react-query):
    - key `["conversions"]`; calls `getConversions(user.id)`; `useQuery`.
    - expose `useInvalidateConversions()` so `useConvert` and History's
      delete/regenerate can refetch one shared cache (Dashboard + History).
 
-3. **History page** — `src/pages/History.tsx` (extract the table currently inside
+3. **History page** - `src/pages/History.tsx` (extract the table currently inside
    `src/pages/Dashboard.tsx` and enrich):
    - Wrap in `AppLayout`; copy the page header pattern (title + theme toggle +
      avatar popover + `UsageIndicator`).
@@ -46,7 +46,7 @@ services. Do **not** duplicate logic that already exists.
      `FRAMEWORKS`), date-range `<Select>` (7d / 30d / All), and an Export-all
      button. Each control needs a `data-testid` + `aria-label`.
    - **Table columns:** thumbnail · name (links to `/slice?conversion=<id>`) ·
-     framework badge · options badges (R/S/D/A — copy the Dashboard pattern) ·
+     framework badge · options badges (R/S/D/A - copy the Dashboard pattern) ·
      created (`formatDistanceToNow`) · status badge · **actions menu**:
      Open · Regenerate (`/slice?conversion=<id>&rerun=1`) · Copy code · Download
      · Export (`.json`) · Delete.
@@ -60,7 +60,7 @@ services. Do **not** duplicate logic that already exists.
      `history-row-<id>`, `history-regenerate-<id>`, `history-delete-<id>`.
    - Responsive: table on `md+`, cards on mobile.
 
-4. **Dashboard refactor** — `src/pages/Dashboard.tsx`:
+4. **Dashboard refactor** - `src/pages/Dashboard.tsx`:
    - Keep stat cards (Total / This month / Frameworks / Success rate) + the bar +
      pie charts (recharts).
    - Replace the full table + search with a **"Recent activity"** panel: top 5
@@ -69,19 +69,19 @@ services. Do **not** duplicate logic that already exists.
      "View all →" `<Link to="/history">`.
    - Add the `UsageIndicator` to the header.
 
-5. **Entitlement** — three small files, reading existing tables (no new RPC):
+5. **Entitlement** - three small files, reading existing tables (no new RPC):
    - `src/lib/usageService.ts`:
      - `getCredits()` → `supabase.from('credits').select('*').maybeSingle()`.
      - `getTodayUsageCount()` →
        `supabase.from('usage_log').select('id', { count:'exact', head:true }).eq('status','success').gte('created_at', new Date().toISOString().slice(0,10))`.
-   - `src/hooks/useEntitlement.ts` — react-query hook returning
+   - `src/hooks/useEntitlement.ts` - react-query hook returning
      `{ plan, balance, usedToday, freeLimit: 5, remainingToday }`.
-   - `src/components/UsageIndicator.tsx` — compact chip (see `c1-ui-ux.md` for
+   - `src/components/UsageIndicator.tsx` - compact chip (see `c1-ui-ux.md` for
      states/colors). Free: `used/5 today` (amber ≥4, red at 5). Pro: `N credits`.
    - Invalidate `["entitlement"]` from `useConvert` after each generate so the
      chip increments immediately.
 
-6. **Regenerate** — extend the existing deep-link in `src/pages/Slice.tsx`:
+6. **Regenerate** - extend the existing deep-link in `src/pages/Slice.tsx`:
    - The page already loads `/slice?conversion=<id>` via `getConversionById`.
    - Add `rerun` handling: when `params.get('rerun') === '1'` and the conversion
      loads, `fetch(loaded.original_image_url)` → `blob()` →

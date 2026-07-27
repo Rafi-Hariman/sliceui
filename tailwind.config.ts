@@ -73,9 +73,15 @@ export default {
       },
       fontFamily: {
         sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       fontSize: {
         "2xs": ["0.6875rem", { lineHeight: "1rem" }],
+      },
+      boxShadow: {
+        "elev-1": "0 1px 2px 0 rgb(0 0 0 / 0.18)",
+        "elev-2": "0 4px 12px -4px rgb(0 0 0 / 0.25)",
+        "elev-3": "0 12px 32px -12px rgb(0 0 0 / 0.35)",
       },
       borderRadius: {
         lg: "var(--radius)",

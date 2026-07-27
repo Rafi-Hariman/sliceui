@@ -1,4 +1,4 @@
-# Changelog — SliceUI
+# Changelog - SliceUI
 
 All notable changes to SliceUI are recorded here.
 
@@ -9,15 +9,15 @@ here on. Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/
 ## [Unreleased]
 
 ### Added
-- Initial SDD documentation set under `docs/project-docs/` (Tier 2 — Standard):
-  foundation, development, operations docs, a phase registry (P1–P4), technical
+- Initial SDD documentation set under `docs/project-docs/` (Tier 2 - Standard):
+  foundation, development, operations docs, a phase registry (P1-P4), technical
   guidelines (ai-providers, data-access, code-style), and this changelog.
 - Folded the full QA plan (20 test cases, 8 Gherkin ACs, cross-browser /
   security / performance checklists) into `development/testing.md` as the
   target verification matrix.
 - Documented the intended `POST /api/convert` contract (planned, not
   implemented) in `development/api-contract.md`.
-- **Cycle C1 plan** — `foundation/phases/phase-C1-functional-production.md`
+- **Cycle C1 plan** - `foundation/phases/phase-C1-functional-production.md`
   (master) + execution briefs `c1/c1-backend.md`, `c1/c1-frontend.md`,
   `c1/c1-ui-ux.md`, `c1/c1-qa.md`. C1 brings SliceUI to local functional
   production: stands the backend up live (migrations + edge function + secrets),
@@ -58,8 +58,8 @@ here on. Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/
 
 ---
 
-<!-- Release template — uncomment when you cut a version + git tag.
-## [0.1.0] — YYYY-MM-DD
+<!-- Release template - uncomment when you cut a version + git tag.
+## [0.1.0] - YYYY-MM-DD
 ### Added
 ### Changed
 ### Fixed

@@ -23,7 +23,7 @@ export function buildPrompt(framework: Framework, options: ConversionOptions): s
 CRITICAL OUTPUT RULES:
 1. Output ONLY the component code. No explanation, no markdown fences.
    First character of your response must be the first character of the code.
-2. Self-contained component — not a full app. No html/body/main entry points.
+2. Self-contained component - not a full app. No html/body/main entry points.
 3. Use the exact text visible in the image as placeholder content.
 4. For images in the UI: use a gray div with a descriptive alt text.
 5. For icons: use a comment /* icon: {description} */ as placeholder.

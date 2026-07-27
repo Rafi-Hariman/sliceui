@@ -1,4 +1,4 @@
-# Phase P4 — Polish & Framework Parity
+# Phase P4 - Polish & Framework Parity
 
 ## Phase Goal
 

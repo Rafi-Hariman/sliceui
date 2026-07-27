@@ -235,7 +235,7 @@ export type Database = {
         }
         Relationships: []
       }
-      // NOTE: manually added — `conversions` exists in the live DB but the rest
+      // NOTE: manually added - `conversions` exists in the live DB but the rest
       // of this file is a stale bug-tracker schema. Regenerate via
       // `supabase gen types` (Phase P3) to replace this whole file.
       conversions: {

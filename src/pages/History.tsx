@@ -177,7 +177,7 @@ export default function History() {
         <AppHeader title="History" />
 
         <div className="flex-1 overflow-auto">
-          <div className="p-4 md:p-6 space-y-4 max-w-[1400px]">
+          <div className="p-5 md:p-8 space-y-5 max-w-[1400px]">
             {/* Toolbar */}
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative flex-1 min-w-[200px] max-w-sm">
@@ -244,7 +244,7 @@ export default function History() {
             </div>
 
             {/* Table */}
-            <div className="border border-border rounded-md overflow-hidden">
+            <div className="border border-border rounded-md overflow-hidden bg-card shadow-elev-1">
               <table className="w-full text-[13px]" data-testid="history-table">
                 <thead>
                   <tr className="border-b border-border bg-muted/30">

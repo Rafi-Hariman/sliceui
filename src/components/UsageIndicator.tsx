@@ -1,4 +1,4 @@
-import { Gauge, Zap } from "lucide-react"
+import { Gauge, Coins } from "lucide-react"
 import { useEntitlement } from "@/hooks/useEntitlement"
 import { cn } from "@/lib/utils"
 import {
@@ -22,7 +22,7 @@ export function UsageIndicator() {
   const proLow = !isFree && balance <= 3
 
   const tone = exhausted
-    ? "text-destructive border-destructive/40"
+    ? "text-destructive border-destructive/40 shadow-[0_0_12px_-2px] shadow-destructive/40"
     : nearLimit || proLow
       ? "text-amber-500 dark:text-amber-400 border-amber-500/40"
       : "text-muted-foreground"
@@ -31,7 +31,7 @@ export function UsageIndicator() {
   const ariaLabel = isFree
     ? `${usedToday} of ${freeLimit} free conversions used today${exhausted ? ", daily limit reached" : ""}`
     : `${balance} credits remaining`
-  const Icon = isFree ? Gauge : Zap
+  const Icon = isFree ? Gauge : Coins
 
   return (
     <Tooltip>
@@ -51,8 +51,8 @@ export function UsageIndicator() {
       </TooltipTrigger>
       <TooltipContent>
         {isFree
-          ? `Free plan — ${remainingToday} of ${freeLimit} conversions left today (resets tomorrow).`
-          : `Pro plan — ${balance} credits remaining.`}
+          ? `Free plan. ${remainingToday} of ${freeLimit} conversions left today. Resets tomorrow.`
+          : `Pro plan. ${balance} credits remaining.`}
       </TooltipContent>
     </Tooltip>
   )

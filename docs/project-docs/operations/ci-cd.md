@@ -1,4 +1,4 @@
-# CI/CD — SliceUI
+# CI/CD - SliceUI
 
 ## 1. Description
 
@@ -13,7 +13,7 @@ the gap and the target.
   Nothing runs automatically on push or PR.
 - **Live secrets are committed in `CLAUDE.md`** (Gemini/Groq/Supabase keys).
   Rotate them immediately and ensure no pipeline ever echoes them.
-- All real secrets are `VITE_*` client env vars — anything in a build is
+- All real secrets are `VITE_*` client env vars - anything in a build is
   embedded in the static bundle and therefore public.
 
 ## 3. Table of Contents
@@ -59,17 +59,17 @@ the gap between current (manual) and target (automated) pipelines.
 ## Build Steps
 
 1. `npm ci` (or chosen lockfile install).
-2. `npm run lint` — ESLint flat config (`eslint.config.js`).
-3. `npm run test` — Vitest (`vitest run`, jsdom).
-4. `npm run build` — TypeScript build + Vite production bundle to `dist/`.
+2. `npm run lint` - ESLint flat config (`eslint.config.js`).
+3. `npm run test` - Vitest (`vitest run`, jsdom).
+4. `npm run build` - TypeScript build + Vite production bundle to `dist/`.
    - Dev variant: `npm run build:dev` (`vite build --mode development`).
-5. `npm run preview` — serve `dist/` for smoke checks.
+5. `npm run preview` - serve `dist/` for smoke checks.
 
 ## Testing & Quality Gates
 
 - Gates to enforce in CI: **lint**, **test**, **build** (type-check).
 - Coverage tooling: not configured (`vitest --coverage` TBD).
-- E2E: Playwright dependency present but unconfigured — not a gate yet.
+- E2E: Playwright dependency present but unconfigured - not a gate yet.
 - See `development/testing.md` for the verification matrix.
 
 ## Deployment Environments
@@ -78,7 +78,7 @@ the gap between current (manual) and target (automated) pipelines.
   (Vercel/Netlify/Cloudflare Pages) serving the Vite SPA.
 - **Preview/PR environments:** none today. Target: per-PR preview deploy.
 - **Supabase:** single project supplies auth + DB + storage for all
-  environments (no separate staging project confirmed — TBD).
+  environments (no separate staging project confirmed - TBD).
 
 ## Secrets
 
@@ -86,8 +86,8 @@ the gap between current (manual) and target (automated) pipelines.
 | :--- | :--- | :--- |
 | `VITE_SUPABASE_URL` | Supabase project URL | Public (in bundle) |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase anon/publishable key | Public (designed to be) |
-| `VITE_GEMINI_API_KEY` | Gemini API key | **Public (in bundle)** — rotate, ideally move server-side |
-| `VITE_GROQ_API_KEY` | Groq API key | **Public (in bundle)** — same caveat |
+| `VITE_GEMINI_API_KEY` | Gemini API key | **Public (in bundle)** - rotate, ideally move server-side |
+| `VITE_GROQ_API_KEY` | Groq API key | **Public (in bundle)** - same caveat |
 
 Rules:
 
@@ -105,10 +105,10 @@ Rules:
 
 ## Related Documents
 
-- [workflow.md](../foundation/workflow.md) — local loop + PR checks.
-- [testing.md](../development/testing.md) — verification policy.
-- [api-contract.md](../development/api-contract.md) — keys + rate limits.
-- [status.md](../foundation/status.md) — CI gap listed as a risk.
+- [workflow.md](../foundation/workflow.md) - local loop + PR checks.
+- [testing.md](../development/testing.md) - verification policy.
+- [api-contract.md](../development/api-contract.md) - keys + rate limits.
+- [status.md](../foundation/status.md) - CI gap listed as a risk.
 
 ## Open Questions
 

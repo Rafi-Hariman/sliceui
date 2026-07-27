@@ -1,4 +1,4 @@
-# Session Handoff — SliceUI (2026-07-26)
+# Session Handoff - SliceUI (2026-07-26)
 
 > **Resume in a new session with this prompt:**
 > `Resume session from docs/project-docs/foundation/session-handoff-2026-07-26.md`
@@ -10,7 +10,7 @@ pick up cleanly. Treat it as the source of truth for "what state are we in."
 ---
 
 ## TL;DR
-- **Branch:** `feat/sliceui-mvp-cleanup` — **12 commits, pushed to origin**, **not merged** to `main`.
+- **Branch:** `feat/sliceui-mvp-cleanup` - **12 commits, pushed to origin**, **not merged** to `main`.
 - **Nothing is deployed / live.** All work is code + migrations in-repo, gate green, but runtime-unverified.
 - **Working tree clean** (only untracked tooling dirs `.claude/`, `.eha/`).
 - **Supabase MCP is now authenticated** → a new session can apply migrations, introspect RLS, and verify the money path live without re-auth.
@@ -19,7 +19,7 @@ pick up cleanly. Treat it as the source of truth for "what state are we in."
 ---
 
 ## What the project is
-**SliceUI** — screenshot → framework-specific frontend **component** code.
+**SliceUI** - screenshot → framework-specific frontend **component** code.
 Vite 5 + React 18 + TypeScript + shadcn/ui (Radix) + Tailwind 3 + Supabase
 (auth/DB/storage) + AI (Gemini primary, Groq fallback; Claude on the paid path).
 Exported from Lovable. Target customer: **freelancers**, ~$19/mo Pro,
@@ -41,7 +41,7 @@ reference/ (migrated prompt.md + QA_TEST_DOCUMENT). `index.md` is the catalog.
 - Route protection (`ProtectedRoute`); fixed history fetch (`profile.id`→`user.id`); conversion delete; request-id guard in `useConvert`; reject empty files.
 - Vitest (15 tests) + Playwright smoke + GitHub Actions CI.
 
-### 3. Phase 0 — metered `/convert` (the revenue prerequisite)
+### 3. Phase 0 - metered `/convert` (the revenue prerequisite)
 - Edge function `supabase/functions/convert/index.ts` (Deno): auth, entitlement, free daily limit, Pro credit reserve, tiered routing (Gemini/Claude), metering, CORS allowlist, image size cap.
 - `credits` + `usage_log` tables + RLS + signup trigger (migration 1).
 - Client: env-gated proxy switch (`VITE_CONVERT_PROXY_URL`).
@@ -52,7 +52,7 @@ reference/ (migrated prompt.md + QA_TEST_DOCUMENT). `index.md` is the catalog.
 - New `HeroDemo` (real before/after) replaces 3D cube; Free/Pro pricing block; "Try again" retries; history deep-link works; forgot-password.
 
 ### 5. Backend audit + safe fixes
-- `operations/backend-audit.md` (B1–B14 + Gherkin test matrix).
+- `operations/backend-audit.md` (B1-B14 + Gherkin test matrix).
 - Fixed (migration 2 `20260725100000_rls_and_triggers.sql`): RLS on `conversions`+`profiles`+storage; atomic `decrement_credit` rpc; profiles-on-signup trigger.
 - Edge fn: failed-quota no longer consumes free quota; atomic reserve-before-generate; CORS allowlist; image size validation.
 
@@ -62,7 +62,7 @@ reference/ (migrated prompt.md + QA_TEST_DOCUMENT). `index.md` is the catalog.
 Branch `feat/sliceui-mvp-cleanup`, 12 commits ahead of `main`:
 ```
 5a4cb1f fix(backend): RLS + atomic decrement + quota/CORS/validation
-83ed7b9 docs(backend): audit (B1–B14) + Gherkin + runbook notes
+83ed7b9 docs(backend): audit (B1-B14) + Gherkin + runbook notes
 06cdb68 fix(a11y,ux): WCAG 2.2 AA remediation + functional fixes
 b5f1914 feat(landing): before/after hero + Free/Pro pricing
 8f52620 docs(a11y): WCAG audit report
@@ -81,9 +81,9 @@ bcbdb5b docs: SDD project docs + reference migration
 ## ✅ Verified vs ⚠️ Unverified
 **Verified (local gate, green):** `npm run lint` 0 errors · `tsc --noEmit` 0 errors · 15/15 Vitest · `npm run build` OK. Static greps confirm audit fixes (0 button-in-Link, 0 hardcoded colors, 19 aria-labels, 9 focus-visible patterns).
 
-**Unverified (needs runtime — DO THIS BEFORE LAUNCH):**
+**Unverified (needs runtime - DO THIS BEFORE LAUNCH):**
 - Backend is **not deployed**: the 2 migrations aren't applied, edge function isn't deployed, secrets not set.
-- **RLS not introspected live** (B1 was the top risk — confirm every table has RLS on with the new policies).
+- **RLS not introspected live** (B1 was the top risk - confirm every table has RLS on with the new policies).
 - **Metering not load-tested** (the atomic-credit race case from the Gherkin matrix is the proof).
 - **No axe/browser run** for the UI/UX fixes.
 - App itself isn't deployed to a public host.
@@ -100,17 +100,17 @@ bcbdb5b docs: SDD project docs + reference migration
 ---
 
 ## ⚠️ Still-open risks
-1. **Leaked keys in git history** — Gemini/Groq/Supabase keys were committed on `main`. Redacted from the branch tip, but `main`'s history still has them. **Rotate + scrub history before any public push.** (User asked to set this aside strategically, but it remains a hard launch blocker.)
+1. **Leaked keys in git history** - Gemini/Groq/Supabase keys were committed on `main`. Redacted from the branch tip, but `main`'s history still has them. **Rotate + scrub history before any public push.** (User asked to set this aside strategically, but it remains a hard launch blocker.)
 2. **Client-side AI keys** until the Phase 0 proxy is deployed.
-3. **Storage still public** via `getPublicUrl` (owner-scoped policies are in place; signed URLs deferred — B2).
+3. **Storage still public** via `getPublicUrl` (owner-scoped policies are in place; signed URLs deferred - B2).
 
 ---
 
 ## Deferred / not built (documented, gate on real usage)
-- **Phase 1 Stripe billing** (Pro $19/mo + credit packs) — not started.
-- **Chrome extension** (distribution bet) — not started.
+- **Phase 1 Stripe billing** (Pro $19/mo + credit packs) - not started.
+- **Chrome extension** (distribution bet) - not started.
 - Backend: B2 signed URLs · B6 idempotency · B7 token/COGS capture · B9 `original_image_path` · B10 auth `fetchProfile` race · B11 reproducible `config.toml` · B14 observability.
-- `.claude/` and `.eha/` tooling dirs are untracked (commit or gitignore — user's call).
+- `.claude/` and `.eha/` tooling dirs are untracked (commit or gitignore - user's call).
 
 ---
 

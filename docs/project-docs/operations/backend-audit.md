@@ -1,22 +1,22 @@
-# Backend Audit & Test Cases — SliceUI
+# Backend Audit & Test Cases - SliceUI
 
 ## 1. Description
-A backend review of SliceUI's server/data layer — Supabase (auth, DB, storage,
-RLS), the `/convert` edge function, and the client services that call them —
+A backend review of SliceUI's server/data layer - Supabase (auth, DB, storage,
+RLS), the `/convert` edge function, and the client services that call them -
 with a Gherkin test-case matrix an engineer can execute. Covers security/RLS
 (first), metering correctness, functional gaps, and config/ops.
 
 ## 2. Important
 - The only migrations in-repo are `credits_usage` and (after this pass)
   `rls_and_triggers`. **`conversions` and `profiles` were created in the live DB
-  via the dashboard** — verify they exist and that RLS is on with the policies below.
+  via the dashboard** - verify they exist and that RLS is on with the policies below.
 - Findings are tagged by severity: 🔴 critical · 🟠 correctness · 🟡 gap · ⚪ ops.
 - "Safe fixes" implemented alongside this doc are listed in § Implemented fixes.
 
 ## 3. Table of Contents
 - [1. Description](#1-description) · [2. Important](#2-important) · [3. TOC](#3-table-of-contents)
 - [4. Scope](#4-scope) · [5. Goals](#5-goals) · [6. Non Goals](#6-non-goals)
-- [Audit findings (B1–B14)](#audit-findings-b1b14)
+- [Audit findings (B1-B14)](#audit-findings-b1b14)
 - [Implemented fixes](#implemented-fixes)
 - [Deferred (follow-ups)](#deferred-follow-ups)
 - [Gherkin test cases](#gherkin-test-cases)
@@ -38,9 +38,9 @@ AI provider APIs (see `development/api-contract.md`) and the client UI.
 
 ---
 
-## Audit findings (B1–B14)
+## Audit findings (B1-B14)
 
-### 🔴 Critical — security / data integrity
+### 🔴 Critical - security / data integrity
 - **B1. `conversions` & `profiles` RLS undefined in-repo.** Only `credits`/`usage_log`
   had policies. The client (anon key) performs CRUD on `conversions`. RLS-on-no-
   policy → history breaks; RLS-off → **cross-user data leak**. → *Fixed: policies added.*
@@ -50,24 +50,24 @@ AI provider APIs (see `development/api-contract.md`) and the client UI.
 - **B3. AI keys ship client-side** until Phase 0 proxy deploys; leaked keys still
   in git history (rotate).
 
-### 🟠 Correctness — metering / billing
-- **B4. Failed attempts consumed free quota** — daily-limit count included
+### 🟠 Correctness - metering / billing
+- **B4. Failed attempts consumed free quota** - daily-limit count included
   `status:'failed'` rows. → *Fixed: count `success` only.*
-- **B5. Pro decrement was non-atomic** — read→JS subtract→write TOCTOU; concurrent
+- **B5. Pro decrement was non-atomic** - read→JS subtract→write TOCTOU; concurrent
   requests over-spent credits. → *Fixed: atomic `decrement_credit` SQL function.*
-- **B6. No idempotency** — a retried request can double-charge a credit. *(deferred)*
+- **B6. No idempotency** - a retried request can double-charge a credit. *(deferred)*
 - **B7. `usage_log.tokens` never written** → COGS not trackable. *(deferred)*
 
 ### 🟡 Functional gaps
-- **B8. No `profiles` row on signup** — the credits trigger existed but not a
+- **B8. No `profiles` row on signup** - the credits trigger existed but not a
   profiles trigger; new users showed "User". → *Fixed: signup trigger.*
-- **B9. Storage path not stored** — delete derives path from URL (fragile). *(deferred)*
-- **B10. Auth race** — `onAuthStateChange` defers `fetchProfile` via `setTimeout(0)`. *(deferred)*
+- **B9. Storage path not stored** - delete derives path from URL (fragile). *(deferred)*
+- **B10. Auth race** - `onAuthStateChange` defers `fetchProfile` via `setTimeout(0)`. *(deferred)*
 
 ### ⚪ Config / ops
-- **B11. `config.toml` nearly empty** (just `project_id`) — not reproducible. *(deferred)*
-- **B12. Edge CORS was `*`** — open to any origin. → *Fixed: env allowlist.*
-- **B13. No server-side image validation** — direct callers bypass client checks. → *Fixed: size cap.*
+- **B11. `config.toml` nearly empty** (just `project_id`) - not reproducible. *(deferred)*
+- **B12. Edge CORS was `*`** - open to any origin. → *Fixed: env allowlist.*
+- **B13. No server-side image validation** - direct callers bypass client checks. → *Fixed: size cap.*
 - **B14. No observability** on the edge function. *(deferred)*
 
 ---
@@ -120,7 +120,7 @@ Scenario: User lists only their own conversions
 Scenario: Cross-user read is denied
   Given conversion X owned by user B
   When user A requests X by id with A's anon JWT
-  Then the request returns no row (PGRST116) — not B's data
+  Then the request returns no row (PGRST116) - not B's data
 
 Scenario: Insert is scoped to the authenticated user
   Given a request to insert a conversion with user_id set to another user

@@ -1,10 +1,10 @@
-# Phase P1 — Security & Production Hardening
+# Phase P1 - Security & Production Hardening
 
 ## Phase Goal
 
 Make SliceUI safe to expose publicly: stop shipping AI API keys to the browser,
 remove committed live secrets, enforce authentication, and lock down Supabase
-access. This is the highest-priority phase — see Risks in `status.md`.
+access. This is the highest-priority phase - see Risks in `status.md`.
 
 ## Timeline (Start → End)
 
@@ -65,5 +65,5 @@ access. This is the highest-priority phase — see Risks in `status.md`.
 
 ## Deprecated Features
 
-- Guest-mode generation (login guard disabled) — to be removed or explicitly
+- Guest-mode generation (login guard disabled) - to be removed or explicitly
   re-scoped.

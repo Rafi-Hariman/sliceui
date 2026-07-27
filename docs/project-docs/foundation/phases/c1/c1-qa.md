@@ -1,4 +1,4 @@
-# C1 — QA / Tester execution brief
+# C1 - QA / Tester execution brief
 
 > **Role:** QA/tester (sub-agent). **Master plan:**
 > [`../phase-C1-functional-production.md`](../phase-C1-functional-production.md).
@@ -13,7 +13,7 @@ checks, add the new test files, and run the Definition-of-Done gate.
 ## Acceptance criteria (Gherkin)
 
 ```gherkin
-Feature: C1 — Functional production (local)
+Feature: C1 - Functional production (local)
 
   Background:
     Given the /convert edge function is deployed and secrets are set
@@ -92,18 +92,18 @@ Feature: C1 — Functional production (local)
 
 ## New test files to add
 
-- `src/lib/usageService.test.ts` — mock `supabase.from('credits'|'usage_log')`,
+- `src/lib/usageService.test.ts` - mock `supabase.from('credits'|'usage_log')`,
   assert `getCredits` + `getTodayUsageCount` shapes and the date filter.
-- `src/pages/History.test.tsx` — render with mocked `useConversions`; assert
+- `src/pages/History.test.tsx` - render with mocked `useConversions`; assert
   filter-by-framework, search, and that Delete calls `deleteConversion` +
   invalidates the cache; assert empty state.
-- `e2e/c1-functional.spec.ts` — `npm run preview` against `.env.local` with the
+- `e2e/c1-functional.spec.ts` - `npm run preview` against `.env.local` with the
   proxy set. Flow: login (seeded confirmed user) → `/slice` → upload a fixture
   image → pick Tailwind → Generate → assert code appears and a History row
   exists → open History → filter → regenerate → assert quota increments.
   Mock nothing on the backend; stub only file upload via `setInputFiles`.
 
-## Backend baseline (local stack — 2026-07-26)
+## Backend baseline (local stack - 2026-07-26)
 
 Run against the local Supabase stack (`supabase start`, API on `127.0.0.1:54321`).
 The remote project `heaqfnzfxlrsxxckjsix` is not used this cycle.
@@ -118,7 +118,7 @@ The remote project `heaqfnzfxlrsxxckjsix` is not used this cycle.
 | `decrement_credit` RPC | exists | ✅ |
 | Storage bucket | `sliceui-images` (public) | ✅ created |
 | `convert` served locally | `/functions/v1/convert` reachable | ✅ served via `supabase functions serve convert --env-file supabase/.env` (after `supabase stop`/`start` from this dir to align container names with `config.toml`). Docker `start` doesn't load `supabase/.env`, so dev serving uses `functions serve`. |
-| Metering writes (`usage_log`) | row per attempt | ✅ after `service_role` grant fix (6c85a22) — was silently 403. Verified: failed attempt logged `tailwind/groq/failed`. |
+| Metering writes (`usage_log`) | row per attempt | ✅ after `service_role` grant fix (6c85a22) - was silently 403. Verified: failed attempt logged `tailwind/groq/failed`. |
 | Concurrency test | 3 ok / 2 denied, balance 0 | ✅ 5 concurrent `decrement_credit` RPCs from balance 3 → `2,1,null,0,null`; final balance 0, never negative |
 | Free smoke (metered) | model=gemini, usage_log row | ⚠️ mechanics verified end-to-end (auth→entitlement→routing→key passed [403→429]→Groq fallback). **AI success blocked by external quota:** Gemini key `RESOURCE_EXHAUSTED` (quota 0); Groq account has **no vision model** (15 models, all text/audio). |
 | Pro smoke | model=claude, balance−1 | ⏳ pending a valid `ANTHROPIC_API_KEY` (then set `credits.plan='pro'` + balance) |
@@ -148,7 +148,7 @@ docker exec -i supabase_db_<host> psql -U postgres -d postgres -c \
 > `authenticated` grants (added `table_grants`). Both make `supabase db reset`
 > work on a fresh stack.
 
-## Definition of Done (the gate — run in order)
+## Definition of Done (the gate - run in order)
 
 ```sh
 npm run lint

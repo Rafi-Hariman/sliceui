@@ -1,4 +1,4 @@
-# Phase P2 — Reliability & QA (tests + CI)
+# Phase P2 - Reliability & QA (tests + CI)
 
 ## Phase Goal
 
