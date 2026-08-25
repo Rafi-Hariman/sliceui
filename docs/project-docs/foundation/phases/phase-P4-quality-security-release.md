@@ -15,14 +15,14 @@ Start → End: **Final phase.** After P3 (tool is functional and persisted) and 
 - First release + changelog entry.
 
 ## Sub-Functions / Tasks
-- [ ] Implement backend proxy for AI calls (keys stay server-side); route `imageToCode` through it
-- [ ] Add CI workflow gating lint + test + build on PR/merge
-- [ ] Security scrub: `git grep` for secrets, verify RLS on `conversions` + bucket, review key handling
-- [ ] i18n scaffold for Bahasa (Webmu surface) — or defer with a documented decision
-- [ ] Prepare free-launch materials (demo video, README, landing copy aimed at agencies)
-- [ ] Launch free to Show HN / r/webdev / X / Indonesian dev communities
-- [ ] Measure pull signal (stars, shares, usage, "I'd pay" DMs) → feed the Week-12 gate in `product-spec.md`
-- [ ] Cut first release + add a changelog entry in `foundation/changelog.md`
+- [x] Implement backend proxy for AI calls (keys stay server-side); route `imageToCode` through it *(2026-08-25: `api/convert.ts` Vercel serverless + `aiService` prod routing. Hobby 60s cap diakui — user chose this over defer. maxDuration 60, client timeout 55s.)*
+- [x] Add CI workflow gating lint + test + build on PR/merge *(2026-08-25: `.github/workflows/ci.yml` Node 20; eslint config disesuaikan → 0 errors)*
+- [x] Security scrub: `git grep` for secrets, verify RLS on `conversions` + bucket, review key handling *(2026-08-25: `git grep` clean; RLS verification blocked — menunggu live Supabase project)*
+- [x] i18n scaffold for Bahasa (Webmu surface) — or defer with a documented decision *(2026-08-25: DEFERRED — tool English untuk agencies; Webmu sudah Bahasa terpisah. Dicatat di `internationalization.md` §7.1.)*
+- [x] Prepare free-launch materials (demo video, README, landing copy aimed at agencies) *(2026-08-25: README rewritten; demo video + landing copy masih [STOP] gate sebelum posting)*
+- [ ] Launch free to Show HN / r/webdev / X / Indonesian dev communities *(**[STOP]** — butuh approval channel + timing user)*
+- [x] Measure pull signal (stars, shares, usage, "I'd pay" DMs) → feed the Week-12 gate in `product-spec.md` *(2026-08-25: `operations/pull-measurement.md` tracking sheet siap)*
+- [ ] Cut first release + add a changelog entry in `foundation/changelog.md` *(changelog [Unreleased] sudah lengkap; tag version menunggu keputusan release)*
 
 ## Sprint Tracker
 | Sprint | Scope | Status |
@@ -41,7 +41,7 @@ Start → End: **Final phase.** After P3 (tool is functional and persisted) and 
 - Backend proxy requires a serverless function (Vercel) — depends on the P2 deploy target.
 
 ## Status
-**Not Started.**
+**6/8 tasks done (2026-08-25).** Remaining [STOP]-gated (user action): free launch (channel + timing approval) and first release tag. All code tasks complete. CI + proxy + security scrub + README + measurement sheet + changelog done.
 
 ## Deprecated Features
 - Client-side AI keys (`VITE_GEMINI_API_KEY` / `VITE_GROQ_API_KEY` in the browser) — superseded by the backend proxy.

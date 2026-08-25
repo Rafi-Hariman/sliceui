@@ -89,7 +89,7 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
                            code.match(/export\s+default\s+\((\w+)\)\s*=>/);
       const constMatch = code.match(/export\s+default\s+const\s+(\w+)\s*=\s*(?:\(\)|\([^)]*\))\s*=>/);
 
-      let cleanCode = code
+      const cleanCode = code
         .replace(/^import\s+.*$/gm, "") // Remove import statements
         .replace(/export\s+default\s+/g, "window.PreviewComponent = ")
         .replace(/export\s+/g, "")

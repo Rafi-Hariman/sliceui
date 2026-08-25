@@ -4,7 +4,7 @@
   "installCommand": "npm install",
   "rewrites": [
     {
-      "source": "/((?!assets/|.*\\..*).*)",
+      "source": "/((?!api/|assets/|demos/|webmu/|.*\\..*).*)",
       "destination": "/index.html"
     }
   ]

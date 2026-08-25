@@ -35,6 +35,10 @@ Does not introduce a translation framework now (out of scope until product decis
 - **Currently:** English only. UI strings are inline literals.
 - **Planned:** none (TBD).
 
+## 7.1 Decision (2026-08-25)
+- **Deferred.** The SliceUI tool targets agencies/freelancers (English surface). The Bahasa surface belongs to the **Webmu service** (`/webmu/`), which is already fully Bahasa as a separate hand-authored page. Two-brand separation means the tool does not need Bahasa i18n — see `foundation/product-spec.md`.
+- Revisit only if the tool launches into Indonesian dev communities with meaningful pull.
+
 ## 8. Translation Workflow
 If i18n is adopted, the recommended approach for this codebase:
 1. Extract hardcoded strings from `src/pages/*` and `src/components/*` into a messages/keys file.
