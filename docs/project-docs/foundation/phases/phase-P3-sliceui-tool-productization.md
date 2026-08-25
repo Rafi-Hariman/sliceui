@@ -24,7 +24,7 @@ Start → End: **After P2.** Persistence and live auth are deliberately deferred
 - [x] Gate `VITE_BYPASS_AUTH` to local dev only (or remove) *(2026-08-25: now `import.meta.env.DEV &&` — tidak bisa aktif di production build)*
 - [x] Standardize conversion id-source to `user.id` (fix `Dashboard` `profile.id` mismatch) *(2026-08-25: Dashboard fetch by user.id)*
 - [x] Implement history load in Slice via `?conversion=` param (or remove the dead link) *(2026-08-25: implemented — loads from history, clears param)*
-- [x] Enable Svelte preview in `CodeOutput.tsx` `canPreview` *(2026-08-25: svelte@5 in-browser compile)*
+- [x] ~~Enable Svelte preview~~ → **DECIDED: exclude** *(2026-08-25: svelte@5 has no standalone browser compiler bundle — `svelte@5/dist/svelte.js` ships runtime only, and jsdelivr `+esm` resolves compiler paths back to runtime. In-browser preview needs a heavy dep for 1 of 7 frameworks. Per EXECUTE-PHASES §3 "ask before adding a heavy dep" — user chose revert. `canPreview` stays at 6 frameworks; acceptance criterion "preview for all 7" re-scoped to 6 + documented here. Svelte output remains fully functional in the Code tab + download.)*
 - [x] Fix `index.html` `<title>` + OG tags → SliceUI *(2026-08-25: title + OG/twitter meta)*
 
 ## Sprint Tracker
@@ -37,7 +37,7 @@ Start → End: **After P2.** Persistence and live auth are deliberately deferred
 - [ ] Dashboard history lists only the owning user's conversions.
 - [ ] Uploaded images resolve via a storage URL.
 - [ ] `npm run build` passes with regenerated types.
-- [ ] Preview renders for all 7 supported frameworks (including Svelte).
+- [ ] Preview renders for all supported frameworks. *(Re-scoped 2026-08-25: 6 of 7 — Svelte preview excluded by decision, see task 8; Svelte code output remains fully functional.)*
 - [ ] App metadata (`<title>`/OG) says SliceUI.
 
 ## Dependencies & Blockers
@@ -45,7 +45,7 @@ Start → End: **After P2.** Persistence and live auth are deliberately deferred
 - Live Supabase project owner (TBD).
 
 ## Status
-**6/10 tasks done (2026-08-25).** Blocked on: a live Supabase project (all configured refs are NXDOMAIN — deleted/paused). Migration files ready in-repo; remaining 4 tasks (apply migrations, gen types, connect live auth, verify CRUD) are a single block once the user creates a project and shares its 20-char ref.
+**6/10 tasks done (2026-08-25).** Task 8 resolved as exclude-Svelte-preview (see above). Blocked on: a live Supabase project (all configured refs are NXDOMAIN — deleted/paused). Migration files ready in-repo; remaining 4 tasks (apply migrations, gen types, connect live auth, verify CRUD) are a single block once the user creates a project and shares its 20-char ref.
 
 ## Deprecated Features
 - `VITE_BYPASS_AUTH` mock becomes dev-only (or removed) once live auth is verified.

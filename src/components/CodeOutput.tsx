@@ -51,7 +51,10 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
     URL.revokeObjectURL(url)
   }, [code, framework])
 
-  const canPreview = framework && ["tailwind", "bootstrap5", "native-html", "react-tsx", "vue-sfc", "nextjs", "svelte"].includes(framework)
+  // Svelte excluded: svelte@5 has no practical standalone browser compiler
+  // bundle (the compiler isn't shipped for browser use), so in-browser preview
+  // would need a heavy dep for one framework. See phase-P3 task 8 decision.
+  const canPreview = framework && ["tailwind", "bootstrap5", "native-html", "react-tsx", "vue-sfc", "nextjs"].includes(framework)
   const lineCount = code ? code.split("\n").length : 0
 
   // Build preview document with necessary CSS frameworks
@@ -129,35 +132,6 @@ export default function CodeOutput({ code, framework, isLoading }: CodeOutputPro
             }
           });
           app.mount('#app');
-        } catch(e) {
-          document.getElementById('app').innerHTML = '<p style="color:red">Preview error: ' + e.message + '</p>';
-        }
-      `
-      bodyContent = `<div id="app"></div>`
-    } else if (fw === "svelte") {
-      // Compile the Svelte component in-browser with the standalone compiler,
-      // then mount it (pattern mirrors the Vue global-build preview).
-      headExtras = `
-        <script src="https://unpkg.com/svelte@5/compiler.cjs"></script>
-        <script src="https://unpkg.com/svelte@5/dist/svelte.js"></script>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <style>body { font-family: 'Inter', sans-serif; }</style>
-      `
-      scriptContent = `
-        try {
-          const componentSrc = ${JSON.stringify(code)};
-          const { js, css } = svelte.compile(componentSrc, { generate: 'client' });
-          const module = { exports: {} };
-          const factory = new Function(js.code + '\\n; return App || (typeof Component !== "undefined" && Component);');
-          const Component = factory();
-          if (!Component) throw new Error('Could not find the component export');
-          new Component({ target: document.getElementById('app') });
-          if (css && css.code) {
-            const style = document.createElement('style');
-            style.textContent = css.code;
-            document.head.appendChild(style);
-          }
         } catch(e) {
           document.getElementById('app').innerHTML = '<p style="color:red">Preview error: ' + e.message + '</p>';
         }
