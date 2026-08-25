@@ -34,3 +34,4 @@ memories/
 
 # Reverse-engineering reference repo (abi/screenshot-to-code) — read-only, never ship
 screenshot-to-code/
+.vercel
