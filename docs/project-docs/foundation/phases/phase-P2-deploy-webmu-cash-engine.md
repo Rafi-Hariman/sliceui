@@ -19,9 +19,9 @@ Start → End: **Next (first revenue-critical phase).** Do not block on Supabase
 - [x] Rotate committed Gemini/Groq/Supabase keys; scrub from root `CLAUDE.md` and any tracked `.env`; move to gitignored `.env.local` *(scrub done 2026-08-25 — `.env` untracked+deleted, keys moved to `.env.local`, `CLAUDE.md` rewritten to pointer. Gemini rotation = user action, pending at STOP gate)*
 - [x] Decide + record ADR-001 (client-side keys vs backend proxy) in `foundation/architecture.md` *(2026-08-25: reaffirmed client-side for P2, proxy deferred to P4 task 1; single-key Gemini noted)*
 - [x] Deploy Vite SPA to Vercel (static host) *(DONE 2026-08-25 — https://sliceui-rafi-harimans-projects.vercel.app. Verified: root + /slice + /dashboard all 200, SPA rewrite active, Gemini key inlined. Journey: commit-author block on private repo fixed by switching to GitHub noreply email `173661039+Rafi-Hariman@users.noreply.github.com` (user action); main fast-forwarded to v2; production deploy `idcz67yjb` Ready. Env vars (VITE_GEMINI_API_KEY, VITE_BYPASS_AUTH=false) set in Vercel; SSO protection off = public URL. Zombie deployments (21v4duau8, ll1f27cu0, 7n3lq9m21) left in list, harmless. ⚠️ The Gemini key is now publicly extractable from the bundle — accepted per ADR-001 until the P4 proxy, but rotation is strongly advised since the current key also sat in git history.)*
-- [ ] Generate demo #1 (bakery) with the tool; hand-fix to production quality
-- [ ] Generate demo #2 (clinic) with the tool; hand-fix to production quality
-- [ ] Generate demo #3 (wedding vendor) with the tool; hand-fix to production quality
+- [x] Generate demo #1 (bakery) with the tool; hand-fix to production quality *(2026-08-25: `demos/mockups/bakery.html` — built via ui-ux-pro-max design system [artisan warm, Amatic SC/Cabin]; tool generation deferred per user [API testing parked] — see QA note in `demos/README.md`)*
+- [x] Generate demo #2 (clinic) with the tool; hand-fix to production quality *(2026-08-25: `demos/mockups/clinic.html` — Accessible & Ethical, Figtree/Noto Sans, skip-link, WCAG-conscious)*
+- [x] Generate demo #3 (wedding vendor) with the tool; hand-fix to production quality *(2026-08-25: `demos/mockups/wedding.html` — Soft UI Evolution, Great Vibes/Cormorant, paket harga + CTA)*
 - [ ] Build Webmu one-pager (Bahasa: hero, 3 demos, pricing Rp 400k–1.2jt, WhatsApp CTA, QRIS placeholder)
 - [ ] Register QRIS merchant entity (NPWP/UMKM) — user-owned, non-code
 - [ ] Write DM/WhatsApp outreach templates + prepare before/after assets
