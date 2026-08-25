@@ -43,7 +43,7 @@ Start → End: **Next (first revenue-critical phase).** Do not block on Supabase
 - No Supabase dependency — persistence is deliberately deferred to P3.
 
 ## Status
-**Not Started.**
+**8/9 tasks done (2026-08-25).** Remaining: task 8 (QRIS merchant entity — user-owned, non-code; one-pager ships QRIS placeholder until it exists). ⚠️ Before real outreach: replace placeholder WhatsApp number in `public/webmu/index.html` + sales templates with the actual number.
 
 ## Deprecated Features
 - None. (Persistence/auth, formerly "P2", moves to P3.)
