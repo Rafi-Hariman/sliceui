@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
@@ -8,6 +9,7 @@ import FrameworkDropdown from "@/components/FrameworkDropdown"
 import OptionsBar from "@/components/OptionsBar"
 import useImageUpload from "@/hooks/useImageUpload"
 import useConvert from "@/hooks/useConvert"
+import { getConversionById } from "@/lib/conversionService"
 import type { Framework, ConversionOptions } from "@/lib/types"
 import {
   Upload,
@@ -45,11 +47,43 @@ export default function Slice() {
 
   const {
     code,
+    setCode,
     isLoading,
     error: convertError,
     convert,
     reset
   } = useConvert()
+
+  // History deep-link: /slice?conversion=<id> loads a saved conversion
+  // (linked from the Dashboard). Requires persistence to be provisioned.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const conversionId = searchParams.get("conversion")
+
+  useEffect(() => {
+    if (!conversionId) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const conv = await getConversionById(conversionId)
+        if (cancelled || !conv) {
+          if (!cancelled) toast.error("Conversion not found")
+          setSearchParams({}, { replace: true })
+          return
+        }
+        setFramework(conv.framework as Framework)
+        if (conv.options) setOptions(conv.options as ConversionOptions)
+        setCode(conv.generated_code)
+        toast.success("Loaded from history")
+      } catch (err) {
+        if (!cancelled) toast.error("Could not load this conversion")
+        console.error("Failed to load conversion:", err)
+      } finally {
+        if (!cancelled) setSearchParams({}, { replace: true })
+      }
+    })()
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversionId])
 
   const handleGenerate = useCallback(async () => {
     if (!file) {

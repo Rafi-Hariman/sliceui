@@ -9,6 +9,7 @@ import type { Framework, ConversionOptions } from "@/lib/types"
 interface UseConvertReturn {
   convert: (file: File, framework: Framework, options: ConversionOptions, instructions?: string) => Promise<void>
   code: string | null
+  setCode: (code: string | null) => void
   isLoading: boolean
   loadingMessage: string
   error: string | null
@@ -99,6 +100,7 @@ export default function useConvert(): UseConvertReturn {
   return {
     convert,
     code,
+    setCode,
     isLoading,
     loadingMessage,
     error,

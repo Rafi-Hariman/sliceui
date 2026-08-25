@@ -27,7 +27,9 @@ const FRAMEWORK_COLORS: Record<string, string> = {
 }
 
 export default function Dashboard() {
-  const { profile } = useAuth()
+  // Conversions are keyed by user.id — the same id useConvert writes with.
+  // (Previously fetched by profile.id, which never matched; standardized in P3.)
+  const { user } = useAuth()
   const navigate = useNavigate()
   const [conversions, setConversions] = useState<Conversion[]>([])
   const [loading, setLoading] = useState(true)
@@ -36,9 +38,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchConversions = async () => {
-      if (!profile?.id) return
+      if (!user?.id) return
       try {
-        const data = await getConversions(profile.id)
+        const data = await getConversions(user.id)
         setConversions(data)
       } catch (err) {
         console.error("Failed to fetch conversions:", err)
@@ -47,7 +49,7 @@ export default function Dashboard() {
       }
     }
     fetchConversions()
-  }, [profile])
+  }, [user])
 
   const filtered = conversions.filter(c =>
     c.original_image_name.toLowerCase().includes(search.toLowerCase()) ||

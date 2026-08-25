@@ -6,9 +6,10 @@ import type { Tables } from "@/integrations/supabase/types";
 type Profile = Tables<"profiles">;
 
 // ── TEMPORARY: bypass login for local testing ──────────────────────────────────
-// Set VITE_BYPASS_AUTH="true" in .env to skip Supabase auth entirely.
-// Remove this block (and the flag) once a live Supabase project is wired up.
-const BYPASS_AUTH = import.meta.env.VITE_BYPASS_AUTH === "true";
+// Set VITE_BYPASS_AUTH="true" in .env.local to skip Supabase auth entirely.
+// DEV-ONLY: this flag cannot activate in production builds, even if the env
+// var leaks into a prod environment. Remove once live auth is fully verified.
+const BYPASS_AUTH = import.meta.env.DEV && import.meta.env.VITE_BYPASS_AUTH === "true";
 
 const MOCK_USER = {
   id: "mock-user-0000-0000-0000-000000000000",
