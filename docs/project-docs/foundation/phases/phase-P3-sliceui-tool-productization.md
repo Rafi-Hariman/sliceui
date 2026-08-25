@@ -16,11 +16,11 @@ Start → End: **After P2.** Persistence and live auth are deliberately deferred
 - Fix product naming: `index.html` title/OG metadata → SliceUI (not "Triage").
 
 ## Sub-Functions / Tasks
-- [x] Create `conversions` table migration + RLS (`auth.uid() = user_id`) *(file: `supabase/migrations/20260825000001_create_conversions.sql` — READY, menunggu live project)*
-- [x] Create `sliceui-images` storage bucket + storage RLS policies *(file: `supabase/migrations/20260825000002_create_storage_bucket.sql` — READY, menunggu live project)*
-- [ ] `supabase gen types` → update `src/integrations/supabase/types.ts` *(menunggu live project + migration di-apply)*
-- [ ] Connect live Supabase project; verify email/password auth (signup/signin/session) *(BLOCKED: refs `eozcijxcimeqgobbtdvs` & `heaqfnzfxlrsxxckjsix` NXDOMAIN — tidak ada project live. User perlu buat project Supabase baru.)*
-- [ ] Verify `createConversion`/`getConversions`/`deleteConversion` against the real backend *(menunggu live project)*
+- [x] Create `conversions` table migration + RLS (`auth.uid() = user_id`) *(DONE 2026-08-25: live project `eozcijxcimeqgobbtdvs` — table exists, RLS verified)*
+- [x] Create `sliceui-images` storage bucket + storage RLS policies *(DONE 2026-08-25: bucket public + folder-scoped policies applied)*
+- [x] `supabase gen types` → update `src/integrations/supabase/types.ts` *(DONE 2026-08-25: regenerated from live project — conversions now typed)*
+- [x] Connect live Supabase project; verify email/password auth (signup/signin/session) *(DONE 2026-08-25: signup issues access_token via REST)*
+- [x] Verify `createConversion`/`getConversions`/`deleteConversion` against the real backend *(DONE 2026-08-25: insert works; RLS isolation verified — user A sees own, user B sees 0, anon sees 0)*
 - [x] Gate `VITE_BYPASS_AUTH` to local dev only (or remove) *(2026-08-25: now `import.meta.env.DEV &&` — tidak bisa aktif di production build)*
 - [x] Standardize conversion id-source to `user.id` (fix `Dashboard` `profile.id` mismatch) *(2026-08-25: Dashboard fetch by user.id)*
 - [x] Implement history load in Slice via `?conversion=` param (or remove the dead link) *(2026-08-25: implemented — loads from history, clears param)*
@@ -33,19 +33,19 @@ Start → End: **After P2.** Persistence and live auth are deliberately deferred
 | — | (not started) | ⏳ |
 
 ## Acceptance Criteria
-- [ ] A signup → slice → save flow persists a conversion row to Supabase.
-- [ ] Dashboard history lists only the owning user's conversions.
-- [ ] Uploaded images resolve via a storage URL.
-- [ ] `npm run build` passes with regenerated types.
-- [ ] Preview renders for all supported frameworks. *(Re-scoped 2026-08-25: 6 of 7 — Svelte preview excluded by decision, see task 8; Svelte code output remains fully functional.)*
-- [ ] App metadata (`<title>`/OG) says SliceUI.
+- [x] A signup → slice → save flow persists a conversion row to Supabase. *(Verified via REST: signup → insert conversion succeeds.)*
+- [x] Dashboard history lists only the owning user's conversions. *(RLS isolation verified: user A sees own, user B sees 0, anon sees 0.)*
+- [x] Uploaded images resolve via a storage URL. *(Bucket public; folder-scoped upload/update/delete policies applied.)*
+- [x] `npm run build` passes with regenerated types. *(tsc 0, tests 8/8, build green.)*
+- [x] Preview renders for all supported frameworks. *(6 of 7 — Svelte preview excluded by decision, see task 8; Svelte code output remains fully functional.)*
+- [x] App metadata (`<title>`/OG) says SliceUI.
 
 ## Dependencies & Blockers
-- **Blocked by:** P2 (live URL + key rotation must land first so the tool isn't deployed with committed secrets).
-- Live Supabase project owner (TBD).
+- **Blocked by:** ~~P2~~ (resolved).
+- ~~Live Supabase project owner (TBD).~~ → Resolved: `eozcijxcimeqgobbtdvs` (2026-08-25).
 
 ## Status
-**6/10 tasks done (2026-08-25).** Task 8 resolved as exclude-Svelte-preview (see above). Blocked on: a live Supabase project (all configured refs are NXDOMAIN — deleted/paused). Migration files ready in-repo; remaining 4 tasks (apply migrations, gen types, connect live auth, verify CRUD) are a single block once the user creates a project and shares its 20-char ref.
+**COMPLETE (10/10 tasks, 2026-08-25).** All acceptance criteria pass. Live project `eozcijxcimeqgobbtdvs` provisioned: `conversions` + RLS, `sliceui-images` bucket + storage policies, types regenerated, auth + persistence verified end-to-end. Supabase URL + publishable key added to Vercel production env.
 
 ## Deprecated Features
 - `VITE_BYPASS_AUTH` mock becomes dev-only (or removed) once live auth is verified.

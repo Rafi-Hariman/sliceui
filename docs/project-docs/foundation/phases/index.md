@@ -40,7 +40,7 @@ Does not hold product requirements (see `foundation/prd.md`) or architecture dec
 | :--- | :--- | :--- | :--- |
 | P1 | Foundation & MVP | 🟢 Functional | Complete via prior commits |
 | P2 | Deploy & Webmu Cash Engine | 🟡 In progress | 8/9 done — deploy, demos, one-pager, sales. Remaining: QRIS (user) + WA number |
-| P3 | SliceUI Tool Productization | 🟡 In progress | 6/10 — non-DB done. Blocked: live Supabase project |
+| P3 | SliceUI Tool Productization | 🟢 Complete | 10/10 — persistence + live auth + RLS verified |
 | P4 | Quality, Security & Release | 🟡 In progress | 6/8 — proxy, CI, scrub, README, changelog. Remaining: launch + release tag (STOP) |
 
 ## 9. Phase Registry

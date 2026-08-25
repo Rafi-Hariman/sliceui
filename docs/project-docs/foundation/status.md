@@ -74,7 +74,7 @@ Does not track daily tasks (use git issues/PRs) or release history (see `foundat
 ## 11. Roadmap
 - **Phase P1 — Foundation & MVP:** 🟢 done.
 - **Phase P2 — Deploy & Webmu Cash Engine:** 🟡 8/9 — deploy ✅, 3 demos ✅, one-pager ✅, sales templates ✅. Remaining: QRIS entity (user) + real WA number.
-- **Phase P3 — SliceUI Tool Productization:** 🟡 6/10 — id-consistency ✅, dead-path ✅, Svelte-preview (excluded, documented) ✅, naming ✅, migrations in-repo ✅. Blocked: live Supabase project (provision + types + live auth + CRUD verify).
+- **Phase P3 — SliceUI Tool Productization:** 🟢 **Complete 10/10** — live Supabase project `eozcijxcimeqgobbtdvs`: conversions + RLS, sliceui-images bucket + storage policies, types regenerated, auth + persistence + RLS isolation verified via REST.
 - **Phase P4 — Quality, Security & Release:** 🟡 6/8 — backend proxy ✅, CI ✅, security scrub ✅ (git grep clean), i18n defer ✅, README + measurement ✅, changelog ✅. Remaining: free launch (STOP) + first release tag (STOP).
 
 ## 12. Epics
