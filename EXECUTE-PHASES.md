@@ -89,7 +89,7 @@ Read these in order:
 | `npx tsc --noEmit` | **Until P3 persistence lands:** exactly 8 known errors in `src/lib/conversionService.ts` (missing Supabase types) — these are expected noise, do NOT "fix" them with stubs. After types regen: 0 errors. |
 | `npm run build` | Success (chunk-size warning is pre-existing and acceptable) |
 | `npm run dev` | Serves at localhost:8081 |
-| `git grep -iE "AIzaSy\|gsk_\|sbp_\|sb_publishable"` | Empty after P2 task 1 |
+| `git grep -iE "AIzaSy\|gsk_[A-Za-z0-9]\|sbp_v0_\|sb_publishable_\|eyJhbGciOi" -- ':!supabase/config.toml'` | Empty after P2 task 1 (matches only real key values; `config.toml` may keep the public project ID) |
 
 ---
 

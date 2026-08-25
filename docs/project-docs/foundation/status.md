@@ -73,7 +73,7 @@ Does not track daily tasks (use git issues/PRs) or release history (see `foundat
 
 ## 11. Roadmap
 - **Phase P1 — Foundation & MVP:** active dev loop, design system, slice pipeline.
-- **Phase P2 — Deploy & Webmu Cash Engine:** key rotation, Vercel deploy, 3 demo pages, Webmu one-pager, QRIS, sales motion.
+- **Phase P2 — Deploy & Webmu Cash Engine:** key rotation ✅ (scrub done, Gemini rotation pending user), Vercel deploy, 3 demo pages, Webmu one-pager, QRIS, sales motion.
 - **Phase P3 — SliceUI Tool Productization:** provision `conversions` + bucket + RLS, wire live auth, id-consistency, dead-path fix, Svelte preview, naming.
 - **Phase P4 — Quality, Security & Release:** backend proxy, CI, security scrub, i18n, free launch to agencies, first release.
 
@@ -92,7 +92,7 @@ Does not track daily tasks (use git issues/PRs) or release history (see `foundat
 ## 13. Risks/Blockers
 | Risk | Severity | Notes |
 | :--- | :--- | :--- |
-| **Live API keys in committed files** | 🔴 High | Root `CLAUDE.md` hardcodes Gemini/Groq/Supabase keys; `.env` is modified/untracked. Rotate + move to `.env.local` only. |
+| **Live API keys in committed files** | 🟠 Medium | Scrub done 2026-08-25: keys removed from `CLAUDE.md` + tracked `.env` → gitignored `.env.local` only. **Remaining:** old keys still in git history (local-only repo → low; purge if ever pushed) + Gemini rotation pending user action. |
 | **Client-side AI keys** | 🟠 Medium | Keys ship to browser; abuse/cost risk (ADR-001). |
 | **No live Supabase project** | 🟠 Medium | Auth/persistence untested against real backend; persistence targets absent. |
 | **Unprovisioned persistence** | 🟠 Medium | `conversions`/`sliceui-images` missing → history + save will fail against a real project. Deferred to P3 (does not block the P2 cash engine). |
