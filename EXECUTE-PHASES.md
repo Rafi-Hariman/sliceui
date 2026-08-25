@@ -86,7 +86,7 @@ Read these in order:
 | Command | Expected |
 |---|---|
 | `npm run test` | All pass (8 tests as of 2026-08-25; count grows as you add tests) |
-| `npx tsc --noEmit` | **Until P3 persistence lands:** exactly 8 known errors in `src/lib/conversionService.ts` (missing Supabase types) — these are expected noise, do NOT "fix" them with stubs. After types regen: 0 errors. |
+| `npx tsc --noEmit` | 0 errors (2026-08-25). Note: `tsconfig.app.json` has `strict: false`, so the missing `conversions` table type compiles silently (`any`) — the old "8 expected errors" claim was inaccurate. Tightening to strict + type-safe persistence is a P4 candidate. |
 | `npm run build` | Success (chunk-size warning is pre-existing and acceptable) |
 | `npm run dev` | Serves at localhost:8081 |
 | `git grep -iE "AIzaSy\|gsk_[A-Za-z0-9]\|sbp_v0_\|sb_publishable_\|eyJhbGciOi" -- ':!supabase/config.toml'` | Empty after P2 task 1 (matches only real key values; `config.toml` may keep the public project ID) |

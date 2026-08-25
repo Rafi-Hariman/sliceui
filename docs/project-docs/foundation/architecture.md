@@ -160,6 +160,7 @@ code + imageUrl ──► createConversion(userId, ...) ──► table: convers
 - **Context:** Need auth, per-user conversion history, and image storage without running a server.
 - **Decision:** Use Supabase Auth + Postgres (`profiles`, `conversions`) + Storage (`sliceui-images`).
 - **Reality check:** `profiles` exists in generated types; **`conversions` and `sliceui-images` do not** — no migration/RLS committed, only `supabase/config.toml`. Auth is bypassed in dev via `VITE_BYPASS_AUTH`.
+- **Optional-Supabase guard (2026-08-25):** `client.ts` now exports `supabase: SupabaseClient<Database> | null` — `null` when `VITE_SUPABASE_URL`/`VITE_SUPABASE_PUBLISHABLE_KEY` are unset, so the SPA boots in guest mode instead of crashing (`createClient(undefined)` throws). All consumers null-check via `isSupabaseConfigured()`. This makes a production deploy possible before P3 provisioning.
 - **Consequences:** Fast to ship once provisioned; **blocker**: the service layer and Dashboard depend on the missing table/bucket. Provisioning is Phase P2 (see `foundation/phases/`).
 
 ### ADR-004: Keep conversion pipeline entirely client-side (React SPA)

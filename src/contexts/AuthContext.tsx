@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
@@ -45,6 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
+    if (!supabase) return;
     const { data } = await supabase
       .from("profiles")
       .select("*")
@@ -57,6 +58,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (BYPASS_AUTH) {
       setUser(MOCK_USER);
       setProfile(MOCK_PROFILE);
+      setLoading(false);
+      return;
+    }
+
+    // No live Supabase project yet (Phase P3) → run as guest; no session,
+    // generation still works, persistence is skipped.
+    if (!isSupabaseConfigured()) {
       setLoading(false);
       return;
     }

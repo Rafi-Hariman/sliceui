@@ -5,7 +5,9 @@
 ## What this project is
 
 SliceUI converts UI screenshots into clean, framework-specific frontend code.
-The repo is a **Vite 5 + React 18 + TypeScript strict SPA** (Tailwind + shadcn/ui, react-router v6, Supabase client, Gemini primary + Groq fallback AI).
+The repo is a **Vite 5 + React 18 + TypeScript SPA** (Tailwind + shadcn/ui, react-router v6, Supabase client, Gemini primary + Groq fallback AI).
+
+> **TypeScript note:** `tsconfig.app.json` currently has `strict: false` (and `noImplicitAny: false`). The app is *not* in strict mode — the missing `conversions` table type therefore compiles silently (`any`) instead of erroring. Tightening to strict + type-safe persistence is a P4 candidate.
 
 > **Stale note:** earlier versions of this file described a Next.js 14 App Router plan. That was never built — the app is a Vite SPA. See `docs/project-docs/`.
 
@@ -48,7 +50,7 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key_here
 
 ```bash
 npm run test        # Vitest — all passing (8 tests as of 2026-08-25)
-npx tsc --noEmit    # Expected: 8 known errors in src/lib/conversionService.ts until P3 persistence types regen
+npx tsc --noEmit    # 0 errors (strict mode is off — missing table types compile silently)
 npm run build       # Vite build — success
 npm run dev         # Serves at localhost:8081
 ```

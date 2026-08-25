@@ -2,6 +2,7 @@ import { useState, useCallback } from "react"
 import { imageToCode } from "@/lib/aiService"
 import { uploadSliceImage } from "@/lib/storageService"
 import { createConversion } from "@/lib/conversionService"
+import { isSupabaseConfigured } from "@/integrations/supabase/client"
 import { useAuth } from "@/contexts/AuthContext"
 import type { Framework, ConversionOptions } from "@/lib/types"
 
@@ -53,10 +54,10 @@ export default function useConvert(): UseConvertReturn {
 
       setCode(generatedCode)
 
-      // Persist to Supabase only when there's a logged-in user. Without a
-      // session (or in bypass mode) the conversion is generated + shown but
-      // not saved to history.
-      if (user) {
+      // Persist to Supabase only when there's a logged-in user AND Supabase
+      // is configured. Without a session (or in bypass mode / no project) the
+      // conversion is generated + shown but not saved to history.
+      if (user && isSupabaseConfigured()) {
         const { url: imageUrl } = await uploadSliceImage(file, user.id)
 
         await createConversion(

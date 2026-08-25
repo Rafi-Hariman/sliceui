@@ -38,7 +38,7 @@ Does not track daily tasks (use git issues/PRs) or release history (see `foundat
 ## 7. Current State
 **Functional slice pipeline; corrected-C business direction set.** The core convert flow works end-to-end: upload → validate → Gemini/Groq → highlighted output. The business now runs two bets on one asset (see `foundation/product-spec.md`): a **Webmu landing-page service** (cash engine) and the **SliceUI tool** (separately-tested product hypothesis). Notable gaps:
 - **Persistence gap (confirmed 2026-08-24):** `conversionService.ts`/`storageService.ts` target a `conversions` table and `sliceui-images` bucket absent from `src/integrations/supabase/types.ts` and `supabase/` (only `config.toml`). This is **not** the launch blocker anymore — it is deferred to P3 (tool productization).
-- **Auth:** `VITE_BYPASS_AUTH` mock is the current reality; no live Supabase project wired.
+- **Auth:** `VITE_BYPASS_AUTH` mock is the current reality; no live Supabase project wired. **Optional-Supabase guard added (2026-08-25):** `supabase` is `null` when env vars are unset → the SPA boots in guest mode (no crash), generation works, persistence skipped. Production deploy unblocked.
 - **Instruction prompt:** now wired through to the model (was previously captured but dropped). ✅
 - **Design-system input:** added (`ConversionOptions.designSystem` + prompt block + collapsible textarea). ✅
 - **Frameworks:** 7 web-only frameworks; `flutter` removed (project is web-focused). ✅

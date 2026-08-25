@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client"
+import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client"
 import type { Conversion, Framework, ConversionOptions } from "./types"
 
 export async function createConversion(
@@ -9,7 +9,10 @@ export async function createConversion(
   options: ConversionOptions,
   code: string
 ): Promise<Conversion> {
-  const { data, error } = await supabase
+  if (!isSupabaseConfigured()) {
+    throw new Error("Persistence is not configured (Supabase unset).")
+  }
+  const { data, error } = await supabase!
     .from("conversions")
     .insert({
       user_id: userId,
@@ -32,7 +35,10 @@ export async function createConversion(
 }
 
 export async function getConversions(userId: string): Promise<Conversion[]> {
-  const { data, error } = await supabase
+  if (!isSupabaseConfigured()) {
+    throw new Error("Persistence is not configured (Supabase unset).")
+  }
+  const { data, error } = await supabase!
     .from("conversions")
     .select("*")
     .eq("user_id", userId)
@@ -46,7 +52,10 @@ export async function getConversions(userId: string): Promise<Conversion[]> {
 }
 
 export async function getConversionById(id: string): Promise<Conversion | null> {
-  const { data, error } = await supabase
+  if (!isSupabaseConfigured()) {
+    throw new Error("Persistence is not configured (Supabase unset).")
+  }
+  const { data, error } = await supabase!
     .from("conversions")
     .select("*")
     .eq("id", id)
@@ -63,7 +72,10 @@ export async function getConversionById(id: string): Promise<Conversion | null> 
 }
 
 export async function deleteConversion(id: string): Promise<void> {
-  const { error } = await supabase
+  if (!isSupabaseConfigured()) {
+    throw new Error("Persistence is not configured (Supabase unset).")
+  }
+  const { error } = await supabase!
     .from("conversions")
     .delete()
     .eq("id", id)
