@@ -18,7 +18,7 @@ Start → End: **Next (first revenue-critical phase).** Do not block on Supabase
 ## Sub-Functions / Tasks
 - [x] Rotate committed Gemini/Groq/Supabase keys; scrub from root `CLAUDE.md` and any tracked `.env`; move to gitignored `.env.local` *(scrub done 2026-08-25 — `.env` untracked+deleted, keys moved to `.env.local`, `CLAUDE.md` rewritten to pointer. Gemini rotation = user action, pending at STOP gate)*
 - [x] Decide + record ADR-001 (client-side keys vs backend proxy) in `foundation/architecture.md` *(2026-08-25: reaffirmed client-side for P2, proxy deferred to P4 task 1; single-key Gemini noted)*
-- [ ] Deploy Vite SPA to Vercel (static host)
+- [ ] Deploy Vite SPA to Vercel (static host) *(PARKED 2026-08-25 — one blocking issue left: GitHub-private-repo commit-author check rejects the campus email `231232609@uii.ac.id` because it belongs to another GitHub account ("email is already in use"). Fix when resumed: rewrite the 5 v2 commits' author to the GitHub noreply email `173661039+Rafi-Hariman@users.noreply.github.com` (already set as repo-local git email) → force-push v2 + main → delete the 2 zombie deployments (sliceui-21v4duau8, sliceui-ll1f27cu0) → verify /slice. Done already: vercel.json (dist/ + SPA rewrite), env vars VITE_GEMINI_API_KEY + VITE_BYPASS_AUTH=false, SSO protection OFF (public URL), v2 + main pushed. Old Gemini key still needs rotation — it was pushed to GitHub in pre-scrub history.)*
 - [ ] Generate demo #1 (bakery) with the tool; hand-fix to production quality
 - [ ] Generate demo #2 (clinic) with the tool; hand-fix to production quality
 - [ ] Generate demo #3 (wedding vendor) with the tool; hand-fix to production quality
