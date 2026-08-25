@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bolu Ibu Ratna — Roti & Kue Hangat Setiap Hari</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cabin:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-primary: #92400E;
+    --color-on-primary: #FFFFFF;
+    --color-secondary: #B45309;
+    --color-accent: #92400E;
+    --color-background: #FFFBF2;
+    --color-foreground: #78350F;
+    --color-muted: #F5EBDD;
+    --color-border: #FDE68A;
+    --font-display: 'Amatic SC', cursive;
+    --font-body: 'Cabin', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font-body);
+    background: var(--color-background);
+    color: var(--color-foreground);
+    line-height: 1.6;
+    font-size: 16px;
+  }
+  .container { max-width: 1152px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255, 251, 242, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  .logo { font-family: var(--font-display); font-size: 32px; font-weight: 700; color: var(--color-primary); text-decoration: none; }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--color-foreground); font-weight: 500; font-size: 15px; transition: color 200ms; }
+  .nav-links a:hover { color: var(--color-primary); }
+  .nav-cta { display: inline-flex; align-items: center; gap: 8px; }
+
+  /* Hero */
+  .hero {
+    padding: 96px 0 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--color-muted);
+    border: 1px solid var(--color-border);
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 14px; font-weight: 600; color: var(--color-primary);
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-size: 72px; line-height: 1.05; font-weight: 700;
+    color: var(--color-foreground);
+    margin-bottom: 20px;
+  }
+  .hero p.lead { font-size: 18px; max-width: 480px; margin-bottom: 32px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 0 24px; border-radius: 8px;
+    font-family: var(--font-body); font-size: 16px; font-weight: 600;
+    cursor: pointer; text-decoration: none; transition: background-color 200ms;
+  }
+  .btn-primary { background: var(--color-primary); color: var(--color-on-primary); }
+  .btn-primary:hover { background: var(--color-secondary); }
+  .btn-outline { border: 2px solid var(--color-primary); color: var(--color-primary); background: transparent; }
+  .btn-outline:hover { background: var(--color-muted); }
+  .hero-visual {
+    background: linear-gradient(135deg, var(--color-border) 0%, var(--color-muted) 100%);
+    border-radius: 16px; height: 420px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--color-border);
+  }
+  .hero-visual svg { width: 160px; height: 160px; opacity: 0.85; }
+
+  /* Trust bar */
+  .trust {
+    border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);
+    background: var(--color-muted);
+    padding: 24px 0;
+  }
+  .trust-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+  .trust-item { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+  .trust-item svg { width: 20px; height: 20px; color: var(--color-primary); flex-shrink: 0; }
+
+  /* Menu / features */
+  .menu { padding: 80px 0; }
+  .section-head { text-align: center; max-width: 560px; margin: 0 auto 48px; }
+  .section-head h2 { font-family: var(--font-display); font-size: 48px; font-weight: 700; margin-bottom: 12px; }
+  .section-head p { color: var(--color-secondary); }
+  .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .card {
+    background: #FFFFFF; border: 1px solid var(--color-border);
+    border-radius: 12px; overflow: hidden;
+    transition: box-shadow 200ms;
+  }
+  .card:hover { box-shadow: 0 8px 24px rgba(146, 64, 14, 0.12); }
+  .card-img { height: 180px; display: flex; align-items: center; justify-content: center; }
+  .card-img svg { width: 56px; height: 56px; color: var(--color-primary); opacity: 0.8; }
+  .card-1 .card-img { background: #FDE68A; }
+  .card-2 .card-img { background: #F5EBDD; }
+  .card-3 .card-img { background: #FEF3C7; }
+  .card-body { padding: 24px; }
+  .card-body h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .card-body p { font-size: 14px; margin-bottom: 16px; }
+  .price { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--color-primary); }
+
+  /* Testimonials */
+  .testimonials { background: var(--color-muted); padding: 80px 0; }
+  .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .testi-card {
+    background: #FFFFFF; border-radius: 12px; padding: 28px;
+    border: 1px solid var(--color-border);
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .stars { color: #D97706; font-size: 16px; letter-spacing: 2px; }
+  .testi-card blockquote { font-size: 15px; font-style: italic; flex: 1; }
+  .testi-author { display: flex; align-items: center; gap: 12px; }
+  .avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--color-primary); color: var(--color-on-primary);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+  }
+  .testi-author strong { display: block; font-size: 14px; }
+  .testi-author span { font-size: 12px; color: var(--color-secondary); }
+
+  /* Location / CTA */
+  .locate { padding: 80px 0; }
+  .locate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+  .locate h2 { font-family: var(--font-display); font-size: 48px; font-weight: 700; margin-bottom: 16px; }
+  .info-list { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+  .info-item { display: flex; gap: 12px; align-items: flex-start; }
+  .info-item svg { width: 20px; height: 20px; color: var(--color-primary); margin-top: 2px; flex-shrink: 0; }
+  .info-item strong { display: block; font-size: 15px; }
+  .info-item span { font-size: 14px; color: var(--color-secondary); }
+  .map-placeholder {
+    background: var(--color-muted); border: 1px solid var(--color-border);
+    border-radius: 16px; height: 320px;
+    display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px;
+  }
+  .map-placeholder svg { width: 48px; height: 48px; color: var(--color-primary); }
+  .map-placeholder p { font-size: 14px; color: var(--color-secondary); }
+
+  /* Footer */
+  footer { background: #78350F; color: #FEF3C7; padding: 48px 0; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px; }
+  .footer-logo { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px; }
+  .footer-grid p { font-size: 14px; opacity: 0.8; max-width: 320px; }
+  .footer-col h4 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; color: #FDE68A; }
+  .footer-col a { display: block; color: #FEF3C7; text-decoration: none; font-size: 14px; padding: 4px 0; transition: color 200ms; }
+  .footer-col a:hover { color: #FFFFFF; }
+  .footer-bottom {
+    margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(254, 243, 199, 0.2);
+    display: flex; justify-content: space-between; font-size: 13px; opacity: 0.7;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero { padding: 64px 0; }
+    .hero-visual { height: 320px; }
+    .menu-grid, .testi-grid { grid-template-columns: repeat(2, 1fr); }
+    .locate-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 56px; }
+  }
+  @media (max-width: 640px) {
+    .nav-links, .nav-cta { display: none; }
+    .menu-grid, .testi-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 44px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+    .footer-bottom { flex-direction: column; gap: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+  :focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <a href="#" class="logo">Bolu Ibu Ratna</a>
+    <ul class="nav-links">
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#testimoni">Testimoni</a></li>
+      <li><a href="#lokasi">Lokasi</a></li>
+    </ul>
+    <a href="#menu" class="btn btn-primary nav-cta">Pesan Sekarang</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container hero-inner">
+    <div>
+      <span class="eyebrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 3 2 5 3 6v3a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-3c1-1 3-3 3-6a7 7 0 0 0-7-7z"/><path d="M9 22h6"/></svg>
+        Panggang Fresh Setiap Pagi
+      </span>
+      <h1>Roti hangat, rasa rumahan yang selalu dirindukan</h1>
+      <p class="lead">Sejak 1998, Bolu Ibu Ratna memanggang roti dan kue dengan resep keluarga. Tanpa pengawet, bahan segar dari pasar pagi.</p>
+      <div style="display:flex; gap:16px; flex-wrap:wrap;">
+        <a href="#menu" class="btn btn-primary">Lihat Menu &amp; Harga</a>
+        <a href="#lokasi" class="btn btn-outline">Cari Toko</a>
+      </div>
+    </div>
+    <div class="hero-visual" role="img" aria-label="Ilustrasi roti dan kue segar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 3 2 5 3 6v3a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-3c1-1 3-3 3-6a7 7 0 0 0-7-7z"/><path d="M9 22h6"/></svg>
+    </div>
+  </div>
+</section>
+
+<section class="trust" aria-label="Keunggulan toko">
+  <div class="container trust-inner">
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Garansi uang kembali
+    </div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      Buka 06.00 – 21.00 setiap hari
+    </div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+      Tanpa pengawet &amp; bahan segar
+    </div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3h2l2 12h11l2-8H7"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+      Bisa pesan online, ambil di toko
+    </div>
+  </div>
+</section>
+
+<section class="menu" id="menu">
+  <div class="container">
+    <div class="section-head">
+      <h2>Menu Favorit Pelanggan</h2>
+      <p>Resep turun-temurun yang bikin balik lagi</p>
+    </div>
+    <div class="menu-grid">
+      <article class="card card-1">
+        <div class="card-img">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12h16c0 4-3 7-8 7s-8-3-8-7z"/><path d="M8 12c0-2 1.5-4 4-4s4 2 4 4"/></svg>
+        </div>
+        <div class="card-body">
+          <h3>Bolu Pandan Bakar</h3>
+          <p>Pandan asli sunda, gula merah Cisarua, panggang tiap pagi pukul 5.</p>
+          <span class="price">Rp 45rb / loyang</span>
+        </div>
+      </article>
+      <article class="card card-2">
+        <div class="card-img">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 7h18v3a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7z"/><path d="M7 13v6M17 13v6"/></svg>
+        </div>
+        <div class="card-body">
+          <h3>Roti Manis Coklat</h3>
+          <p>Isian coklat melimpah, adonan lembut 48-jam. Favorit anak sekolah.</p>
+          <span class="price">Rp 8rb / pcs</span>
+        </div>
+      </article>
+      <article class="card card-3">
+        <div class="card-img">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 6c-2-2-6-2-8 0v14c2-2 6-2 8 0 2-2 6-2 8 0V6c-2-2-6-2-8 0z"/><path d="M12 6v14"/></svg>
+        </div>
+        <div class="card-body">
+          <h3>Kue Ulang Tahun Custom</h3>
+          <p>Desain sesuai pesanan, foto/reference tinggal kirim via WhatsApp.</p>
+          <span class="price">Mulai Rp 150rb</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials" id="testimoni">
+  <div class="container">
+    <div class="section-head">
+      <h2>Kata Mereka</h2>
+      <p>4.9 dari 500+ ulasan Google</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="stars" aria-label="Rating 5 dari 5">★★★★★</div>
+        <blockquote>"Roti bolunya juara, lembut dan wangi pandannya natural. Tiap weekend pasti mampir."</blockquote>
+        <div class="testi-author">
+          <div class="avatar">SW</div>
+          <div><strong>Sari Wulandari</strong><span>Pelanggan sejak 2019</span></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars" aria-label="Rating 5 dari 5">★★★★★</div>
+        <blockquote>"Pesan kue ulang tahun custom, hasilnya melebihi ekspektasi. Harga bersahabat."</blockquote>
+        <div class="testi-author">
+          <div class="avatar">AP</div>
+          <div><strong>Andi Pratama</strong><span>Pemesan kue custom</span></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars" aria-label="Rating 5 dari 5">★★★★★</div>
+        <blockquote>"Tokonya bersih, pelayanannya ramah. Rotinya tahan 3 hari masih lembut."</blockquote>
+        <div class="testi-author">
+          <div class="avatar">RH</div>
+          <div><strong>Rina Handayani</strong><span>Pelanggan tetap</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="locate" id="lokasi">
+  <div class="container locate-grid">
+    <div>
+      <h2>Mampir ke Toko Kami</h2>
+      <p>Roti hangat keluar oven pukul 06.00, 12.00, dan 17.00. Datang pas jam itu dapat yang paling fresh.</p>
+      <div class="info-list">
+        <div class="info-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div><strong>Jl. Merdeka No. 45, Yogyakarta</strong><span>Seberang pasar ngasem, parkir luas</span></div>
+        </div>
+        <div class="info-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <div><strong>Setiap hari 06.00 – 21.00</strong><span>Minggu &amp; libur nasional tetap buka</span></div>
+        </div>
+        <div class="info-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <div><strong>0812-3456-7890 (WhatsApp)</strong><span>Pesan &amp; tanya-tanya langsung dibalas</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="map-placeholder" role="img" aria-label="Peta lokasi toko">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <p>Peta lokasi akan dimuat di sini</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">Bolu Ibu Ratna</div>
+        <p>Roti dan kue rumahan dengan resep keluarga sejak 1998. Dibuat dengan bahan segar setiap hari.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Menu</h4>
+        <a href="#menu">Bolu Pandan</a>
+        <a href="#menu">Roti Manis</a>
+        <a href="#menu">Kue Custom</a>
+      </div>
+      <div class="footer-col">
+        <h4>Kontak</h4>
+        <a href="#lokasi">Lokasi Toko</a>
+        <a href="#lokasi">Jam Buka</a>
+        <a href="#lokasi">WhatsApp</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Bolu Ibu Ratna. Semua hak dilindungi.</span>
+      <span>Dibuat dengan Webmu</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
