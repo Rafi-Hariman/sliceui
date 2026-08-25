@@ -17,7 +17,7 @@ Start → End: **Next (first revenue-critical phase).** Do not block on Supabase
 
 ## Sub-Functions / Tasks
 - [x] Rotate committed Gemini/Groq/Supabase keys; scrub from root `CLAUDE.md` and any tracked `.env`; move to gitignored `.env.local` *(scrub done 2026-08-25 — `.env` untracked+deleted, keys moved to `.env.local`, `CLAUDE.md` rewritten to pointer. Gemini rotation = user action, pending at STOP gate)*
-- [ ] Decide + record ADR-001 (client-side keys vs backend proxy) in `foundation/architecture.md`
+- [x] Decide + record ADR-001 (client-side keys vs backend proxy) in `foundation/architecture.md` *(2026-08-25: reaffirmed client-side for P2, proxy deferred to P4 task 1; single-key Gemini noted)*
 - [ ] Deploy Vite SPA to Vercel (static host)
 - [ ] Generate demo #1 (bakery) with the tool; hand-fix to production quality
 - [ ] Generate demo #2 (clinic) with the tool; hand-fix to production quality

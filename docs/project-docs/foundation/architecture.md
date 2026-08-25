@@ -88,7 +88,7 @@ Does not describe a backend server (there is none), production deployment topolo
 ## 9. System Flow
 ### 9.1 Slice conversion flow
 1. User uploads an image (drag / picker / paste) → `useImageUpload` validates (PNG/JPG/WebP ≤10MB) and shows a preview.
-2. User selects a framework and (optionally) types instructions (instructions not yet passed to the model — see PRD FR-9).
+2. User selects a framework and (optionally) types instructions — now passed through `useConvert` → `aiService` → `buildPrompt` (instruction text appended to the prompt).
 3. `useConvert.convert(file, framework, options)`:
    - reads file to base64 via `FileReader`;
    - calls `imageToCode(base64, framework, options)` (Gemini → Groq fallback);
@@ -143,10 +143,11 @@ code + imageUrl ──► createConversion(userId, ...) ──► table: convers
 
 ## 13. Architecture Decision Records
 ### ADR-001: Client-side AI calls instead of a backend proxy
-- **Status:** Accepted (current code).
-- **Context:** The original design (stale `CLAUDE.md`) described a Next.js API route with server-side keys and sharp normalization. The current code calls Gemini/Groq directly from the browser.
-- **Decision:** Keep AI calls in the browser using `VITE_*` keys.
+- **Status:** Accepted — reaffirmed for P2 (2026-08-25); superseded by a serverless proxy in P4.
+- **Context:** The original design (stale `CLAUDE.md`) described a Next.js API route with server-side keys and sharp normalization. The current code calls the AI provider directly from the browser. The repo is a **Vite + React SPA** with no backend.
+- **Decision:** Keep AI calls in the browser using `VITE_*` keys **for the P2 cash-engine launch** (simplest static deploy). **Deferred:** a serverless proxy (Vercel function wrapping the AI provider) is planned for **P4 task 1** — see `phase-P4-quality-security-release.md`. Until then, expect keys in the browser.
 - **Consequences:** Simplest deploy (static SPA, no server), but keys are public, no server-side rate limiting, and no server-side image normalization. If abuse or cost becomes an issue, revisit with a proxy route.
+- **Current reality (2026-08-25):** **single-key Gemini** (`VITE_GEMINI_API_KEY` set; `VITE_GROQ_API_KEY` empty). The Groq fallback path remains in code but is dormant — `aiService.ts` only calls it when `GROQ_API_KEY` is non-empty (line 45). Gemini rate limits therefore surface directly to the user unless/until a fallback key is added. P2 acceptance keeps the **zero-committed-secrets** requirement (`git grep` clean).
 
 ### ADR-002: Gemini → Groq fallback in one call
 - **Status:** Accepted.
@@ -180,7 +181,7 @@ code + imageUrl ──► createConversion(userId, ...) ──► table: convers
 - [Technical Guidelines — AI Service](../technical-guidelines/ai-service.md)
 
 ## 16. Open Questions
-- Should a backend proxy be introduced for AI calls (server-side keys, rate limiting, image normalization)? See ADR-001 — currently no.
+- Backend proxy for AI calls (server-side keys, rate limiting, image normalization) is **planned for P4 task 1** (ADR-001 deferred) — revisit client-side-key risk then.
 - What is the final deploy target? Lovable publish is the documented path; Vercel is mentioned in the stale docs only.
 - Are the unused Supabase tables (`projects`, `user_roles`, etc.) safe to remove from the schema/types, or are they planned?
 - **Persistence:** when provisioning `conversions` + `sliceui-images`, should RLS policies be committed as migrations in-repo? (Recommended — see `development/database.md`.)
