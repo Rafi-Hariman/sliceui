@@ -39,7 +39,7 @@ Does not hold product requirements (see `foundation/prd.md`) or architecture dec
 | Phase | Theme | Status | Timeline |
 | :--- | :--- | :--- | :--- |
 | P1 | Foundation & MVP | 🟢 Functional | Complete via prior commits |
-| P2 | Deploy & Webmu Cash Engine | 🟡 In progress | Task 1 (key rotation) done — awaiting user Gemini rotation |
+| P2 | Deploy & Webmu Cash Engine | 🟡 In progress | Tasks 1–3 done (scrub, ADR-001, Vercel prod live) — next: demo pages + Webmu one-pager |
 | P3 | SliceUI Tool Productization | 🔴 Not started | After P2 |
 | P4 | Quality, Security & Release | 🔴 Not started | Final |
 
@@ -47,7 +47,7 @@ Does not hold product requirements (see `foundation/prd.md`) or architecture dec
 | Phase | File | Status | Summary |
 | :--- | :--- | :--- | :--- |
 | P1 | [phase-P1-foundation-mvp.md](phase-P1-foundation-mvp.md) | 🟢 Functional | Dev loop, design system, slice pipeline, AI fallback |
-| P2 | [phase-P2-deploy-webmu-cash-engine.md](phase-P2-deploy-webmu-cash-engine.md) | 🟡 In progress | Deploy to Vercel, key rotation, 3 demo pages, Webmu one-pager, QRIS, sales motion — task 1 scrub done, awaiting user key rotation |
+| P2 | [phase-P2-deploy-webmu-cash-engine.md](phase-P2-deploy-webmu-cash-engine.md) | 🟡 In progress | Tasks 1–3 done (scrub, ADR-001, Vercel prod live); next: 3 demo pages, Webmu one-pager, QRIS, sales motion |
 | P3 | [phase-P3-sliceui-tool-productization.md](phase-P3-sliceui-tool-productization.md) | 🔴 Not started | Provision persistence + live auth, id-consistency, dead-path fix, Svelte preview, naming |
 | P4 | [phase-P4-quality-security-release.md](phase-P4-quality-security-release.md) | 🔴 Not started | Backend proxy, CI, security scrub, i18n, free launch, first release |
 

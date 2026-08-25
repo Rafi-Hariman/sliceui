@@ -73,7 +73,7 @@ Does not track daily tasks (use git issues/PRs) or release history (see `foundat
 
 ## 11. Roadmap
 - **Phase P1 — Foundation & MVP:** active dev loop, design system, slice pipeline.
-- **Phase P2 — Deploy & Webmu Cash Engine:** key rotation ✅ (scrub done, Gemini rotation pending user), Vercel deploy, 3 demo pages, Webmu one-pager, QRIS, sales motion.
+- **Phase P2 — Deploy & Webmu Cash Engine:** key rotation ✅ (scrub done; user chose to keep current Gemini key), ADR-001 ✅, **Vercel prod live ✅** (https://sliceui-rafi-harimans-projects.vercel.app — root/slice/dashboard 200). Next: 3 demo pages, Webmu one-pager, QRIS, sales motion.
 - **Phase P3 — SliceUI Tool Productization:** provision `conversions` + bucket + RLS, wire live auth, id-consistency, dead-path fix, Svelte preview, naming.
 - **Phase P4 — Quality, Security & Release:** backend proxy, CI, security scrub, i18n, free launch to agencies, first release.
 
