@@ -22,7 +22,7 @@ Start → End: **Next (first revenue-critical phase).** Do not block on Supabase
 - [x] Generate demo #1 (bakery) with the tool; hand-fix to production quality *(2026-08-25: `demos/mockups/bakery.html` — built via ui-ux-pro-max design system [artisan warm, Amatic SC/Cabin]; tool generation deferred per user [API testing parked] — see QA note in `demos/README.md`)*
 - [x] Generate demo #2 (clinic) with the tool; hand-fix to production quality *(2026-08-25: `demos/mockups/clinic.html` — Accessible & Ethical, Figtree/Noto Sans, skip-link, WCAG-conscious)*
 - [x] Generate demo #3 (wedding vendor) with the tool; hand-fix to production quality *(2026-08-25: `demos/mockups/wedding.html` — Soft UI Evolution, Great Vibes/Cormorant, paket harga + CTA)*
-- [ ] Build Webmu one-pager (Bahasa: hero, 3 demos, pricing Rp 400k–1.2jt, WhatsApp CTA, QRIS placeholder)
+- [x] Build Webmu one-pager (Bahasa: hero, 3 demos, pricing Rp 400k–1.2jt, WhatsApp CTA, QRIS placeholder) *(2026-08-25: `public/webmu/index.html` — Hero-Centric + vibrant orange design system, BR-01-compliant copy. Demos live di `public/demos/`. Akan ter-serve di /webmu/ setelah push ke main. QRIS = placeholder sampai task 8 selesai. Nomor WhatsApp masih placeholder — perlu diganti nomor asli sebelum bagikan ke calon pelanggan.)*
 - [ ] Register QRIS merchant entity (NPWP/UMKM) — user-owned, non-code
 - [ ] Write DM/WhatsApp outreach templates + prepare before/after assets
 
