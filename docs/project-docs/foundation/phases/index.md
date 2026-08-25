@@ -39,9 +39,9 @@ Does not hold product requirements (see `foundation/prd.md`) or architecture dec
 | Phase | Theme | Status | Timeline |
 | :--- | :--- | :--- | :--- |
 | P1 | Foundation & MVP | 🟢 Functional | Complete via prior commits |
-| P2 | Deploy & Webmu Cash Engine | 🟡 In progress | Tasks 1–3 done (scrub, ADR-001, Vercel prod live) — next: demo pages + Webmu one-pager |
-| P3 | SliceUI Tool Productization | 🔴 Not started | After P2 |
-| P4 | Quality, Security & Release | 🔴 Not started | Final |
+| P2 | Deploy & Webmu Cash Engine | 🟡 In progress | 8/9 done — deploy, demos, one-pager, sales. Remaining: QRIS (user) + WA number |
+| P3 | SliceUI Tool Productization | 🟡 In progress | 6/10 — non-DB done. Blocked: live Supabase project |
+| P4 | Quality, Security & Release | 🟡 In progress | 6/8 — proxy, CI, scrub, README, changelog. Remaining: launch + release tag (STOP) |
 
 ## 9. Phase Registry
 | Phase | File | Status | Summary |

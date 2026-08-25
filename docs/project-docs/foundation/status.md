@@ -60,22 +60,22 @@ Does not track daily tasks (use git issues/PRs) or release history (see `foundat
 - **AI pipeline enhancements** (2026-08-25): wired instruction prompt, added design-system input, fixed mimeType (no longer hardcoded PNG), Groq timeout/abort, removed `flutter` (web-only).
 
 ## 9. Upcoming Focus
-1. **Deploy & Webmu cash engine (P2)** — rotate committed keys, deploy Vite SPA to Vercel, produce 3 demo pages, stand up the Webmu one-pager + QRIS path. (Revenue-critical, not persistence.)
-2. **SliceUI tool productization (P3)** — provision persistence + live auth, fix id-consistency + dead path, Svelte preview, naming.
-3. **Quality, security & release (P4)** — backend proxy for AI keys, CI, security scrub, free launch to agencies.
+1. **P3 — provision Supabase persistence + live auth** — single remaining block: a live Supabase project (all refs NXDOMAIN). Migrations ready in-repo.
+2. **P2 — QRIS entity + real WhatsApp number** (user-owned).
+3. **P4 — free launch** (channel + timing approval) + first release tag.
 
 ## 10. Key Metrics
 - **Tests passing:** 8 (prompt + framework + example suites).
-- **Lint/build:** passes locally (`npm run build` exit 0) — *not* yet enforced by CI.
+- **Lint/build/CI:** lint 0 errors, build green, tsc 0. CI workflow added (`.github/workflows/ci.yml`) — gating lint+test+build on push/PR.
 - **Framework outputs:** 7 web-only (flutter removed).
-- **AI providers:** 2 (Gemini primary, Groq fallback).
-- **Persistence:** 0 of 2 targets provisioned (`conversions` table, `sliceui-images` bucket) — deferred to P3.
+- **AI providers:** 2 (Gemini primary, Groq fallback); production routes through serverless proxy (keys server-side).
+- **Persistence:** 0 of 2 targets provisioned (`conversions` table, `sliceui-images` bucket) — migrations ready in-repo, blocked on a live Supabase project.
 
 ## 11. Roadmap
-- **Phase P1 — Foundation & MVP:** active dev loop, design system, slice pipeline.
-- **Phase P2 — Deploy & Webmu Cash Engine:** key rotation ✅ (scrub done; user chose to keep current Gemini key), ADR-001 ✅, **Vercel prod live ✅** (https://sliceui-rafi-harimans-projects.vercel.app — root/slice/dashboard 200). Next: 3 demo pages, Webmu one-pager, QRIS, sales motion.
-- **Phase P3 — SliceUI Tool Productization:** provision `conversions` + bucket + RLS, wire live auth, id-consistency, dead-path fix, Svelte preview, naming.
-- **Phase P4 — Quality, Security & Release:** backend proxy, CI, security scrub, i18n, free launch to agencies, first release.
+- **Phase P1 — Foundation & MVP:** 🟢 done.
+- **Phase P2 — Deploy & Webmu Cash Engine:** 🟡 8/9 — deploy ✅, 3 demos ✅, one-pager ✅, sales templates ✅. Remaining: QRIS entity (user) + real WA number.
+- **Phase P3 — SliceUI Tool Productization:** 🟡 6/10 — id-consistency ✅, dead-path ✅, Svelte-preview (excluded, documented) ✅, naming ✅, migrations in-repo ✅. Blocked: live Supabase project (provision + types + live auth + CRUD verify).
+- **Phase P4 — Quality, Security & Release:** 🟡 6/8 — backend proxy ✅, CI ✅, security scrub ✅ (git grep clean), i18n defer ✅, README + measurement ✅, changelog ✅. Remaining: free launch (STOP) + first release tag (STOP).
 
 ## 12. Epics
 | Epic | Status | Notes |
