@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ayu &amp; Rama — Dekorasi &amp; Dokumentasi Pernikahan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-primary: #DB2777;
+    --color-on-primary: #FFFFFF;
+    --color-secondary: #F472B6;
+    --color-accent: #A16207;
+    --color-gold: #A16207;
+    --color-gold-light: #CA8A04;
+    --color-background: #FDF8FA;
+    --color-foreground: #831843;
+    --color-muted: #F0E8EC;
+    --color-border: #FBCFE8;
+    --font-display: 'Great Vibes', cursive;
+    --font-serif: 'Cormorant Infant', serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font-serif);
+    background: var(--color-background);
+    color: var(--color-foreground);
+    line-height: 1.7;
+    font-size: 17px;
+  }
+  .container { max-width: 1152px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(253, 248, 250, 0.96);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 76px; }
+  .logo { font-family: var(--font-display); font-size: 34px; color: var(--color-primary); text-decoration: none; }
+  .nav-links { display: flex; gap: 30px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--color-foreground); font-weight: 500; font-size: 16px; transition: color 200ms; }
+  .nav-links a:hover { color: var(--color-primary); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 50px; padding: 0 30px; border-radius: 999px;
+    font-family: var(--font-serif); font-size: 16px; font-weight: 600;
+    cursor: pointer; text-decoration: none; letter-spacing: 0.3px;
+    transition: background-color 200ms, box-shadow 200ms, transform 200ms;
+  }
+  .btn-primary { background: var(--color-primary); color: var(--color-on-primary); }
+  .btn-primary:hover { background: #BE185D; box-shadow: 0 6px 20px rgba(219, 39, 119, 0.3); }
+  .btn-gold { background: var(--color-gold); color: white; }
+  .btn-gold:hover { background: #854D0F; box-shadow: 0 6px 20px rgba(161, 98, 7, 0.3); }
+  .btn-outline { border: 1.5px solid var(--color-primary); color: var(--color-primary); background: transparent; }
+  .btn-outline:hover { background: #FDF2F8; }
+
+  /* Hero */
+  .hero {
+    padding: 96px 0 80px;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(244, 114, 182, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 80%, rgba(202, 138, 4, 0.08) 0%, transparent 50%);
+    text-align: center;
+    position: relative;
+  }
+  .hero-eyebrow {
+    font-size: 14px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--color-gold); font-weight: 600; margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: 88px; line-height: 1.1; font-weight: 400;
+    color: var(--color-primary);
+    margin-bottom: 12px;
+  }
+  .hero .names-sub {
+    font-size: 22px; font-style: italic; color: #9D5C77;
+    margin-bottom: 28px;
+  }
+  .hero p.lead { font-size: 18px; max-width: 560px; margin: 0 auto 34px; color: #9D5C77; }
+  .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .hero-stats {
+    display: flex; justify-content: center; gap: 56px; margin-top: 56px; flex-wrap: wrap;
+  }
+  .hstat { text-align: center; }
+  .hstat .num {
+    font-family: var(--font-serif); font-size: 40px; font-weight: 600; color: var(--color-primary);
+  }
+  .hstat .lbl { font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; color: #9D5C77; }
+
+  /* Divider flourish */
+  .flourish { text-align: center; padding: 8px 0; color: var(--color-gold-light); font-size: 22px; letter-spacing: 8px; }
+
+  /* Portfolio */
+  .portfolio { padding: 72px 0; }
+  .section-head { text-align: center; max-width: 600px; margin: 0 auto 48px; }
+  .section-head .script { font-family: var(--font-display); font-size: 52px; color: var(--color-primary); margin-bottom: 6px; }
+  .section-head p { color: #9D5C77; font-size: 16px; }
+  .folio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .folio-card {
+    background: white; border-radius: 18px; overflow: hidden;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 18px rgba(131, 24, 67, 0.06);
+    transition: box-shadow 200ms, transform 200ms;
+  }
+  .folio-card:hover { box-shadow: 0 12px 32px rgba(131, 24, 67, 0.12); transform: translateY(-2px); }
+  .folio-img { height: 220px; display: flex; align-items: center; justify-content: center; position: relative; }
+  .folio-img::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(160deg, rgba(253,242,248,0.4), rgba(240,231,236,0.2));
+  }
+  .folio-1 .folio-img { background: linear-gradient(150deg, #FBCFE8, #FDE68A44); }
+  .folio-2 .folio-img { background: linear-gradient(150deg, #F472B633, #FBCFE8); }
+  .folio-3 .folio-img { background: linear-gradient(150deg, #FDF2F8, #CA8A0422); }
+  .folio-img svg { width: 52px; height: 52px; color: var(--color-primary); opacity: 0.75; z-index: 1; }
+  .folio-body { padding: 24px 26px 28px; }
+  .folio-tag {
+    display: inline-block; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--color-gold); font-weight: 700; margin-bottom: 8px;
+  }
+  .folio-body h3 { font-size: 21px; font-weight: 600; margin-bottom: 6px; }
+  .folio-body p { font-size: 15px; color: #9D5C77; margin-bottom: 14px; }
+  .folio-price { font-size: 16px; font-weight: 700; color: var(--color-primary); }
+  .folio-price span { font-weight: 400; color: #9D5C77; font-size: 14px; }
+
+  /* Packages / pricing */
+  .packages { background: white; padding: 72px 0; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); }
+  .pkg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: stretch; }
+  .pkg-card {
+    background: var(--color-background); border: 1px solid var(--color-border);
+    border-radius: 20px; padding: 34px 30px;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .pkg-card.featured {
+    background: white; border: 2px solid var(--color-primary);
+    box-shadow: 0 12px 36px rgba(219, 39, 119, 0.12);
+  }
+  .pkg-badge {
+    position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+    background: var(--color-gold); color: white;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700;
+    padding: 5px 16px; border-radius: 999px; white-space: nowrap;
+  }
+  .pkg-name { font-family: var(--font-serif); font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+  .pkg-desc { font-size: 14px; color: #9D5C77; margin-bottom: 18px; }
+  .pkg-price { font-size: 34px; font-weight: 700; color: var(--color-primary); margin-bottom: 4px; }
+  .pkg-price span { font-size: 15px; font-weight: 400; color: #9D5C77; }
+  .pkg-list { list-style: none; margin: 20px 0 26px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .pkg-list li { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; }
+  .pkg-list svg { width: 18px; height: 18px; color: var(--color-gold); flex-shrink: 0; margin-top: 4px; }
+
+  /* Testimonial */
+  .testimonial { padding: 72px 0; text-align: center; }
+  .testi-quote {
+    font-family: var(--font-serif); font-size: 26px; font-style: italic;
+    max-width: 760px; margin: 0 auto 24px; line-height: 1.55; color: #6B2A47;
+  }
+  .testi-author { display: flex; align-items: center; justify-content: center; gap: 14px; }
+  .testi-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px;
+  }
+  .testi-author strong { display: block; font-size: 16px; }
+  .testi-author span { font-size: 14px; color: #9D5C77; }
+  .stars { color: var(--color-gold-light); letter-spacing: 4px; font-size: 18px; margin-bottom: 18px; }
+
+  /* CTA */
+  .cta-section { padding: 24px 0 88px; }
+  .cta-card {
+    background: linear-gradient(135deg, #FDF2F8 0%, #F0E8EC 100%);
+    border: 1px solid var(--color-border);
+    border-radius: 24px; padding: 56px 48px; text-align: center;
+  }
+  .cta-card .script { font-family: var(--font-display); font-size: 56px; color: var(--color-primary); margin-bottom: 8px; }
+  .cta-card p { max-width: 520px; margin: 0 auto 30px; color: #9D5C77; font-size: 17px; }
+  .cta-note { font-size: 13px; color: #B78DA1; margin-top: 18px; letter-spacing: 0.5px; }
+
+  /* Footer */
+  footer { background: #4A0E29; color: #F8E8EF; padding: 48px 0; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px; }
+  .footer-logo { font-family: var(--font-display); font-size: 36px; color: white; margin-bottom: 6px; }
+  .footer-grid p { font-size: 15px; opacity: 0.85; max-width: 320px; }
+  .footer-col h4 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 16px; color: var(--color-secondary);
+  }
+  .footer-col a { display: block; color: #F8E8EF; text-decoration: none; font-size: 15px; padding: 4px 0; transition: color 200ms; }
+  .footer-col a:hover { color: white; }
+  .footer-bottom {
+    margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(248, 232, 239, 0.18);
+    display: flex; justify-content: space-between; font-size: 14px; opacity: 0.75;
+  }
+
+  @media (max-width: 1024px) {
+    .hero h1 { font-size: 68px; }
+    .folio-grid, .pkg-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero-stats { gap: 36px; }
+  }
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .hero h1 { font-size: 52px; }
+    .folio-grid, .pkg-grid { grid-template-columns: 1fr; }
+    .hero-stats { flex-direction: column; gap: 24px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+    .footer-bottom { flex-direction: column; gap: 8px; }
+    .cta-card { padding: 40px 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+  :focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <a href="#" class="logo">Ayu &amp; Rama</a>
+    <ul class="nav-links">
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li><a href="#paket">Paket</a></li>
+      <li><a href="#cerita">Cerita</a></li>
+    </ul>
+    <a href="#cta" class="btn btn-gold">Konsultasi Gratis</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <p class="hero-eyebrow">Dekorasi · Dokumentasi · Wedding Organizer</p>
+    <h1>Hari Bahagia Anda, Cerita Kami</h1>
+    <p class="names-sub">Mewujudkan pernikahan impian sejak 2015</p>
+    <p class="lead">Dari dekorasi pelaminan hingga dokumentasi sinematik — satu tim untuk semua momen Anda. Konsultasi gratis, penawaran transparan.</p>
+    <div class="hero-actions">
+      <a href="#paket" class="btn btn-primary">Lihat Paket &amp; Harga</a>
+      <a href="#portfolio" class="btn btn-outline">Lihat Portfolio</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><span class="num">350+</span><span class="lbl">Pernikahan</span></div>
+      <div class="hstat"><span class="num">10th</span><span class="lbl">Pengalaman</span></div>
+      <div class="hstat"><span class="num">4.9</span><span class="lbl">Rating Google</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="flourish" aria-hidden="true">❦ ❦ ❦</div>
+
+<section class="portfolio" id="portfolio">
+  <div class="container">
+    <div class="section-head">
+      <p class="script">Portfolio</p>
+      <p>Momen nyata dari pernikahan yang kami tangani</p>
+    </div>
+    <div class="folio-grid">
+      <article class="folio-card folio-1">
+        <div class="folio-img" role="img" aria-label="Dekorasi pelaminan garden party">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3l1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6l-5 3.6 1.9-5.8L4 8.8h6.1z"/></svg>
+        </div>
+        <div class="folio-body">
+          <span class="folio-tag">Dekorasi</span>
+          <h3>Garden Party di Payakumbuh</h3>
+          <p>Tema rustic-organic dengan bunga lokal musim panen.</p>
+          <span class="folio-price">Rp 18jt <span>/ dekorasi</span></span>
+        </div>
+      </article>
+      <article class="folio-card folio-2">
+        <div class="folio-img" role="img" aria-label="Dokumentasi sinematik">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg>
+        </div>
+        <div class="folio-body">
+          <span class="folio-tag">Dokumentasi</span>
+          <h3>Prewedding Sinematik Bandung</h3>
+          <p>Film pendek 3 menit + 200 foto edit premium.</p>
+          <span class="folio-price">Rp 6,5jt <span>/ sesi</span></span>
+        </div>
+      </article>
+      <article class="folio-card folio-3">
+        <div class="folio-img" role="img" aria-label="Wedding organizer full service">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 21s-8-4.35-8-10a4.5 4.5 0 0 1 8-2.78A4.5 4.5 0 0 1 20 11c0 5.65-8 10-8 10z"/></svg>
+        </div>
+        <div class="folio-body">
+          <span class="folio-tag">Full Service</span>
+          <h3>WO Intimate Wedding Yogyakarta</h3>
+          <p>50 tamu, venue privat, semua vendor ditangani.</p>
+          <span class="folio-price">Rp 45jt <span>/ event</span></span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="packages" id="paket">
+  <div class="container">
+    <div class="section-head">
+      <p class="script">Paket Kami</p>
+      <p>Transparan, bisa disesuaikan dengan budget Anda</p>
+    </div>
+    <div class="pkg-grid">
+      <div class="pkg-card">
+        <p class="pkg-name">Dokumentasi</p>
+        <p class="pkg-desc">Untuk yang sudah punya venue &amp; dekorasi</p>
+        <p class="pkg-price">Rp 8jt <span>on</span></p>
+        <ul class="pkg-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Fotografer + videografer</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>300+ foto edit premium</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Film 3–5 menit</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Online gallery 1 tahun</li>
+        </ul>
+        <a href="#cta" class="btn btn-outline">Pilih Paket Ini</a>
+      </div>
+      <div class="pkg-card featured">
+        <span class="pkg-badge">Paling Laris</span>
+        <p class="pkg-name">Dekorasi + Dokumentasi</p>
+        <p class="pkg-desc">Paket kombinasi paling dicari</p>
+        <p class="pkg-price">Rp 25jt <span>on</span></p>
+        <ul class="pkg-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Semua di paket Dokumentasi</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Dekorasi pelaminan + akad</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Flower standing 4 unit</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Lighting + backdrop photobooth</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Koordinator hari-H</li>
+        </ul>
+        <a href="#cta" class="btn btn-primary">Pilih Paket Ini</a>
+      </div>
+      <div class="pkg-card">
+        <p class="pkg-name">Full Service WO</p>
+        <p class="pkg-desc">Serahkan semuanya, nikmati hari Anda</p>
+        <p class="pkg-price">Rp 60jt <span>on</span></p>
+        <ul class="pkg-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Semua di paket kombinasi</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Vendor catering &amp; katering tamu</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Undangan digital + cetak</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>MC + entertainmen akustik</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Meeting persiapan tak terbatas</li>
+        </ul>
+        <a href="#cta" class="btn btn-outline">Pilih Paket Ini</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="testimonial" id="cerita">
+  <div class="container">
+    <div class="stars" aria-label="Rating 5 dari 5">★★★★★</div>
+    <blockquote class="testi-quote">"Semua tamu kami mengira dekorasi dan videonya jauh lebih mahal dari harga sebenarnya. Timnya tenang, rapi, dan super sabar menghadapi keluarga besar kami."</blockquote>
+    <div class="testi-author">
+      <div class="testi-avatar" aria-hidden="true">DM</div>
+      <div style="text-align:left">
+        <strong>Dinda &amp; Mega</strong>
+        <span>Pernikahan Maret 2026 · Paket kombinasi</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="cta">
+  <div class="container">
+    <div class="cta-card">
+      <p class="script">Mulai Cerita Anda</p>
+      <p>Ceritakan rencana pernikahan Anda — kami balas dengan ide konsep dan estimasi biaya dalam 1×24 jam. Gratis, tanpa komitmen.</p>
+      <a href="https://wa.me/6281234567890" class="btn btn-primary">Chat via WhatsApp</a>
+      <p class="cta-note">Respon cepat · Konsultasi gratis · Penawaran tertulis</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">Ayu &amp; Rama</div>
+        <p>Studio dekorasi, dokumentasi, dan wedding organizer. Melayani Yogyakarta &amp; sekitarnya sejak 2015.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Layanan</h4>
+        <a href="#paket">Dekorasi</a>
+        <a href="#paket">Dokumentasi</a>
+        <a href="#paket">Full Service WO</a>
+      </div>
+      <div class="footer-col">
+        <h4>Kontak</h4>
+        <a href="#cta">WhatsApp</a>
+        <a href="#portfolio">Portfolio</a>
+        <a href="#">Jl. Kaliurang No. 88, Sleman</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Ayu &amp; Rama Studio.</span>
+      <span>Dibuat dengan Webmu</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klinik Sehat Sentosa — Layanan Kesehatan Keluarga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=Noto+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-primary: #0891B2;
+    --color-on-primary: #FFFFFF;
+    --color-secondary: #22D3EE;
+    --color-accent: #059669;
+    --color-background: #F7FDFE;
+    --color-foreground: #164E63;
+    --color-muted: #E8F1F6;
+    --color-border: #A5F3FC;
+    --font-display: 'Figtree', sans-serif;
+    --font-body: 'Noto Sans', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font-body);
+    background: var(--color-background);
+    color: var(--color-foreground);
+    line-height: 1.65;
+    font-size: 16px;
+  }
+  .container { max-width: 1152px; margin: 0 auto; padding: 0 24px; }
+
+  /* Skip link (accessibility) */
+  .skip-link {
+    position: absolute; left: -9999px; top: 0;
+    background: var(--color-primary); color: white;
+    padding: 8px 16px; z-index: 200; border-radius: 0 0 8px 0;
+  }
+  .skip-link:focus { left: 0; }
+
+  /* Header */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(247, 253, 254, 0.97);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 76px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .brand-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--color-primary); color: white;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brand-icon svg { width: 22px; height: 22px; }
+  .brand-name { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--color-foreground); line-height: 1.2; }
+  .brand-sub { font-size: 12px; color: var(--color-primary); font-weight: 500; }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--color-foreground); font-weight: 500; font-size: 15px; padding: 8px 0; transition: color 200ms; }
+  .nav-links a:hover { color: var(--color-primary); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 0 24px; border-radius: 10px;
+    font-family: var(--font-body); font-size: 15px; font-weight: 600;
+    cursor: pointer; text-decoration: none;
+    transition: background-color 200ms, box-shadow 200ms;
+  }
+  .btn-primary { background: var(--color-primary); color: var(--color-on-primary); }
+  .btn-primary:hover { background: #0E7490; box-shadow: 0 4px 14px rgba(8, 145, 178, 0.3); }
+  .btn-accent { background: var(--color-accent); color: white; }
+  .btn-accent:hover { background: #047857; }
+  .btn-outline { border: 2px solid var(--color-primary); color: var(--color-primary); background: transparent; }
+  .btn-outline:hover { background: var(--color-muted); }
+
+  /* Hero */
+  .hero { padding: 88px 0 72px; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 64px; align-items: center; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #ECFEFF; border: 1px solid var(--color-border);
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 600; color: var(--color-primary);
+    margin-bottom: 20px;
+  }
+  .badge svg { width: 14px; height: 14px; }
+  h1 {
+    font-family: var(--font-display);
+    font-size: 46px; line-height: 1.15; font-weight: 700;
+    margin-bottom: 18px; letter-spacing: -0.5px;
+  }
+  .hero p.lead { font-size: 17px; color: #3F6E80; max-width: 500px; margin-bottom: 28px; }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 28px; }
+  .hero-visual {
+    background: linear-gradient(160deg, #ECFEFF 0%, #E8F1F6 100%);
+    border: 1px solid var(--color-border);
+    border-radius: 20px; padding: 32px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .stat-card {
+    background: white; border-radius: 14px; padding: 20px;
+    border: 1px solid var(--color-border);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .stat-card .num { font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--color-primary); }
+  .stat-card .lbl { font-size: 13px; color: #3F6E80; }
+  .op-card {
+    background: var(--color-primary); color: white;
+    border-radius: 14px; padding: 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .op-card strong { font-size: 15px; display: block; }
+  .op-card span { font-size: 13px; opacity: 0.85; }
+  .op-badge {
+    background: rgba(255,255,255,0.2); padding: 6px 12px;
+    border-radius: 999px; font-size: 13px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .op-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: #4ADE80; }
+
+  /* Trust bar */
+  .trust { border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); background: white; padding: 22px 0; }
+  .trust-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+  .trust-item { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+  .trust-item svg { width: 20px; height: 20px; color: var(--color-accent); flex-shrink: 0; }
+
+  /* Services */
+  .services { padding: 80px 0; }
+  .section-head { text-align: center; max-width: 560px; margin: 0 auto 48px; }
+  .section-head h2 { font-family: var(--font-display); font-size: 34px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.3px; }
+  .section-head p { color: #3F6E80; }
+  .svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .svc-card {
+    background: white; border: 1px solid var(--color-border);
+    border-radius: 16px; padding: 28px;
+    transition: box-shadow 200ms, transform 200ms;
+  }
+  .svc-card:hover { box-shadow: 0 8px 28px rgba(8, 145, 178, 0.12); }
+  .svc-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: #ECFEFF; color: var(--color-primary);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+  }
+  .svc-icon svg { width: 24px; height: 24px; }
+  .svc-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .svc-card p { font-size: 14px; color: #3F6E80; margin-bottom: 14px; }
+  .svc-price { font-size: 14px; font-weight: 700; color: var(--color-primary); }
+  .svc-price span { font-weight: 400; color: #3F6E80; font-size: 13px; }
+
+  /* Doctors */
+  .doctors { background: white; padding: 80px 0; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); }
+  .doc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .doc-card {
+    background: var(--color-background); border: 1px solid var(--color-border);
+    border-radius: 16px; padding: 24px; text-align: center;
+  }
+  .doc-avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: white; margin: 0 auto 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 700; font-size: 22px;
+  }
+  .doc-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+  .doc-card .spec { font-size: 13px; color: var(--color-primary); font-weight: 600; margin-bottom: 8px; }
+  .doc-card .sched { font-size: 12px; color: #3F6E80; }
+
+  /* Booking CTA */
+  .booking { padding: 80px 0; }
+  .booking-card {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #0E7490 100%);
+    border-radius: 24px; padding: 56px 48px;
+    color: white; text-align: center;
+  }
+  .booking-card h2 { font-family: var(--font-display); font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+  .booking-card p { font-size: 16px; opacity: 0.9; max-width: 520px; margin: 0 auto 28px; }
+  .booking-card .btn { background: white; color: var(--color-primary); }
+  .booking-card .btn:hover { background: #ECFEFF; }
+
+  /* Footer */
+  footer { background: #164E63; color: #E0F2FE; padding: 48px 0; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px; }
+  .footer-grid p { font-size: 14px; opacity: 0.85; max-width: 320px; margin-top: 10px; }
+  .footer-col h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; color: var(--color-secondary); }
+  .footer-col a { display: block; color: #E0F2FE; text-decoration: none; font-size: 14px; padding: 4px 0; transition: color 200ms; }
+  .footer-col a:hover { color: white; }
+  .footer-bottom {
+    margin-top: 36px; padding-top: 22px; border-top: 1px solid rgba(224, 242, 254, 0.2);
+    display: flex; justify-content: space-between; font-size: 13px; opacity: 0.75;
+  }
+
+  @media (max-width: 1024px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .svc-grid { grid-template-columns: repeat(2, 1fr); }
+    .doc-grid { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 38px; }
+  }
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .svc-grid, .doc-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 32px; }
+    .booking-card { padding: 40px 24px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+    .footer-bottom { flex-direction: column; gap: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+  :focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Langsung ke konten utama</a>
+<header>
+  <div class="container nav">
+    <a href="#" class="brand">
+      <span class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M4 12h16"/></svg>
+      </span>
+      <span>
+        <span class="brand-name">Klinik Sehat Sentosa</span><br>
+        <span class="brand-sub">Layanan Kesehatan Keluarga</span>
+      </span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#layanan">Layanan</a></li>
+      <li><a href="#dokter">Dokter</a></li>
+      <li><a href="#jadwal">Jadwal</a></li>
+    </ul>
+    <a href="#booking" class="btn btn-primary">Buat Janji Temu</a>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+        Terakreditasi Kementerian Kesehatan
+      </span>
+      <h1>Kesehatan keluarga Anda, prioritas kami setiap hari</h1>
+      <p class="lead">Klinik keluarga dengan dokter berpengalaman, alat medis modern, dan pelayanan ramah. Tanpa antre panjang, tanpa ribet.</p>
+      <div class="hero-actions">
+        <a href="#booking" class="btn btn-accent">Pesan Janji via WhatsApp</a>
+        <a href="#layanan" class="btn btn-outline">Lihat Layanan</a>
+      </div>
+    </div>
+    <div class="hero-visual" role="complementary" aria-label="Statistik klinik">
+      <div class="stat-row">
+        <div class="stat-card"><span class="num">12+</span><span class="lbl">Tahun melayani</span></div>
+        <div class="stat-card"><span class="num">25rb+</span><span class="lbl">Pasien per tahun</span></div>
+      </div>
+      <div class="op-card">
+        <div>
+          <strong>Jam Operasional</strong>
+          <span>Senin–Sabtu 08.00–20.00 · Minggu 09.00–14.00</span>
+        </div>
+        <span class="op-badge"><span class="dot" aria-hidden="true"></span>Buka Sekarang</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="trust" aria-label="Keunggulan klinik">
+  <div class="container trust-inner">
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Izin &amp; akreditasi resmi
+    </div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Dokter umum &amp; spesialis
+    </div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      Antrean online, tanpa nunggu
+    </div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/></svg>
+      Harga transparan, ada BPJS
+    </div>
+  </div>
+</section>
+
+<section class="services" id="layanan">
+  <div class="container">
+    <div class="section-head">
+      <h2>Layanan Kami</h2>
+      <p>Pemeriksaan menyeluruh dengan peralatan modern</p>
+    </div>
+    <div class="svc-grid">
+      <article class="svc-card">
+        <div class="svc-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h3>Pemeriksaan Umum</h3>
+        <p>Konsultasi keluhan kesehatan, cek tekanan darah, dan saran pengobatan.</p>
+        <span class="svc-price">Rp 75.000 <span>/ konsultasi</span></span>
+      </article>
+      <article class="svc-card">
+        <div class="svc-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 3 2 5 3 6v3a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-3c1-1 3-3 3-6a7 7 0 0 0-7-7z"/></svg>
+        </div>
+        <h3>Medical Check-Up</h3>
+        <p>Paket pemeriksaan lengkap: darah, urine, EKG, dan konsultasi hasil.</p>
+        <span class="svc-price">Mulai Rp 450.000 <span>/ paket</span></span>
+      </article>
+      <article class="svc-card">
+        <div class="svc-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <h3>Kesehatan Ibu &amp; Anak</h3>
+        <p>Program KIA, imunisasi, dan konsultasi tumbuh kembang anak.</p>
+        <span class="svc-price">Rp 120.000 <span>/ kunjungan</span></span>
+      </article>
+      <article class="svc-card">
+        <div class="svc-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <h3>Lab &amp; Diagnostik</h3>
+        <p>Pengambilan sampel di tempat, hasil cepat via WhatsApp.</p>
+        <span class="svc-price">Mulai Rp 95.000 <span>/ tes</span></span>
+      </article>
+      <article class="svc-card">
+        <div class="svc-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+        </div>
+        <h3>Vaksinasi</h3>
+        <p>Vaksin anak &amp; dewasa, termasuk influenza dan hepatitis.</p>
+        <span class="svc-price">Mulai Rp 150.000 <span>/ vaksin</span></span>
+      </article>
+      <article class="svc-card">
+        <div class="svc-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>Telemedicine</h3>
+        <p>Konsultasi daring via video call, resep dikirim ke apotek langganan.</p>
+        <span class="svc-price">Rp 60.000 <span>/ sesi</span></span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="doctors" id="dokter">
+  <div class="container">
+    <div class="section-head">
+      <h2>Dokter Kami</h2>
+      <p>Berpengalaman dan bersertifikat</p>
+    </div>
+    <div class="doc-grid">
+      <div class="doc-card">
+        <div class="doc-avatar" aria-hidden="true">dr. AS</div>
+        <h3>dr. Anita Saraswati</h3>
+        <p class="spec">Dokter Umum</p>
+        <p class="sched">Senin–Jumat · 08.00–14.00</p>
+      </div>
+      <div class="doc-card">
+        <div class="doc-avatar" aria-hidden="true">dr. BW</div>
+        <h3>dr. Bima Wicaksana</h3>
+        <p class="spec">Anak</p>
+        <p class="sched">Selasa, Kamis, Sabtu · 13.00–19.00</p>
+      </div>
+      <div class="doc-card">
+        <div class="doc-avatar" aria-hidden="true">dr. CP</div>
+        <h3>dr. Citra Puspita</h3>
+        <p class="spec">Kebidanan &amp; Kandungan</p>
+        <p class="sched">Senin, Rabu, Jumat · 15.00–20.00</p>
+      </div>
+      <div class="doc-card">
+        <div class="doc-avatar" aria-hidden="true">dr. DR</div>
+        <h3>dr. Dimas Raharja</h3>
+        <p class="spec">Penyakit Dalam</p>
+        <p class="sched">Sabtu–Minggu · 09.00–14.00</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="booking" id="booking">
+  <div class="container">
+    <div class="booking-card">
+      <h2>Sudah punya keluhan kesehatan?</h2>
+      <p>Jangan tunda. Pesan janji temu sekarang — pilih waktu yang nyaman untuk Anda, kami siap melayani.</p>
+      <a href="https://wa.me/6281234567890" class="btn">Chat WhatsApp Kami</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <strong style="font-family:var(--font-display);font-size:18px;">Klinik Sehat Sentosa</strong>
+        <p>Layanan kesehatan keluarga yang tepercaya sejak 2013. Terakreditasi Kementerian Kesehatan RI.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Layanan</h4>
+        <a href="#layanan">Pemeriksaan Umum</a>
+        <a href="#layanan">Medical Check-Up</a>
+        <a href="#layanan">Vaksinasi</a>
+        <a href="#layanan">Telemedicine</a>
+      </div>
+      <div class="footer-col">
+        <h4>Kontak</h4>
+        <a href="#booking">Buat Janji</a>
+        <a href="#dokter">Jadwal Dokter</a>
+        <a href="#">Jl. Kesehatan No. 12, Sleman</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Klinik Sehat Sentosa. Izin Kemenkes No. 445/2013.</span>
+      <span>Dibuat dengan Webmu</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

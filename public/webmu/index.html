@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Website usaha Anda jadi dalam 48 jam. Mulai Rp 400 ribu. Untuk toko kue, klinik, jasa, dan usaha kecil lainnya. Konsultasi gratis via WhatsApp.">
+<title>Webmu — Website Usaha Anda Jadi Dalam 48 Jam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-primary: #EA580C;
+    --color-primary-dark: #C2410C;
+    --color-on-primary: #FFFFFF;
+    --color-secondary: #F97316;
+    --color-accent: #2563EB;
+    --color-background: #FFF7ED;
+    --color-foreground: #0F172A;
+    --color-muted: #FDF4F0;
+    --color-border: #FCEAE1;
+    --color-wa: #16A34A;
+    --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font);
+    background: var(--color-background);
+    color: var(--color-foreground);
+    line-height: 1.65;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  .skip-link {
+    position: absolute; left: -9999px; top: 0;
+    background: var(--color-primary); color: white;
+    padding: 10px 18px; z-index: 300; border-radius: 0 0 10px 0; font-weight: 600;
+  }
+  .skip-link:focus { left: 0; }
+
+  /* ── Header ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255, 247, 237, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-mark {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--color-primary); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 17px;
+  }
+  .logo-name { font-weight: 800; font-size: 21px; color: var(--color-foreground); letter-spacing: -0.3px; }
+  .nav-links { display: flex; gap: 28px; list-style: none; align-items: center; }
+  .nav-links a { text-decoration: none; color: #4A5568; font-weight: 600; font-size: 14.5px; transition: color 200ms; }
+  .nav-links a:hover { color: var(--color-primary); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    min-height: 48px; padding: 0 26px; border-radius: 12px;
+    font-family: var(--font); font-size: 15px; font-weight: 700;
+    cursor: pointer; text-decoration: none; white-space: nowrap;
+    transition: background-color 200ms, box-shadow 200ms, transform 200ms;
+  }
+  .btn svg { width: 19px; height: 19px; }
+  .btn-primary { background: var(--color-primary); color: var(--color-on-primary); }
+  .btn-primary:hover { background: var(--color-primary-dark); box-shadow: 0 6px 22px rgba(234, 88, 12, 0.35); transform: translateY(-1px); }
+  .btn-wa { background: var(--color-wa); color: white; }
+  .btn-wa:hover { background: #15803D; box-shadow: 0 6px 22px rgba(22, 163, 74, 0.35); transform: translateY(-1px); }
+  .btn-outline { border: 2px solid var(--color-primary); color: var(--color-primary); background: transparent; }
+  .btn-outline:hover { background: #FFEDD5; }
+  .btn-sm { min-height: 42px; padding: 0 18px; font-size: 14px; border-radius: 10px; }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 88px 0 72px;
+    background:
+      radial-gradient(ellipse 700px 400px at 15% -10%, rgba(249, 115, 22, 0.14), transparent),
+      radial-gradient(ellipse 600px 350px at 90% 20%, rgba(37, 99, 235, 0.07), transparent);
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: white; border: 1px solid var(--color-border);
+    padding: 8px 16px; border-radius: 999px;
+    font-size: 13.5px; font-weight: 600; color: var(--color-primary-dark);
+    margin-bottom: 24px; box-shadow: 0 2px 8px rgba(234, 88, 12, 0.06);
+  }
+  .hero-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-wa); }
+  .hero h1 {
+    font-size: clamp(34px, 6vw, 58px); line-height: 1.12; font-weight: 800;
+    letter-spacing: -1.2px; margin-bottom: 20px; max-width: 820px; margin-inline: auto;
+  }
+  .hero h1 em { font-style: normal; color: var(--color-primary); position: relative; }
+  .hero p.lead {
+    font-size: clamp(16px, 2.2vw, 19px); color: #52607A;
+    max-width: 620px; margin: 0 auto 34px;
+  }
+  .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .hero-note { font-size: 13.5px; color: #8B95A8; margin-top: 18px; }
+
+  /* ── Value strip ── */
+  .strip { background: var(--color-foreground); color: white; padding: 30px 0; }
+  .strip-inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .strip-item { display: flex; align-items: center; gap: 12px; justify-content: center; }
+  .strip-item svg { width: 22px; height: 22px; color: var(--color-secondary); flex-shrink: 0; }
+  .strip-item span { font-size: 14.5px; font-weight: 600; }
+
+  /* ── Demos ── */
+  .demos { padding: 84px 0; }
+  .section-head { text-align: center; max-width: 600px; margin: 0 auto 48px; }
+  .kicker {
+    display: inline-block; font-size: 12.5px; font-weight: 800;
+    letter-spacing: 2.2px; text-transform: uppercase; color: var(--color-primary);
+    margin-bottom: 10px;
+  }
+  .section-head h2 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; letter-spacing: -0.8px; margin-bottom: 12px; }
+  .section-head p { color: #52607A; font-size: 16.5px; }
+  .demo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .demo-card {
+    background: white; border: 1px solid var(--color-border);
+    border-radius: 18px; overflow: hidden;
+    box-shadow: 0 3px 14px rgba(15, 23, 42, 0.05);
+    transition: box-shadow 250ms, transform 250ms;
+    display: flex; flex-direction: column;
+  }
+  .demo-card:hover { box-shadow: 0 14px 36px rgba(15, 23, 42, 0.12); transform: translateY(-3px); }
+  .demo-frame { height: 230px; position: relative; overflow: hidden; }
+  .demo-frame img {
+    position: absolute; top: 0; left: 0; width: 1440px; height: auto;
+    transform-origin: top left; transform: scale(0.27);
+    image-rendering: auto; border: 0; display: block;
+  }
+  .demo-1 .demo-frame { background: #FFFBF2; }
+  .demo-2 .demo-frame { background: #F7FDFE; }
+  .demo-3 .demo-frame { background: #FDF8FA; }
+  .demo-body { padding: 22px 24px 26px; flex: 1; display: flex; flex-direction: column; }
+  .demo-tag {
+    display: inline-block; align-self: flex-start;
+    font-size: 11.5px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase;
+    color: var(--color-primary); background: #FFEDD5;
+    padding: 4px 10px; border-radius: 6px; margin-bottom: 10px;
+  }
+  .demo-body h3 { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+  .demo-body p { font-size: 14px; color: #52607A; margin-bottom: 16px; flex: 1; }
+  .demo-link {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 14.5px; font-weight: 700; color: var(--color-accent);
+    text-decoration: none; transition: gap 200ms;
+  }
+  .demo-link:hover { gap: 11px; }
+  .demo-link svg { width: 16px; height: 16px; }
+
+  /* ── Pricing ── */
+  .pricing { padding: 84px 0; background: white; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); }
+  .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: stretch; }
+  .price-card {
+    background: var(--color-background); border: 1px solid var(--color-border);
+    border-radius: 20px; padding: 32px 28px;
+    display: flex; flex-direction: column; position: relative;
+  }
+  .price-card.featured {
+    background: white; border: 2px solid var(--color-primary);
+    box-shadow: 0 14px 40px rgba(234, 88, 12, 0.13);
+  }
+  .price-badge {
+    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+    background: var(--color-primary); color: white;
+    font-size: 11px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase;
+    padding: 5px 14px; border-radius: 999px; white-space: nowrap;
+  }
+  .price-name { font-size: 19px; font-weight: 800; margin-bottom: 3px; }
+  .price-for { font-size: 13.5px; color: #8B95A8; margin-bottom: 18px; }
+  .price-amount { font-size: 34px; font-weight: 800; letter-spacing: -1px; color: var(--color-foreground); }
+  .price-amount span { font-size: 15px; font-weight: 600; color: #8B95A8; letter-spacing: 0; }
+  .price-note { font-size: 13px; color: var(--color-primary-dark); font-weight: 700; margin: 6px 0 20px; }
+  .price-list { list-style: none; display: flex; flex-direction: column; gap: 11px; margin-bottom: 26px; flex: 1; }
+  .price-list li { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; }
+  .price-list svg { width: 19px; height: 19px; color: var(--color-wa); flex-shrink: 0; margin-top: 2px; }
+
+  /* ── Process ── */
+  .process { padding: 84px 0; }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; counter-reset: step; }
+  .step-card {
+    background: white; border: 1px solid var(--color-border); border-radius: 18px;
+    padding: 30px 28px; position: relative;
+  }
+  .step-num {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--color-foreground); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 17px; margin-bottom: 16px;
+  }
+  .step-card h3 { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+  .step-card p { font-size: 14.5px; color: #52607A; }
+
+  /* ── FAQ ── */
+  .faq { padding: 84px 0; background: white; border-top: 1px solid var(--color-border); }
+  .faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+  details {
+    background: var(--color-background); border: 1px solid var(--color-border);
+    border-radius: 14px; padding: 0; overflow: hidden;
+  }
+  summary {
+    cursor: pointer; padding: 18px 22px;
+    font-weight: 700; font-size: 15.5px;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: '+'; font-size: 22px; font-weight: 400; color: var(--color-primary);
+    transition: transform 200ms; flex-shrink: 0;
+  }
+  details[open] summary::after { transform: rotate(45deg); }
+  details .faq-a { padding: 0 22px 20px; font-size: 14.5px; color: #52607A; }
+
+  /* ── Final CTA ── */
+  .final { padding: 20px 0 88px; }
+  .final-card {
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    border-radius: 24px; padding: 60px 48px;
+    color: white; text-align: center; position: relative; overflow: hidden;
+  }
+  .final-card::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 500px 300px at 20% 0%, rgba(249, 115, 22, 0.25), transparent),
+      radial-gradient(ellipse 400px 250px at 90% 100%, rgba(37, 99, 235, 0.18), transparent);
+    pointer-events: none;
+  }
+  .final-inner { position: relative; }
+  .final-card h2 { font-size: clamp(26px, 4vw, 38px); font-weight: 800; letter-spacing: -0.8px; margin-bottom: 14px; }
+  .final-card p { font-size: 17px; opacity: 0.85; max-width: 520px; margin: 0 auto 32px; }
+  .final-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .qr-note {
+    margin-top: 28px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.14);
+    font-size: 13.5px; opacity: 0.7; display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .qr-note svg { width: 18px; height: 18px; }
+
+  /* ── Footer ── */
+  footer { background: #FFFFFF; border-top: 1px solid var(--color-border); padding: 40px 0; }
+  .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .footer-left { display: flex; align-items: center; gap: 10px; }
+  .footer-links { display: flex; gap: 22px; }
+  .footer-links a { color: #52607A; text-decoration: none; font-size: 14px; font-weight: 600; }
+  .footer-links a:hover { color: var(--color-primary); }
+  .footer-copy { font-size: 13.5px; color: #8B95A8; }
+
+  /* Floating WA */
+  .wa-float {
+    position: fixed; right: 22px; bottom: 22px; z-index: 150;
+    width: 58px; height: 58px; border-radius: 50%;
+    background: var(--color-wa); color: white;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 28px rgba(22, 163, 74, 0.45);
+    text-decoration: none;
+    transition: transform 200ms, box-shadow 200ms;
+  }
+  .wa-float:hover { transform: scale(1.08); box-shadow: 0 12px 34px rgba(22, 163, 74, 0.55); }
+  .wa-float svg { width: 28px; height: 28px; }
+
+  @media (max-width: 1024px) {
+    .strip-inner { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .demo-grid, .price-grid, .steps { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .demo-grid, .price-grid, .steps { grid-template-columns: 1fr; }
+    .strip-inner { grid-template-columns: 1fr; }
+    .hero { padding: 56px 0 52px; }
+    .final-card { padding: 44px 24px; }
+    .footer-inner { flex-direction: column; text-align: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+  }
+  :focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Langsung ke konten utama</a>
+
+<header>
+  <div class="container nav">
+    <a href="#" class="logo" aria-label="Webmu — beranda">
+      <span class="logo-mark" aria-hidden="true">W</span>
+      <span class="logo-name">webmu</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#contoh">Contoh Website</a></li>
+      <li><a href="#harga">Harga</a></li>
+      <li><a href="#cara">Cara Kerja</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <a href="https://wa.me/6281234567890?text=Halo%20Webmu%2C%20saya%20mau%20konsultasi%20website%20usaha" class="btn btn-wa btn-sm">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Chat Gratis
+    </a>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="container">
+    <p class="hero-badge"><span class="dot" aria-hidden="true"></span>Sekarang melayani area Yogyakarta &amp; sekitarnya</p>
+    <h1>Website usaha Anda jadi<br>dalam <em>48 jam</em></h1>
+    <p class="lead">Tinggal kirim foto usaha lewat WhatsApp — kami yang buatkan websitenya. Tanpa ribet, tanpa perlu bisa komputer, harga jelas sejak awal.</p>
+    <div class="hero-actions">
+      <a href="https://wa.me/6281234567890?text=Halo%20Webmu%2C%20saya%20mau%20konsultasi%20website%20usaha" class="btn btn-wa">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Konsultasi Gratis via WhatsApp
+      </a>
+      <a href="#contoh" class="btn btn-outline">Lihat Contoh Website</a>
+    </div>
+    <p class="hero-note">Balasan cepat di jam kerja · Tanpa biaya konsultasi · Harga jelas dari awal</p>
+  </div>
+</section>
+
+<section class="strip" aria-label="Kenapa Webmu">
+  <div class="container strip-inner">
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <span>Jadi dalam 48 jam</span>
+    </div>
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 12v8H4v-8"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/></svg>
+      <span>Harga mulai Rp 400rb</span>
+    </div>
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span>Order &amp; revisi via WhatsApp</span>
+    </div>
+    <div class="strip-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Garansi revisi sampai cocok</span>
+    </div>
+  </div>
+</section>
+
+<section class="demos" id="contoh">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Contoh Nyata</span>
+      <h2>Ini contoh website yang bisa Anda miliki</h2>
+      <p>Bukan sekadar gambar — klik dan jelajahi sendiri websitenya, buka di HP Anda juga.</p>
+    </div>
+    <div class="demo-grid">
+      <article class="demo-card demo-1">
+        <div class="demo-frame">
+          <img src="../demos/bakery-shot.png" alt="Tampilan website toko kue: hero roti hangat dengan warna cokelat krem" loading="lazy" width="389" height="230">
+        </div>
+        <div class="demo-body">
+          <span class="demo-tag">Toko Kue</span>
+          <h3>Bolu Ibu Ratna</h3>
+          <p>Menu dengan harga, testimoni pelanggan, lokasi toko, dan tombol pesan.</p>
+          <a href="../demos/bakery.html" class="demo-link" target="_blank" rel="noopener">
+            Buka website
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg>
+          </a>
+        </div>
+      </article>
+      <article class="demo-card demo-2">
+        <div class="demo-frame">
+          <img src="../demos/clinic-shot.png" alt="Tampilan website klinik: layanan kesehatan dengan warna biru kehijauan" loading="lazy" width="389" height="230">
+        </div>
+        <div class="demo-body">
+          <span class="demo-tag">Klinik</span>
+          <h3>Klinik Sehat Sentosa</h3>
+          <p>Daftar layanan &amp; tarif, jadwal dokter, dan janji temu lewat WhatsApp.</p>
+          <a href="../demos/clinic.html" class="demo-link" target="_blank" rel="noopener">
+            Buka website
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg>
+          </a>
+        </div>
+      </article>
+      <article class="demo-card demo-3">
+        <div class="demo-frame">
+          <img src="../demos/wedding-shot.png" alt="Tampilan website jasa pernikahan: tema romantis pink dan emas" loading="lazy" width="389" height="230">
+        </div>
+        <div class="demo-body">
+          <span class="demo-tag">Jasa Pernikahan</span>
+          <h3>Ayu &amp; Rama</h3>
+          <p>Contoh karya, paket harga transparan, dan tombol konsultasi gratis.</p>
+          <a href="../demos/wedding.html" class="demo-link" target="_blank" rel="noopener">
+            Buka website
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg>
+          </a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="harga">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Harga Jelas</span>
+      <h2>Sekali bayar, tidak ada biaya tersembunyi</h2>
+      <p>Harga sudah termasuk pembuatan lengkap. Domain &amp; biaya tahunan opsional, kami jelaskan sebelum order.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card">
+        <p class="price-name">Halaman Tunggal</p>
+        <p class="price-for">Untuk usaha yang butuh kehadiran online cepat</p>
+        <p class="price-amount">Rp 400rb <span>sekali bayar</span></p>
+        <p class="price-note">Jadi dalam 2 hari</p>
+        <ul class="price-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>1 halaman profil usaha lengkap</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Foto, harga produk/jasa, kontak</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Tombol WhatsApp langsung chat</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Link bisa dibagikan ke status WA</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>1x revisi</li>
+        </ul>
+        <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20pesan%20paket%20Halaman%20Tunggal%20Rp%20400rb" class="btn btn-outline">Pesan Paket Ini</a>
+      </div>
+      <div class="price-card featured">
+        <span class="price-badge">Paling Laris</span>
+        <p class="price-name">Usaha Lengkap</p>
+        <p class="price-for">Untuk usaha yang serius tampil profesional</p>
+        <p class="price-amount">Rp 850rb <span>sekali bayar</span></p>
+        <p class="price-note">Jadi dalam 3–4 hari</p>
+        <ul class="price-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Semua di paket Halaman Tunggal</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Hingga 3 halaman (beranda, layanan/menu, kontak)</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Galeri foto &amp; testimoni pelanggan</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Lokasi Google Maps terpasang</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>3x revisi</li>
+        </ul>
+        <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20pesan%20paket%20Usaha%20Lengkap%20Rp%20850rb" class="btn btn-primary">Pesan Paket Ini</a>
+      </div>
+      <div class="price-card">
+        <p class="price-name">Custom Plus</p>
+        <p class="price-for">Untuk kebutuhan khusus &amp; katalog besar</p>
+        <p class="price-amount">Rp 1,2jt <span>sekali bayar</span></p>
+        <p class="price-note">Waktu sesuai lingkup, jelas di awal</p>
+        <ul class="price-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Semua di paket Usaha Lengkap</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Katalog produk/jasa tak terbatas</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Formulir pesanan / pemesanan online</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Revisi sampai 5x</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Prioritas antrian</li>
+        </ul>
+        <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20tanya%20paket%20Custom%20Plus" class="btn btn-outline">Tanya Dulu</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="process" id="cara">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Gampang Banget</span>
+      <h2>Cara kerjanya cuma 3 langkah</h2>
+      <p>Anda tinggal santai — yang teknis-teknis serahkan ke kami.</p>
+    </div>
+    <div class="steps">
+      <div class="step-card">
+        <span class="step-num" aria-hidden="true">1</span>
+        <h3>Chat &amp; kirim materi</h3>
+        <p>Hubungi kami di WhatsApp. Kirim foto usaha, daftar produk/harga, dan cerita singkat usaha Anda. Format bebas, yang penting jelas.</p>
+      </div>
+      <div class="step-card">
+        <span class="step-num" aria-hidden="true">2</span>
+        <h3>Kami buatkan</h3>
+        <p>Dalam 1–2 hari kami kirim tautan pratinjau. Anda buka di HP, lihat sendiri hasilnya, dan minta revisi kalau ada yang mau diubah.</p>
+      </div>
+      <div class="step-card">
+        <span class="step-num" aria-hidden="true">3</span>
+        <h3>Bayar &amp; website aktif</h3>
+        <p>Setelah cocok, selesaikan pembayaran (QRIS/transfer). Website langsung aktif dan siap Anda bagikan ke pelanggan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Sering Ditanyakan</span>
+      <h2>Pertanyaan yang biasa muncul</h2>
+    </div>
+    <div class="faq-list">
+      <details>
+        <summary>Saya gaptek, apa bisa tetap punya website?</summary>
+        <div class="faq-a">Bisa banget. Anda tidak perlu mengoperasikan apa pun — semua dikerjakan kami. Setelah jadi, Anda tinggal membagikan tautan websitenya ke pelanggan, seperti membagikan tautan YouTube.</div>
+      </details>
+      <details>
+        <summary>Apakah ada biaya bulanan?</summary>
+        <div class="faq-a">Tidak ada. Harga paket adalah sekali bayar untuk pembuatannya. Jika ingin alamat sendiri (misalnya namausaha.com), ada biaya domain tahunan sekitar Rp 150–300rb yang kami jelaskan transparan sebelum order — dan itu bayar ke penyedia domain, bukan ke kami.</div>
+      </details>
+      <details>
+        <summary>Bagaimana kalau saya mau mengubah isi website nanti?</summary>
+        <div class="faq-a">Perubahan kecil (harga, jam buka, nomor telepon) gratis 30 hari setelah website aktif. Setelah itu ada biaya perubahan mulai Rp 50rb, atau Anda bisa ambil paket perawatan tahunan.</div>
+      </details>
+      <details>
+        <summary>Pembayarannya bagaimana?</summary>
+        <div class="faq-a">QRIS atau transfer bank. Pembayaran setelah Anda melihat pratinjau dan merasa cocok — tidak ada pembayaran di muka untuk paket pertama.</div>
+      </details>
+      <details>
+        <summary>Website-nya bisa dibuka di HP kan?</summary>
+        <div class="faq-a">Ya. Semua website kami tampil rapi di HP, tablet, dan komputer. mayoritas pelanggan Anda akan membukanya dari HP, jadi itu prioritas kami.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final" id="kontak">
+  <div class="container">
+    <div class="final-card">
+      <div class="final-inner">
+        <h2>Usaha Anda layak ditemukan pelanggan</h2>
+        <p>Ceritakan usaha Anda sekarang — gratis, tanpa komitmen. Kami balas dengan contoh tampilan awal untuk usaha Anda.</p>
+        <div class="final-actions">
+          <a href="https://wa.me/6281234567890?text=Halo%20Webmu%2C%20saya%20mau%20konsultasi%20website%20usaha" class="btn btn-wa">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Chat WhatsApp Sekarang
+          </a>
+          <a href="#harga" class="btn btn-primary">Lihat Harga Lagi</a>
+        </div>
+        <p class="qr-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM19 14h2M14 19h2M18 18h3v3h-3z"/></svg>
+          Pembayaran QRIS tersedia — kode QR akan tersedia di sini setelah terbit
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-left">
+      <span class="logo-mark" aria-hidden="true">W</span>
+      <span class="logo-name">webmu</span>
+    </div>
+    <nav class="footer-links" aria-label="Navigasi footer">
+      <a href="#contoh">Contoh</a>
+      <a href="#harga">Harga</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://wa.me/6281234567890">WhatsApp</a>
+    </nav>
+    <span class="footer-copy">© 2026 Webmu — website untuk usaha kecil Indonesia.</span>
+  </div>
+</footer>
+
+<a href="https://wa.me/6281234567890?text=Halo%20Webmu%2C%20saya%20mau%20konsultasi%20website%20usaha" class="wa-float" aria-label="Chat WhatsApp Webmu">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+</body>
+</html>
