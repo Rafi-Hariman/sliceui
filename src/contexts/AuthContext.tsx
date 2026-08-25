@@ -5,6 +5,26 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
 
+// ── TEMPORARY: bypass login for local testing ──────────────────────────────────
+// Set VITE_BYPASS_AUTH="true" in .env to skip Supabase auth entirely.
+// Remove this block (and the flag) once a live Supabase project is wired up.
+const BYPASS_AUTH = import.meta.env.VITE_BYPASS_AUTH === "true";
+
+const MOCK_USER = {
+  id: "mock-user-0000-0000-0000-000000000000",
+  email: "dev@local.test",
+} as unknown as User;
+
+const MOCK_PROFILE: Profile = {
+  id: "mock-profile-0000-0000-0000-000000000000",
+  user_id: "mock-user-0000-0000-0000-000000000000",
+  full_name: "Local Dev",
+  job_title: null,
+  avatar_url: null,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+};
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -34,6 +54,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    if (BYPASS_AUTH) {
+      setUser(MOCK_USER);
+      setProfile(MOCK_PROFILE);
+      setLoading(false);
+      return;
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
@@ -77,6 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
+    if (BYPASS_AUTH) return;
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   };

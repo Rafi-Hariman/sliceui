@@ -1,10 +1,19 @@
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import {
+  GoogleGenerativeAI,
+  GoogleGenerativeAIAbortError,
+  type SingleRequestOptions
+} from "@google/generative-ai"
 import Groq from "groq-sdk"
 import { buildPrompt } from "./prompts"
 import type { Framework, ConversionOptions } from "./types"
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY
+
+// Gemini vision on a large screenshot can legitimately take 30-90s.
+// Without an explicit timeout the SDK never aborts a hung fetch, so the
+// request can spin forever — cap it and surface a friendly error instead.
+const GEMINI_REQUEST_TIMEOUT_MS = 90_000
 
 const gemini = new GoogleGenerativeAI(GEMINI_API_KEY || "")
 const groq = new Groq({
@@ -15,14 +24,16 @@ const groq = new Groq({
 export async function imageToCode(
   base64Image: string,
   framework: Framework,
-  options: ConversionOptions
+  options: ConversionOptions,
+  instructions?: string,
+  mimeType: string = "image/png"
 ): Promise<string> {
   if (!GEMINI_API_KEY) {
     throw new Error("GEMINI_API_KEY is not configured")
   }
 
   try {
-    return await callGemini(base64Image, framework, options)
+    return await callGemini(base64Image, framework, options, instructions, mimeType)
   } catch (err: unknown) {
     const error = err as { status?: number; message?: string }
     const isRateLimit =
@@ -33,7 +44,7 @@ export async function imageToCode(
 
     if (isRateLimit && GROQ_API_KEY) {
       console.warn("Gemini rate limit hit, switching to Groq")
-      return await callGroq(base64Image, framework, options)
+      return await callGroq(base64Image, framework, options, instructions, mimeType)
     }
     throw err
   }
@@ -42,42 +53,68 @@ export async function imageToCode(
 async function callGemini(
   base64: string,
   framework: Framework,
-  options: ConversionOptions
+  options: ConversionOptions,
+  instructions?: string,
+  mimeType: string = "image/png"
 ): Promise<string> {
   const model = gemini.getGenerativeModel({ model: "gemini-flash-latest" })
-  const prompt = buildPrompt(framework, options)
+  const prompt = buildPrompt(framework, options, instructions)
 
-  const result = await model.generateContent([
-    prompt,
-    { inlineData: { mimeType: "image/png", data: base64 } }
-  ])
+  const requestOptions: SingleRequestOptions = {
+    timeout: GEMINI_REQUEST_TIMEOUT_MS,
+    signal: new AbortController().signal // caller-side signal; SDK aborts its own fetch on abort
+  }
 
-  return clean(result.response.text())
+  try {
+    const result = await model.generateContent(
+      [
+        prompt,
+        { inlineData: { mimeType, data: base64 } }
+      ],
+      requestOptions
+    )
+    return clean(result.response.text())
+  } catch (err: unknown) {
+    if (err instanceof GoogleGenerativeAIAbortError) {
+      throw new Error(
+        "Generation timed out. The image may be too large or the AI service is slow — try again or use a smaller image."
+      )
+    }
+    throw err
+  }
 }
 
 async function callGroq(
   base64: string,
   framework: Framework,
-  options: ConversionOptions
+  options: ConversionOptions,
+  instructions?: string,
+  mimeType: string = "image/png"
 ): Promise<string> {
-  const prompt = buildPrompt(framework, options)
+  const prompt = buildPrompt(framework, options, instructions)
 
-  const res = await groq.chat.completions.create({
-    model: "pixtral-12b-2409",
-    messages: [
-      {
-        role: "user",
-        content: [
-          { type: "text", text: prompt },
-          {
-            type: "image_url",
-            image_url: { url: `data:image/png;base64,${base64}` }
-          }
-        ]
-      }
-    ],
-    max_tokens: 4096
-  })
+  const res = await groq.chat.completions.create(
+    {
+      model: "pixtral-12b-2409",
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: prompt },
+            {
+              type: "image_url",
+              image_url: { url: `data:${mimeType};base64,${base64}` }
+            }
+          ]
+        }
+      ],
+      max_tokens: 4096
+    },
+    {
+      timeout: GEMINI_REQUEST_TIMEOUT_MS,
+      signal: new AbortController().signal
+    }
+  )
 
   return clean(res.choices[0].message.content ?? "")
 }

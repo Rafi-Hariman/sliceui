@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import type { Framework, ConversionOptions } from "@/lib/types"
 
 interface UseConvertReturn {
-  convert: (file: File, framework: Framework, options: ConversionOptions) => Promise<void>
+  convert: (file: File, framework: Framework, options: ConversionOptions, instructions?: string) => Promise<void>
   code: string | null
   isLoading: boolean
   loadingMessage: string
@@ -24,13 +24,9 @@ export default function useConvert(): UseConvertReturn {
   const convert = useCallback(async (
     file: File,
     framework: Framework,
-    options: ConversionOptions
+    options: ConversionOptions,
+    instructions?: string
   ) => {
-    if (!user) {
-      setError("You must be logged in to convert images")
-      return
-    }
-
     setIsLoading(true)
     setError(null)
     setCode(null)
@@ -52,25 +48,35 @@ export default function useConvert(): UseConvertReturn {
       reader.readAsDataURL(file)
 
       const base64 = await base64Promise
-      const generatedCode = await imageToCode(base64, framework, options)
+      const mimeType = file.type || "image/png"
+      const generatedCode = await imageToCode(base64, framework, options, instructions, mimeType)
 
       setCode(generatedCode)
 
-      const { url: imageUrl } = await uploadSliceImage(file, user.id)
+      // Persist to Supabase only when there's a logged-in user. Without a
+      // session (or in bypass mode) the conversion is generated + shown but
+      // not saved to history.
+      if (user) {
+        const { url: imageUrl } = await uploadSliceImage(file, user.id)
 
-      await createConversion(
-        user.id,
-        imageUrl,
-        file.name,
-        framework,
-        options,
-        generatedCode
-      )
+        await createConversion(
+          user.id,
+          imageUrl,
+          file.name,
+          framework,
+          options,
+          generatedCode
+        )
+      }
     } catch (err: any) {
       console.error("Conversion error:", err)
       const errorMessage = err?.message || "Conversion failed. Please try again."
 
-      if (errorMessage.includes("quota") || errorMessage.includes("limit")) {
+      if (errorMessage.includes("timed out")) {
+        setError(
+          "Generation timed out. The image may be too large or the AI service is slow — try again or use a smaller image."
+        )
+      } else if (errorMessage.includes("quota") || errorMessage.includes("limit")) {
         setError("Daily limit reached. Please try again tomorrow.")
       } else if (errorMessage.includes("API key")) {
         setError("API configuration error. Please check your settings.")

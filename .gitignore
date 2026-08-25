@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Session handoffs (EHA rule 2.4)
+memories/
+
+# Claude local settings (permission entries contain env-specific values)
+.claude/settings.local.json
+
+# Local Claude plans
+.claude/plans/
+
+# Reverse-engineering reference repo (abi/screenshot-to-code) — read-only, never ship
+screenshot-to-code/

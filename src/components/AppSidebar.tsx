@@ -69,18 +69,20 @@ export function SidebarContent({ collapsed = false, onNavigate, onToggle }: Side
           variant="ghost"
           size="icon"
           onClick={onToggle}
-          className="h-6 w-6 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
+          className="h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? (
-            <ChevronRight className="h-3.5 w-3.5" />
+            <ChevronRight className="h-4 w-4" />
           ) : (
-            <ChevronLeft className="h-3.5 w-3.5" />
+            <ChevronLeft className="h-4 w-4" />
           )}
         </Button>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 py-1.5 px-1.5 space-y-px">
+      <nav className="flex-1 py-2 px-2 space-y-1">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path ||
             (item.path !== "/" && location.pathname.startsWith(item.path));
@@ -89,14 +91,19 @@ export function SidebarContent({ collapsed = false, onNavigate, onToggle }: Side
               key={item.path}
               to={item.path}
               onClick={(e) => handleNavClick(e, item.path)}
+              aria-current={isActive ? "page" : undefined}
+              title={collapsed ? item.label : undefined}
               className={cn(
-                "flex items-center gap-2 px-2 py-1.5 rounded text-[13px] transition-colors",
+                "relative flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-all duration-200",
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  ? "bg-primary/10 text-primary font-medium shadow-[inset_0_0_0_1px] shadow-primary/15"
                   : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )}
-              title={collapsed ? item.label : undefined}
             >
+              {/* Active indicator bar */}
+              {isActive && !collapsed && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-full bg-primary shadow-[0_0_8px] shadow-primary/60" />
+              )}
               <item.icon className="h-4 w-4 shrink-0" />
               {!collapsed && <span>{item.label}</span>}
             </Link>
@@ -107,8 +114,8 @@ export function SidebarContent({ collapsed = false, onNavigate, onToggle }: Side
       {/* Footer */}
       <div className="border-t border-sidebar-border p-2">
         <div className="flex items-center gap-2 px-1">
-          <Avatar className="h-5 w-5 shrink-0">
-            <AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground text-[9px] leading-none">
+          <Avatar className="h-6 w-6 shrink-0">
+            <AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground text-[10px] leading-none">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -122,9 +129,11 @@ export function SidebarContent({ collapsed = false, onNavigate, onToggle }: Side
               variant="ghost"
               size="icon"
               onClick={signOut}
-              className="text-sidebar-foreground hover:bg-sidebar-accent h-6 w-6 shrink-0"
+              className="text-sidebar-foreground hover:bg-sidebar-accent h-8 w-8 shrink-0"
+              aria-label="Sign out"
+              title="Sign out"
             >
-              <LogOut className="h-3 w-3" />
+              <LogOut className="h-3.5 w-3.5" />
             </Button>
           )}
         </div>

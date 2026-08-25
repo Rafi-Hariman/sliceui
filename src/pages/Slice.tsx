@@ -1,19 +1,21 @@
 import { useState, useRef, useCallback } from "react"
-import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import { AppLayout } from "@/components/AppLayout"
 import CodeOutput from "@/components/CodeOutput"
+import FrameworkDropdown from "@/components/FrameworkDropdown"
+import OptionsBar from "@/components/OptionsBar"
 import useImageUpload from "@/hooks/useImageUpload"
 import useConvert from "@/hooks/useConvert"
-import { FRAMEWORKS } from "@/lib/frameworks"
 import type { Framework, ConversionOptions } from "@/lib/types"
-import { Plus, ArrowUp, X, Image as ImageIcon, Sun, Moon, Settings as SettingsIcon } from "lucide-react"
-import { useAuth } from "@/contexts/AuthContext"
+import {
+  Upload,
+  Sparkles,
+  RefreshCw,
+  X,
+  Image as ImageIcon,
+} from "lucide-react"
 
 const DEFAULT_OPTIONS: ConversionOptions = {
   responsive: true,
@@ -22,41 +24,12 @@ const DEFAULT_OPTIONS: ConversionOptions = {
   a11y: false
 }
 
-const FRAMEWORK_ICONS: Record<string, React.ReactNode> = {
-  "tailwind": <span className="font-bold text-cyan-500">TW</span>,
-  "react-tsx": <span className="font-bold text-blue-500">Re</span>,
-  "vue-sfc": <span className="font-bold text-green-500">Vu</span>,
-  "bootstrap5": <span className="font-bold text-purple-500">BS</span>,
-  "native-html": <span className="font-bold text-orange-500">HT</span>,
-  "nextjs": <span className="font-bold text-gray-900 dark:font-bold">Nx</span>,
-  "svelte": <span className="font-bold text-red-500">Sv</span>,
-}
-
 export default function Slice() {
-  const { profile, user } = useAuth()
   const [framework, setFramework] = useState<Framework>("tailwind")
+  const [options, setOptions] = useState<ConversionOptions>(DEFAULT_OPTIONS)
   const [prompt, setPrompt] = useState("")
-  const [showCanvasPreview, setShowCanvasPreview] = useState(false)
-  const [theme, setThemeState] = useState<string>(() => {
-    if (typeof window !== "undefined") return document.documentElement.classList.contains("dark") ? "dark" : "light"
-    return "dark"
-  })
+  const [designSystem, setDesignSystem] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const initials = profile?.full_name
-    ? profile.full_name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
-    : "U"
-
-  const toggleTheme = (value: string) => {
-    setThemeState(value)
-    if (value === "dark") {
-      document.documentElement.classList.add("dark")
-      localStorage.setItem("theme", "dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-      localStorage.setItem("theme", "light")
-    }
-  }
 
   const {
     file,
@@ -78,15 +51,19 @@ export default function Slice() {
     reset
   } = useConvert()
 
-  const handleGenerate = async () => {
+  const handleGenerate = useCallback(async () => {
     if (!file) {
       toast.error("Please upload an image first")
       return
     }
 
     reset()
-    await convert(file, framework, DEFAULT_OPTIONS)
-  }
+    const effectiveOptions: ConversionOptions = {
+      ...options,
+      designSystem: designSystem.trim() || undefined
+    }
+    await convert(file, framework, effectiveOptions, prompt)
+  }, [file, framework, options, designSystem, prompt, convert, reset])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -100,57 +77,8 @@ export default function Slice() {
   }
 
   return (
-    <AppLayout>
+    <AppLayout title="Slice">
       <div className="flex flex-col h-full relative">
-        {/* Header Navbar - Like Dashboard/Settings */}
-        <div className="flex items-center justify-between px-4 md:px-6 h-11 border-b border-border shrink-0">
-          <h1 className="text-[13px] font-medium">Slice</h1>
-
-          <div className="flex items-center gap-2">
-            {/* Theme Toggle - Single Icon */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => toggleTheme(theme === "dark" ? "light" : "dark")}
-              className="h-7 w-7"
-              title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-            >
-              {theme === "dark" ? (
-                <Sun className="h-3.5 w-3.5" />
-              ) : (
-                <Moon className="h-3.5 w-3.5" />
-              )}
-            </Button>
-
-            {/* Avatar with Popover */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full">
-                  <Avatar className="h-5 w-5">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-[9px] leading-none">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-48 p-0" align="end">
-                <div className="p-3 border-b border-border">
-                  <p className="text-[13px] font-medium">{profile?.full_name || "User"}</p>
-                  <p className="text-[11px] text-muted-foreground truncate">{user?.email || ""}</p>
-                </div>
-                <div className="p-1">
-                  <Link to="/settings">
-                    <Button variant="ghost" size="sm" className="w-full justify-start h-7 text-[12px] gap-1.5">
-                      <SettingsIcon className="h-3 w-3" />
-                      Settings
-                    </Button>
-                  </Link>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
-
         {/* Drag Overlay */}
         {isDragging && (
           <div className="fixed inset-0 bg-primary/10 backdrop-blur-sm z-50 flex items-center justify-center pointer-events-none">
@@ -161,123 +89,131 @@ export default function Slice() {
           </div>
         )}
 
-        {/* Main Content: Left Panel + Right Canvas */}
         <div
-          className="flex-1 flex overflow-hidden p-4 gap-4 bg-sidebar min-h-0"
+          className="flex-1 flex flex-col overflow-hidden p-4 gap-3 bg-background min-h-0"
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
-          {/* Left Panel Card - Not attached to sidebar/header */}
-          <div className="w-80 shrink-0 bg-sidebar border border-border rounded-xl shadow-sm flex flex-col min-h-0">
-            {/* Chat Bar */}
-            <div className="p-3 border-b border-border">
-              <div className="bg-background border border-border rounded-xl p-2">
-                <div className="flex items-end gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handlePlusClick}
-                    className="shrink-0 rounded-full h-9 w-9"
-                    title="Upload image"
-                  >
-                    {file ? <X className="w-4 h-4" onClick={(e) => { e.stopPropagation(); clearFile(); }} /> : <Plus className="w-4 h-4" />}
-                  </Button>
-
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
+          {/* ── Top bar: image upload + prompt + generate ── */}
+          <div className="shrink-0 flex flex-col lg:flex-row gap-3 items-stretch lg:items-center">
+            {/* Image / prompt card */}
+            <div className="flex-1 min-w-0 flex items-center gap-2 bg-card border border-border rounded-2xl px-2 py-1.5 shadow-sm focus-within:border-primary/30 transition-colors">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handlePlusClick}
+                className="shrink-0 rounded-lg h-9 w-9"
+                title="Upload image (PNG, JPG, WebP · max 10MB)"
+              >
+                {file ? (
+                  <X
+                    className="w-4 h-4"
+                    onClick={(e) => { e.stopPropagation(); clearFile(); }}
                   />
+                ) : (
+                  <Upload className="w-4 h-4" />
+                )}
+              </Button>
 
-                  <Textarea
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder={file ? "Add instructions..." : "Upload image..."}
-                    disabled={!file}
-                    rows={1}
-                    className="min-h-[36px] max-h-24 resize-none border-0 focus-visible:ring-0 shadow-none bg-transparent px-2 text-sm"
-                  />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
 
-                  <Button
-                    onClick={handleGenerate}
-                    disabled={!file || isLoading}
-                    size="icon"
-                    className="shrink-0 rounded-full h-9 w-9 bg-primary hover:bg-primary/90"
-                  >
-                    <ArrowUp className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-
-              {uploadError && (
-                <p className="text-xs text-destructive mt-2">{uploadError}</p>
-              )}
-            </div>
-
-            {/* Framework Cards */}
-            <div className="p-3 flex-1 overflow-auto">
-              <p className="text-xs text-muted-foreground mb-2 px-1">Select Framework</p>
-              <div className="grid grid-cols-2 gap-2">
-                {FRAMEWORKS.map((fw) => (
-                  <button
-                    key={fw.id}
-                    onClick={() => setFramework(fw.id as Framework)}
-                    className={`
-                      flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all
-                      ${framework === fw.id
-                        ? "border-primary bg-primary/20 shadow-sm"
-                        : "border-border bg-sidebar hover:border-muted-foreground/30 hover:bg-muted/20"
-                      }
-                    `}
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-sidebar border border-border flex items-center justify-center text-sm font-bold">
-                      {FRAMEWORK_ICONS[fw.id] || fw.id.slice(0, 2).toUpperCase()}
-                    </div>
-                    <span className="text-[10px] text-center leading-tight text-foreground">
-                      {fw.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Image Thumbnail - Bottom of Left Panel */}
-            {file && preview && (
-              <div className="p-3 border-t border-border shrink-0">
+              {file && preview ? (
                 <button
-                  onClick={() => setShowCanvasPreview(!showCanvasPreview)}
-                  className="w-full flex items-center gap-2 p-2 rounded-lg border border-border hover:border-muted-foreground/30 hover:bg-muted/20 transition-colors"
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="shrink-0 flex items-center gap-2 rounded-lg border border-border hover:border-muted-foreground/40 transition-colors p-0.5 pr-2"
+                  title="Replace image"
                 >
-                  <div className="w-12 h-12 rounded-lg overflow-hidden border border-border shrink-0">
-                    <img src={preview} alt="Preview" className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1 text-left min-w-0">
-                    <p className="text-[11px] font-medium truncate">{file.name}</p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {file.size > 1024 * 1024
-                        ? `${(file.size / 1024 / 1024).toFixed(1)}MB`
-                        : `${(file.size / 1024).toFixed(0)}KB`}
-                    </p>
-                  </div>
-                  <span className="text-[10px] text-muted-foreground">
-                    {showCanvasPreview ? "Hide" : "Preview"}
-                  </span>
+                  <img
+                    src={preview}
+                    alt="Uploaded preview"
+                    className="h-9 w-9 rounded-md object-cover border border-border"
+                  />
+                  <span className="text-[11px] font-medium truncate max-w-24">{file.name}</span>
                 </button>
-              </div>
-            )}
+              ) : (
+                <span className="shrink-0 text-[11px] text-muted-foreground hidden sm:block">
+                  PNG · JPG · WebP
+                </span>
+              )}
+
+              <Textarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={file ? "Describe what you want, or leave blank…" : "Upload an image to start…"}
+                disabled={!file}
+                rows={1}
+                className="min-h-[36px] max-h-24 resize-none border-0 focus-visible:ring-0 shadow-none bg-transparent px-2 text-sm"
+              />
+
+              <Button
+                onClick={handleGenerate}
+                disabled={!file || isLoading}
+                size="sm"
+                className="shrink-0 rounded-lg h-9 gap-1.5"
+              >
+                {isLoading ? (
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="w-3.5 h-3.5" />
+                )}
+                {isLoading ? "Generating…" : "Generate"}
+              </Button>
+            </div>
+
+            {/* Framework + options */}
+            <div className="shrink-0 flex flex-col sm:flex-row sm:items-center gap-2 lg:w-auto lg:justify-end">
+              <FrameworkDropdown
+                value={framework}
+                onChange={setFramework}
+                disabled={isLoading}
+              />
+              <OptionsBar options={options} onChange={setOptions} />
+            </div>
           </div>
 
-          {/* Right Canvas: Code Output */}
-          <div className="flex-1 bg-sidebar border border-border rounded-xl shadow-sm overflow-hidden min-h-0 flex flex-col">
+          {/* ── Design system (optional) ── */}
+          <details className="shrink-0 group">
+            <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 select-none list-none">
+              <span className="transition-transform group-open:rotate-90">›</span>
+              Design system (optional)
+              {designSystem.trim() && (
+                <span className="text-[10px] text-primary">• set</span>
+              )}
+            </summary>
+            <div className="mt-2">
+              <Textarea
+                value={designSystem}
+                onChange={(e) => setDesignSystem(e.target.value)}
+                placeholder="Paste your tokens — colors, fonts, spacing, or a Tailwind theme — and the output will conform to it."
+                rows={3}
+                className="min-h-[64px] max-h-40 resize-none text-sm"
+              />
+            </div>
+          </details>
+
+          {uploadError && (
+            <p className="text-xs text-destructive shrink-0">{uploadError}</p>
+          )}
+
+          {/* ── Main canvas: code output / states ── */}
+          <div className="flex-1 min-h-0 bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col transition-colors focus-within:border-primary/25">
             {!file && !code ? (
-              // Empty State
+              // Empty state
               <div className="h-full flex flex-col items-center justify-center text-center space-y-4 p-8">
-                <div className="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center">
-                  <ImageIcon className="w-10 h-10 text-primary" />
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-3xl blur-2xl opacity-40 bg-primary/20" aria-hidden />
+                  <div className="relative w-20 h-20 rounded-3xl border border-border bg-background flex items-center justify-center">
+                    <ImageIcon className="w-10 h-10 text-primary" />
+                  </div>
                 </div>
                 <div>
                   <h2 className="text-2xl font-semibold mb-2">Convert UI to Code</h2>
@@ -287,34 +223,12 @@ export default function Slice() {
                 </div>
               </div>
             ) : (
-              // Content Display
               <div className="h-full flex flex-col">
-                {showCanvasPreview && file && preview && !code && !isLoading && (
-                  // Image Preview in Canvas
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-sm font-medium">Image Preview</h3>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowCanvasPreview(false)}
-                        className="h-6 text-[11px]"
-                      >
-                        <X className="w-3 h-3 mr-1" />
-                        Close
-                      </Button>
-                    </div>
-                    <div className="rounded-lg border border-border overflow-hidden bg-background">
-                      <img src={preview} alt="Preview" className="w-full" />
-                    </div>
-                  </div>
-                )}
-
                 {isLoading && (
                   <div className="flex-1 flex items-center justify-center">
                     <div className="text-center space-y-4">
                       <div className="w-12 h-12 border-3 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
-                      <p className="text-sm text-muted-foreground">Generating code...</p>
+                      <p className="text-sm text-muted-foreground">Generating code…</p>
                     </div>
                   </div>
                 )}
@@ -341,6 +255,26 @@ export default function Slice() {
                 )}
               </div>
             )}
+          </div>
+
+          {/* ── Bottom bar: usage chart (like vibe-coding app builders) ── */}
+          <div className="shrink-0 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 bg-card border border-border rounded-2xl px-4 py-2.5">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground shrink-0">
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+              <span>Generations</span>
+            </div>
+            <div className="flex-1 flex items-end h-9 gap-1 min-w-0" aria-hidden="true">
+              {[38, 62, 45, 80, 56, 92, 70].map((h, i) => (
+                <div
+                  key={i}
+                  style={{ height: `${h}%` }}
+                  className="flex-1 rounded-t-sm bg-primary/15 hover:bg-primary/30 transition-colors"
+                />
+              ))}
+            </div>
+            <div className="text-[11px] text-muted-foreground shrink-0 tabular-nums">
+              5 / 1,500 today
+            </div>
           </div>
         </div>
       </div>

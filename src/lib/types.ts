@@ -8,13 +8,13 @@ export type Framework =
   | "native-html"
   | "nextjs"
   | "svelte"
-  | "flutter"
 
 export interface ConversionOptions {
   responsive: boolean
   semanticHtml: boolean
   darkMode: boolean
   a11y: boolean
+  designSystem?: string
 }
 
 export interface Conversion {
