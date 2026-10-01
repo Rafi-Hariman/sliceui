@@ -3,7 +3,7 @@ import { imageToCode } from "@/lib/aiService"
 import { uploadSliceImage } from "@/lib/storageService"
 import { createConversion } from "@/lib/conversionService"
 import { isSupabaseConfigured } from "@/integrations/supabase/client"
-import { useAuth } from "@/contexts/AuthContext"
+import { useAuth, isBypassAuth } from "@/contexts/AuthContext"
 import type { Framework, ConversionOptions } from "@/lib/types"
 
 interface UseConvertReturn {
@@ -56,9 +56,11 @@ export default function useConvert(): UseConvertReturn {
       setCode(generatedCode)
 
       // Persist to Supabase only when there's a logged-in user AND Supabase
-      // is configured. Without a session (or in bypass mode / no project) the
-      // conversion is generated + shown but not saved to history.
-      if (user && isSupabaseConfigured()) {
+      // is configured AND auth isn't bypassed. Bypass mode uses a mock user id
+      // with no real session, so RLS (auth.uid()=NULL) rejects the upload —
+      // skip persistence and keep generation/preview working. (Prod never runs
+      // bypass; this only affects local dev.)
+      if (user && isSupabaseConfigured() && !isBypassAuth()) {
         const { url: imageUrl } = await uploadSliceImage(file, user.id)
 
         await createConversion(

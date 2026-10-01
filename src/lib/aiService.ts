@@ -41,26 +41,26 @@ export async function imageToCode(
     return callProxy(base64Image, framework, options, instructions, mimeType)
   }
 
-  if (!GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY is not configured")
+  if (!GEMINI_API_KEY && !GROQ_API_KEY) {
+    throw new Error("No AI API key configured")
   }
 
-  try {
-    return await callGemini(base64Image, framework, options, instructions, mimeType)
-  } catch (err: unknown) {
-    const error = err as { status?: number; message?: string }
-    const isRateLimit =
-      error?.status === 429 ||
-      error?.message?.includes("quota") ||
-      error?.message?.includes("rate") ||
-      error?.message?.includes("limit")
-
-    if (isRateLimit && GROQ_API_KEY) {
-      console.warn("Gemini rate limit hit, switching to Groq")
+  // Dev default is Groq when a key is set — Gemini keys often hit free-tier
+  // limits, and Groq responds faster on typical screenshots. Gemini is the
+  // fallback if Groq fails (e.g. pixtral unavailable).
+  if (GROQ_API_KEY) {
+    try {
       return await callGroq(base64Image, framework, options, instructions, mimeType)
+    } catch (err: unknown) {
+      if (GEMINI_API_KEY) {
+        console.warn("Groq failed, falling back to Gemini")
+        return await callGemini(base64Image, framework, options, instructions, mimeType)
+      }
+      throw err
     }
-    throw err
   }
+
+  return await callGemini(base64Image, framework, options, instructions, mimeType)
 }
 
 // Call the Vercel serverless proxy so the AI key never reaches the browser.
@@ -149,7 +149,7 @@ async function callGroq(
 
   const res = await groq.chat.completions.create(
     {
-      model: "pixtral-12b-2409",
+      model: "qwen/qwen3.6-27b", // only vision-capable model available on this Groq key
       messages: [
         {
           role: "user",

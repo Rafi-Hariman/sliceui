@@ -11,6 +11,11 @@ type Profile = Tables<"profiles">;
 // var leaks into a prod environment. Remove once live auth is fully verified.
 const BYPASS_AUTH = import.meta.env.DEV && import.meta.env.VITE_BYPASS_AUTH === "true";
 
+// Bypass mode uses a mock user id with no real Supabase session, so RLS
+// (auth.uid() = NULL) rejects uploads/persist. Consumers (e.g. useConvert)
+// use this flag to skip persistence entirely and keep generation working.
+export const isBypassAuth = (): boolean => BYPASS_AUTH;
+
 const MOCK_USER = {
   id: "mock-user-0000-0000-0000-000000000000",
   email: "dev@local.test",

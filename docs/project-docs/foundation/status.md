@@ -63,6 +63,7 @@ Does not track daily tasks (use git issues/PRs) or release history (see `foundat
 1. **P3 — provision Supabase persistence + live auth** — single remaining block: a live Supabase project (all refs NXDOMAIN). Migrations ready in-repo.
 2. **P2 — QRIS entity + real WhatsApp number** (user-owned).
 3. **P4 — free launch** (channel + timing approval) + first release tag.
+4. **Local-skill npm package** (`sliceui`, repo `sliceui-skill`) — a new tool-distribution surface for agencies/freelancers (in-progress, not yet published). Converts a screenshot into component code adapted to the developer's own project; model-agnostic (transcribes image → text for non-vision agents); first-class Angular 13 support. See `foundation/changelog.md`.
 
 ## 10. Key Metrics
 - **Tests passing:** 8 (prompt + framework + example suites).

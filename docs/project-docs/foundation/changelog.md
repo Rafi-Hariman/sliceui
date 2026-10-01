@@ -45,6 +45,7 @@ Does not document internal code details not visible at the feature level (see co
 - **CI workflow** (`.github/workflows/ci.yml`): lint + test + build on push/PR to main — 2026-08-25.
 - **Pull-measurement tracking** (`operations/pull-measurement.md`) for the Week-12 gate.
 - **Migrations in-repo** (`supabase/migrations/`): `conversions` table + RLS and `sliceui-images` bucket + RLS.
+- **Local skill npm package** (`sliceui`, companion repo `sliceui-skill`, 2026-08-27): a new distribution surface that converts a screenshot into component code *adapted to the developer's own project* (framework + version + conventions). Model-agnostic — transcribes the image to a text transcript (Gemini vision → zero-dependency static extraction + Swift OCR) so even non-vision coding agents can generate accurate code. First-class Angular 13 support (the web app has no Angular output). Ships as an agent skill + CLI (`npx sliceui`); not yet published to npm.
 
 ### Changed
 - Conversion pipeline evolved from a (documented) Next.js API-route design to a fully client-side SPA flow.
